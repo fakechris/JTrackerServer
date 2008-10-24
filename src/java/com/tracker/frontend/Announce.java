@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package backend;
+package com.tracker.frontend;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -166,8 +166,8 @@ public class Announce extends HttpServlet {
         Long uploaded, downloaded, left;
         Integer numPeersToReturn = new Integer(50);
         Integer port;
-        entity.Torrent t;
-        entity.Peer p;
+        com.tracker.entity.Torrent t;
+        com.tracker.entity.Peer p;
         
         /*
          * Check for mandatory fields
@@ -252,7 +252,7 @@ public class Announce extends HttpServlet {
         
         // find torrent in database of tracked torrents
         try {
-            t = em.find(entity.Torrent.class, infoHash.getBytes());
+            t = em.find(com.tracker.entity.Torrent.class, infoHash.getBytes());
 
             if(t == null) {
                 return(parseFailed("Torrent not tracked."));
@@ -272,7 +272,7 @@ public class Announce extends HttpServlet {
             // client just started the download
             if(requestParams.get((String)"event") == "started") {
                 // add new peer
-                p = new entity.Peer();
+                p = new com.tracker.entity.Peer();
                 
                 p.setBytesLeft(left);
                 p.setDownloaded(downloaded);
@@ -307,7 +307,7 @@ public class Announce extends HttpServlet {
             // client stopped download
             else if(requestParams.get((String)"event") == "stopped") {
                 // remove peer from list
-                p = em.find(entity.Peer.class, peerId.getBytes());
+                p = em.find(com.tracker.entity.Peer.class, peerId.getBytes());
                 if(p != null) {
                     em.remove(p);
                 }

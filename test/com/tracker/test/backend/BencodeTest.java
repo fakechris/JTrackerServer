@@ -3,8 +3,9 @@
  * and open the template in the editor.
  */
 
-package backend;
+package com.tracker.test.backend;
 
+import com.tracker.backend.Bencode;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

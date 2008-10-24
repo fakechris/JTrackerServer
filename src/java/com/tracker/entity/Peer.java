@@ -3,14 +3,16 @@
  * and open the template in the editor.
  */
 
-package entity;
+package com.tracker.entity;
 
 import java.io.Serializable;
+import java.util.Date;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.Temporal;
 
 /**
  *
@@ -36,6 +38,17 @@ public class Peer implements Serializable {
     private Long bytesLeft;
     
     private Boolean seed;
+
+    @Temporal(javax.persistence.TemporalType.DATE)
+    private Date lastAction;
+
+    public Date getLastActionTime() {
+        return lastAction;
+    }
+
+    public void setLastActionTime(Date lastAction) {
+        this.lastAction = lastAction;
+    }
 
     public Boolean isSeed() {
         return seed;
