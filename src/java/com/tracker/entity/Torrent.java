@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package entity;
+package com.tracker.entity;
 
 import java.io.Serializable;
 import java.util.Collection;
