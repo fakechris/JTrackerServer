@@ -6,7 +6,9 @@
 package com.tracker.entity;
 
 import java.io.Serializable;
+import java.net.InetAddress;
 import java.util.Date;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -23,15 +25,17 @@ public class Peer implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    // fixes some errors about multiple write-able IDs
+    @Column(nullable=false,insertable=false,updatable=false)
     private Long id;
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     @ManyToOne
     private Torrent torrent;
-        
-    private Byte[] peerId;
-    private Byte[] ip;
-    private Byte[] port;
+
+    @Id
+    @Column(length=20)
+    private String peerId;
+    private InetAddress ip;
+    private Byte[] port = new Byte[2];
     
     private Long downloaded;
     private Long uploaded;
@@ -41,6 +45,35 @@ public class Peer implements Serializable {
 
     @Temporal(javax.persistence.TemporalType.DATE)
     private Date lastAction;
+
+    public Peer() {
+        downloaded = uploaded = bytesLeft = (long)0;
+    }
+
+    /**
+     * gives a compact representation of this peer in a String format
+     * @return a String containing 6-bytes; the first 4 being the ip-address,
+     * and the last 2 be    ing the port number.
+     */
+    public String getCompactAddressPort()
+    {
+        String ret = new String();
+        byte address[] = ip.getAddress();
+        // ipv6?
+        if(address.length > 4) {
+            // no compact for you!
+            return null;
+        }
+
+        for(int i = 0; i < address.length; i++) {
+            ret += address[i];
+        }
+
+        for(int i = 0; i < port.length; i++) {
+            ret += port[i];
+        }
+        return ret;
+    }
 
     public Date getLastActionTime() {
         return lastAction;
@@ -78,19 +111,19 @@ public class Peer implements Serializable {
         this.downloaded = downloaded;
     }
 
-    public Byte[] getIp() {
+    public InetAddress getIp() {
         return ip;
     }
 
-    public void setIp(Byte[] ip) {
+    public void setIp(InetAddress ip) {
         this.ip = ip;
     }
 
-    public Byte[] getPeerId() {
+    public String getPeerId() {
         return peerId;
     }
 
-    public void setPeerId(Byte[] peerId) {
+    public void setPeerId(String peerId) {
         this.peerId = peerId;
     }
 
