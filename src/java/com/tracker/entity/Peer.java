@@ -43,7 +43,7 @@ public class Peer implements Serializable {
     
     private Boolean seed;
 
-    @Temporal(javax.persistence.TemporalType.DATE)
+    @Temporal(javax.persistence.TemporalType.TIMESTAMP)
     private Date lastAction;
 
     public Peer() {
@@ -168,7 +168,6 @@ public class Peer implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof Peer)) {
             return false;
         }
