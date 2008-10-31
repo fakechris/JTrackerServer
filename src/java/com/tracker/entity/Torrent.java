@@ -52,7 +52,7 @@ public class Torrent implements Serializable {
     /**
      * Date and time the torrent was added
      */
-    @Temporal(javax.persistence.TemporalType.DATE)
+    @Temporal(javax.persistence.TemporalType.TIMESTAMP)
     private Date added;
     
     /**
