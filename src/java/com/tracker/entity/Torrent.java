@@ -8,6 +8,7 @@ package com.tracker.entity;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Vector;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -16,6 +17,8 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.CascadeType;
 import javax.persistence.Temporal;
+
+
 
 /**
  *
@@ -34,18 +37,16 @@ public class Torrent implements Serializable {
      * Primary key, 20-byte hash-string
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Byte[] infoHash;
+    @Column(length=20)
+    private String infoHash;
 
     /**
      * Name of the torrent
      */
-    @Column(name = "torrentName")
     private String name;
     /**
      * Description of the torrent contents
      */
-    @Column(name = "torrentDescription")
     private String description;
     
     /**
@@ -86,13 +87,13 @@ public class Torrent implements Serializable {
      * The peers that are seeding this torrent
      * bi-directional relationship with the Peer Entity class
      */
-    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "torrent")
+    @OneToMany
     private Collection<Peer> seedersData;
     /**
      * The peers that are leeching this torrent
      * bi-directional relationship with the Peer Entity class
      */
-    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "torrent")
+    @OneToMany
     private Collection<Peer> leechersData;
 
     /**
@@ -100,6 +101,9 @@ public class Torrent implements Serializable {
      */
     public Torrent() {
         numCompleted = numLeechers = numPeers = numSeeders = (long)0;
+        peersData = new Vector<Peer>();
+        seedersData = new Vector<Peer>();
+        leechersData = new Vector<Peer>();
     }
     
     /**
@@ -295,11 +299,11 @@ public class Torrent implements Serializable {
         this.description = description;
     }
 
-    public Byte[] getInfoHash() {
+    public String getInfoHash() {
         return infoHash;
     }
 
-    public void setInfoHash(Byte[] infoHash) {
+    public void setInfoHash(String infoHash) {
         this.infoHash = infoHash;
     }
 
@@ -328,7 +332,6 @@ public class Torrent implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof Torrent)) {
             return false;
         }
@@ -341,7 +344,7 @@ public class Torrent implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.Torrent[id=" + id + "]";
+        return "entity.Torrent[id=" + id + ",info_hash=" + infoHash + "]";
     }
 
 }
