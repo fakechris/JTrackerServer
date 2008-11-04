@@ -123,7 +123,8 @@ public class Torrent implements Serializable {
     public boolean addLeecher(Peer p) {
         if(this.peersData.contains(p))
             return(false);
-        
+
+        p.setSeed(false);
         this.leechersData.add(p);
         numLeechers++;
         this.addPeer(p);
@@ -196,7 +197,8 @@ public class Torrent implements Serializable {
     public boolean addSeeder(Peer p) {
         if(this.seedersData.contains(p))
             return(false);
-        
+
+        p.setSeed(true);
         this.seedersData.add(p);
         numSeeders++;
         this.addPeer(p);
@@ -326,7 +328,9 @@ public class Torrent implements Serializable {
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
+        for(int i = 0; i < 20; i++) {
+            hash += infoHash.getBytes()[i] ^ 0x4F;
+        }
         return hash;
     }
 
@@ -336,7 +340,9 @@ public class Torrent implements Serializable {
             return false;
         }
         Torrent other = (Torrent) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))
+                || (this.infoHash == null && other.infoHash != null)
+                || (this.infoHash != null && !this.infoHash.equals(other.infoHash))) {
             return false;
         }
         return true;

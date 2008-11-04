@@ -6,8 +6,12 @@
 package com.tracker.entity;
 
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
+import java.nio.ByteBuffer;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -35,7 +39,8 @@ public class Peer implements Serializable {
     @Column(length=20)
     private String peerId;
     private InetAddress ip;
-    private Byte[] port = new Byte[2];
+    //private Byte[] port = new Byte[2];
+    private Long port;
     
     private Long downloaded;
     private Long uploaded;
@@ -57,7 +62,7 @@ public class Peer implements Serializable {
      */
     public String getCompactAddressPort()
     {
-        String ret = new String();
+        byte[] buf = new byte[6];
         byte address[] = ip.getAddress();
         // ipv6?
         if(address.length > 4) {
@@ -66,12 +71,23 @@ public class Peer implements Serializable {
         }
 
         for(int i = 0; i < address.length; i++) {
-            ret += address[i];
+            buf[i] = address[i];
         }
 
-        for(int i = 0; i < port.length; i++) {
-            ret += port[i];
+        ByteBuffer bb = ByteBuffer.allocateDirect(8);
+        bb.putLong(port);
+        buf[4] = bb.get(0);
+        buf[5] = bb.get(1);
+
+        String ret;
+        try {
+            ret = new String(buf, "utf-8");
+        } catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(Peer.class.getName()).log(Level.SEVERE, 
+                    "no utf-8 for making compact peerlist?", ex);
+            return(null);
         }
+
         return ret;
     }
 
@@ -127,11 +143,11 @@ public class Peer implements Serializable {
         this.peerId = peerId;
     }
 
-    public Byte[] getPort() {
+    public Long getPort() {
         return port;
     }
 
-    public void setPort(Byte[] port) {
+    public void setPort(Long port) {
         this.port = port;
     }
 
@@ -162,7 +178,9 @@ public class Peer implements Serializable {
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
+        for(int i = 0; i < 20; i++) {
+            hash += peerId.getBytes()[i] ^ 0x8B;
+        }
         return hash;
     }
 
@@ -172,7 +190,9 @@ public class Peer implements Serializable {
             return false;
         }
         Peer other = (Peer) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))
+                || (this.peerId == null && other.peerId != null)
+                || (this.peerId != null && !this.peerId.equals(other.peerId))) {
             return false;
         }
         return true;
