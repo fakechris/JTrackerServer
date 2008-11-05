@@ -138,11 +138,11 @@ public class Torrent implements Serializable {
      * @return true if the Peer was leeching this torrent and was successfully
      * removed, false if the Peer was not leeching this torrent.
      */
-    public boolean removeLeecher(Peer p) {
+    private boolean removeLeecher(Peer p) {
         if(this.leechersData.contains(p)) {
             this.leechersData.remove(p);
             numLeechers--;
-            return(this.removePeer(p));
+            return(true);
         }
         else
             return(false);
@@ -212,11 +212,11 @@ public class Torrent implements Serializable {
      * @return true if the Peer is successfully removed, false if the Peer is
      * not seeding this torrent or is not a peer of this torrent
      */
-    public boolean removeSeed(Peer p) {
+    private boolean removeSeed(Peer p) {
         if(this.seedersData.contains(p)) {
             this.seedersData.remove(p);
             numSeeders--;
-            return(this.removePeer(p));
+            return(true);
         }
         else
             return(false);
@@ -250,12 +250,15 @@ public class Torrent implements Serializable {
      * @return true if the peer has been removed, false if the peer is not
      * on this torrent
      */
-    private boolean removePeer(Peer p) {
+    public boolean removePeer(Peer p) {
         if(this.peersData.contains(p)) {
             this.peersData.remove(p);
-            p.setTorrent(null);
             numPeers--;
-            return(true);
+
+            if(p.isSeed())
+                return this.removeSeed(p);
+            else
+                return this.removeLeecher(p);
         }
         else
             return(false);
