@@ -132,6 +132,15 @@ public class TrackerRequestParserTest {
         Iterator itr = l.iterator();
         while(itr.hasNext()) {
             Peer tmp = (Peer) itr.next();
+            Torrent tTemp = tmp.getTorrent();
+            /*if(tmp.isSeed())
+                tTemp.removeSeed(tmp);
+            else
+                tTemp.removeLeecher(tmp);*/
+            if(tTemp != null)
+                tTemp.removePeer(tmp);
+            else
+                System.out.println("woot?");
             em.remove(tmp);
         }
 
@@ -216,7 +225,7 @@ public class TrackerRequestParserTest {
             expResult.put((String)"min interval", (String)"180");
             // grabbed from output
             expResult.put((String)"peers", 
-                    URLDecoder.decode("%28%01%03%00%00%28%01%04%00%00", "utf-8"));
+                    URLDecoder.decode("%28%01%03%00%00", "utf-8"));
 
             System.out.println(" -- parsing request");
             TreeMap result = instance.parseRequest();
@@ -281,7 +290,7 @@ public class TrackerRequestParserTest {
             assertEquals(expResult, result);
 
             // check if the peer is gone from the DB
-            System.out.println(" -- checking for new peer in DB");
+            System.out.println(" -- checking if the peer is gone from the DB");
             EntityManager em = emf.createEntityManager();
             Query q = em.createQuery("SELECT p FROM Peer p WHERE p.peerId = :peerId");
             q.setParameter("peerId", newPeerId);
@@ -293,6 +302,7 @@ public class TrackerRequestParserTest {
             failMessage += ex.toString();
             failMessage += " ";
             failMessage += ex.getMessage();
+            ex.printStackTrace();
             fail(failMessage);
         }
     }

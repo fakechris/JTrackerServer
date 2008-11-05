@@ -32,12 +32,13 @@ public class Peer implements Serializable {
     // fixes some errors about multiple write-able IDs
     @Column(nullable=false,insertable=false,updatable=false)
     private Long id;
-    @ManyToOne
-    private Torrent torrent;
 
     @Id
     @Column(length=20)
     private String peerId;
+
+    @ManyToOne(optional=false)
+    private Torrent torrent;
     private InetAddress ip;
     //private Byte[] port = new Byte[2];
     private Long port;
