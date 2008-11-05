@@ -43,8 +43,8 @@ public class Announce extends HttpServlet {
         // parse request
         TrackerRequestParser trp = new TrackerRequestParser();
         Enumeration e = request.getAttributeNames();
-        TreeMap requestParams = new TreeMap();
-        TreeMap responseParams;
+        TreeMap<String, String> requestParams = new TreeMap<String,String>();
+        TreeMap<String, String> responseParams;
         
         while(e.hasMoreElements()) {
             String name = (String)e.nextElement();

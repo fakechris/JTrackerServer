@@ -21,7 +21,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.NoResultException;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
 
@@ -30,7 +29,7 @@ import javax.persistence.Query;
  * @author bo
  */
 public class TrackerRequestParser {
-    private TreeMap requestParams;
+    private TreeMap<String,String> requestParams;
     private InetAddress remoteAddress;
     EntityManagerFactory emf = Persistence.createEntityManagerFactory("TorrentTrackerPU");
 
@@ -43,7 +42,7 @@ public class TrackerRequestParser {
     {
     }
 
-    public void setRequestParams(TreeMap params)
+    public void setRequestParams(TreeMap<String,String> params)
     {
         requestParams = params;
     }
@@ -63,14 +62,14 @@ public class TrackerRequestParser {
         return(remoteAddress);
     }
 
-    public TreeMap parseRequest() throws Exception
+    public TreeMap<String,String> parseRequest() throws Exception
     {
         if(requestParams == null || remoteAddress == null) {
             return(null);
         }
 
         EntityManager em = emf.createEntityManager();
-        TreeMap responseParams = new TreeMap();
+        TreeMap<String,String> responseParams = new TreeMap<String,String>();
         String infoHash, peerId;
         String event = new String();
         Long uploaded, downloaded, left, port;
@@ -198,7 +197,7 @@ public class TrackerRequestParser {
 
                 // there will only be zero or one results from this query. PeerID
                 // must be unique
-                List<Peer> res = q.getResultList();
+                List<Peer> res = (List<Peer>)q.getResultList();
                 if(!res.isEmpty()) {
                     // check for inactivity
                     if(!peerIsInactive(res.get(0))) {
@@ -246,7 +245,7 @@ public class TrackerRequestParser {
                 q.setParameter("peerId", peerId);
 
                 // zero or one results returned
-                List<Peer> res = q.getResultList();
+                List<Peer> res = (List<Peer>)q.getResultList();
                 if(!res.isEmpty()) {
                     p = res.get(0);
                     em.remove(p);
@@ -350,12 +349,12 @@ public class TrackerRequestParser {
         String peerList;
         if(returnSeeds) {
             // only return leechers
-            Vector v = (Vector) t.getLeechersData();
+            Vector<Peer> v = (Vector<Peer>) t.getLeechersData();
             peerList = getCompactPeerList(v, numPeersToReturn);
         }
         else {
             // return both seeds and leechers
-            Vector v = (Vector) t.getPeersData();
+            Vector<Peer> v = (Vector<Peer>) t.getPeersData();
             peerList = getCompactPeerList(v, numPeersToReturn);
         }
 
@@ -460,8 +459,8 @@ public class TrackerRequestParser {
      * @return returns a TreeMap containing one element. The key being
      * "failure reason" and the value being the human-readable explanation.
      */
-    private TreeMap parseFailed(String error) {
-        TreeMap t = new TreeMap();
+    private TreeMap<String,String> parseFailed(String error) {
+        TreeMap<String,String> t = new TreeMap<String,String>();
         t.put((String)"failure reason", error);
         return(t);
     }
@@ -472,8 +471,8 @@ public class TrackerRequestParser {
      * @return returns a TreeMap containing one element. The key being
      * "warning message" and the value being the human-readable explanation.
      */
-    private TreeMap parseWarning(String warning) {
-        TreeMap t = new TreeMap();
+    private TreeMap<String,String> parseWarning(String warning) {
+        TreeMap<String,String> t = new TreeMap<String,String>();
         t.put((String)"warning message", warning);
         return(t);
     }
