@@ -36,7 +36,7 @@ public class Announce extends HttpServlet {
     * @param response servlet response
     */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException, Exception  {
+    throws ServletException, IOException  {
         // store remote address in a useful form
         remoteAddress = InetAddress.getByName(request.getRemoteAddr());
         
@@ -55,15 +55,17 @@ public class Announce extends HttpServlet {
         trp.setRemoteAddress(remoteAddress);
         trp.setRequestParams(requestParams);
 
-        responseParams = trp.parseRequest();
-        
-        // bencode the response params to a dictionary, send it
         String responseString = new String();
+
         try {
+            responseParams = trp.parseRequest();
+
+            // bencode the response params to a dictionary, send it
+
             responseString = Bencode.encode(responseParams);
         } catch (Exception ex) {
             Logger.getLogger(Announce.class.getName()).log(Level.SEVERE,
-                    "error when bencoding response", ex);
+                    "Exception caught", ex);
         }
         
         response.setContentType("text/plain");
