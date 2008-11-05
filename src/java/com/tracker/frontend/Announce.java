@@ -36,7 +36,7 @@ public class Announce extends HttpServlet {
     * @param response servlet response
     */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException  {
+    throws ServletException, IOException, Exception  {
         // store remote address in a useful form
         remoteAddress = InetAddress.getByName(request.getRemoteAddr());
         
