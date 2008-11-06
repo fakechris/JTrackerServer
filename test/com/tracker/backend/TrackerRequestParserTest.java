@@ -18,6 +18,7 @@ import java.util.Random;
 import java.util.TreeMap;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.NoResultException;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
 import org.junit.After;
@@ -196,7 +197,7 @@ public class TrackerRequestParserTest {
     @Test
     public void testParseRequestEventStarted() {
         try {
-            System.out.println("parseRequest");
+            System.out.println("parseRequestEventStarted");
             TrackerRequestParser instance = new TrackerRequestParser();
             // populate request and address
             TreeMap request;
@@ -255,7 +256,7 @@ public class TrackerRequestParserTest {
     @Test
     public void testParseRequestEventStopped() {
         try {
-            System.out.println("parseRequest");
+            System.out.println("parseRequestEventStopped");
             TrackerRequestParser instance = new TrackerRequestParser();
             // populate request and address
             TreeMap request;
@@ -306,38 +307,69 @@ public class TrackerRequestParserTest {
             fail(failMessage);
         }
     }
-//
-//    /**
-//     * Test of parseRequest method with event=completed, of class TrackerRequestParser.
-//     */
-//    @Test
-//    public void testParseRequestEventCompleted() {
-//        try {
-//            System.out.println("parseRequest");
-//            TrackerRequestParser instance = new TrackerRequestParser();
-//            // populate request and address
-//            TreeMap request = new TreeMap();
-//            InetAddress address;
-//            TreeMap expResult = new TreeMap();
-//            String newPeerId = new String();
-//
-//            /**
-//             * For event = started
-//             */
-//            address = InetAddress.getByName("192.168.1.4");
-//            request.put((String)"info_hash", infoHash);
-//            newPeerId = "lbdfgd1321-------002";
-//            request.put((String)"peerId",newPeerId);
-//            request.put((String)"",)
-//
-//            TreeMap result = instance.parseRequest();
-//
-//            assertEquals(expResult, result);
-//        } catch (Exception ex) {
-//            System.out.println(ex.getMessage());
-//            fail("Exception Caught");
-//        }
-//    }
+
+    /**
+     * Test of parseRequest method with event=completed, of class TrackerRequestParser.
+     */
+    @Test
+    public void testParseRequestEventCompleted() {
+        try {
+            System.out.println("parseRequestEventCompleted");
+            TrackerRequestParser instance = new TrackerRequestParser();
+            // populate request and address
+            TreeMap request;
+            InetAddress address;
+            TreeMap expResult = new TreeMap();
+            String newPeerId = new String();
+
+            /**
+             * For event = completed
+             */
+            System.out.println(" -- populating address and request");
+            address = p.getIp();
+            newPeerId = p.getPeerId();
+
+            request = peerRequest(newPeerId, infoHash, "completed");
+            request.put((String)"left", (String)"999999999");
+
+            instance.setRemoteAddress(address);
+            instance.setRequestParams(request);
+
+            System.out.println(" -- populating expected result");
+            expResult.put((String)"complete",(String)"1");
+            // no leechers left after this one turned into a seed
+            expResult.put((String)"incomplete",(String)"0");
+            expResult.put((String)"interval",(String)"1800");
+            expResult.put((String)"min interval", (String)"180");
+            expResult.put((String)"peers","");
+
+            System.out.println(" -- parsing request");
+            TreeMap result = instance.parseRequest();
+
+            assertEquals(expResult, result);
+
+            // check if the peer has turned into a seed properly
+            System.out.println(" -- checking if the peer is a seed");
+            EntityManager em = emf.createEntityManager();
+            Query q = em.createQuery("SELECT p FROM Peer p WHERE p.peerId = :peerId");
+            q.setParameter("peerId", newPeerId);
+            try {
+                Peer tmp = (Peer) q.getSingleResult();
+                assertTrue("is the peer a seed now?",tmp.isSeed());
+            } catch(NoResultException ex) {
+                fail("did not find any peer: " + ex.getMessage());
+            }
+
+        } catch (Exception ex) {
+            String failMessage = "Exception Caught: ";
+            failMessage += ex.toString();
+            failMessage += " ";
+            failMessage += ex.getMessage();
+            ex.printStackTrace();
+            fail(failMessage);
+        }
+    }
+
 //
 //    /**
 //     * Test of parseRequest method with no event given, of class TrackerRequestParser.
