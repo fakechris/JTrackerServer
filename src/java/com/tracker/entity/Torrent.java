@@ -105,6 +105,30 @@ public class Torrent implements Serializable {
         seedersData = new Vector<Peer>();
         leechersData = new Vector<Peer>();
     }
+
+    /**
+     * marks a leecher as completed (turns into a seed).
+     * This is necessary since removePeer() + addSeed() confuses JPA and it's
+     * mapping-table.
+     * @param p the leecher that has completed this torrent
+     * @return true if the leecher is on this torrent and has been changed to a
+     * seed, false if the peer is not a leecher of this torrent.
+     */
+    public boolean leecherCompleted(Peer p) {
+        if(leechersData.contains(p)) {
+            leechersData.remove(p);
+            numLeechers--;
+
+            seedersData.add(p);
+            numSeeders++;
+
+            p.setSeed(true);
+
+            return true;
+        }
+
+        return false;
+    }
     
     /**
      * Gets the leechers data

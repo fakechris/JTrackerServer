@@ -14,7 +14,6 @@ import java.util.TreeMap;
 import java.net.URLDecoder;
 import java.util.BitSet;
 import java.util.Calendar;
-import java.util.List;
 import java.util.Random;
 import java.util.Vector;
 import java.util.logging.Level;
@@ -32,7 +31,7 @@ import javax.persistence.Query;
 public class TrackerRequestParser {
     private TreeMap<String,String> requestParams;
     private InetAddress remoteAddress;
-    EntityManagerFactory emf = Persistence.createEntityManagerFactory("TorrentTrackerPU");
+    private static EntityManagerFactory emf = Persistence.createEntityManagerFactory("TorrentTrackerPU");
 
     // TODO: get from config or some such
     /// intervals between announces
@@ -314,12 +313,14 @@ public class TrackerRequestParser {
                     return parseFailed("Tracker error.");
                 }
 
-                // add to list of seeds and set the seed parameter
-                p.setSeed(true);
+                if(!p.getTorrent().leecherCompleted(p)) {
+                    Logger.getLogger(TrackerRequestParser.class.getName()).log(Level.SEVERE,
+                            "cannot turn leech into seed?");
+                    em.getTransaction().rollback();
+                    em.close();
+                    return parseFailed("Tracker error.");
+                }
                 returnSeeds = false;
-                p.getTorrent().removePeer(p);
-                p.getTorrent().addSeeder(p);
-                p.getTorrent().setNumCompleted(p.getTorrent().getNumCompleted() + 1);
             }
         } // if(event)
 
@@ -327,7 +328,7 @@ public class TrackerRequestParser {
         else {
             // update data for the peer
             try {
-                Query q = em.createQuery("SELECT p FROM Peers p WHERE p.peerId = :peerId");
+                Query q = em.createQuery("SELECT p FROM Peer p WHERE p.peerId = :peerId");
                 q.setParameter("peerId", peerId);
 
                 p = (Peer) q.getSingleResult();
@@ -363,14 +364,19 @@ public class TrackerRequestParser {
         }
         // commit the changes made so far and close the EntityManager
         try {
-            em.getTransaction().commit();
+            synchronized(this) {
+                em.getTransaction().commit();
+            }
         } catch(Exception ex) {
             if(em.getTransaction().isActive())
                 em.getTransaction().rollback();
             em.close();
             throw ex;
         }
-        
+
+        // make sure that the response is not based on some stale cache
+        em.refresh(t);
+
         // populate the response
         responseParams.put((String)"complete", t.getNumSeeders().toString());
         responseParams.put((String)"incomplete", t.getNumLeechers().toString());
@@ -479,7 +485,7 @@ public class TrackerRequestParser {
                 picked.set(next);
             }
             // check chances for collisions?
-            // TODO: improve random pick
+            // TODO: improve random pick, check for inactivity
             // if numpeers is half the size or more of the swarm, drop the
             // usual random pick-method, and simply pick either a sequential
             // stream of peers either right-to-left or left-to-right?

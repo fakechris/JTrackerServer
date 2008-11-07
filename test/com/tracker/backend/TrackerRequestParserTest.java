@@ -79,6 +79,8 @@ public class TrackerRequestParserTest {
         // we need to add some torrents and peers to test this
         // in setUp to have the same environment before each test
 
+        System.out.println("Setting up database");
+
         EntityManager em = emf.createEntityManager();
         Random r = new Random(Calendar.getInstance().getTimeInMillis());
 
@@ -124,6 +126,8 @@ public class TrackerRequestParserTest {
     public void tearDown() {
         // removes all the peers and torrent after each test
         EntityManager em = emf.createEntityManager();
+
+        System.out.println("Tearing down database");
 
         em.getTransaction().begin();
         em.clear();
@@ -355,6 +359,8 @@ public class TrackerRequestParserTest {
             q.setParameter("peerId", newPeerId);
             try {
                 Peer tmp = (Peer) q.getSingleResult();
+                // make sure that we don't have some stale cache of this
+                em.refresh(tmp);
                 assertTrue("is the peer a seed now?",tmp.isSeed());
             } catch(NoResultException ex) {
                 fail("did not find any peer: " + ex.getMessage());
@@ -370,72 +376,176 @@ public class TrackerRequestParserTest {
         }
     }
 
-//
-//    /**
-//     * Test of parseRequest method with no event given, of class TrackerRequestParser.
-//     * Regular announce.
-//     */
-//    @Test
-//    public void testParseRequestNoEvent() {
-//        try {
-//            System.out.println("parseRequest");
-//            TrackerRequestParser instance = new TrackerRequestParser();
-//            // populate request and address
-//            TreeMap request = new TreeMap();
-//            InetAddress address;
-//            TreeMap expResult = new TreeMap();
-//            String newPeerId = new String();
-//
-//            /**
-//             * For event = started
-//             */
-//            address = InetAddress.getByName("192.168.1.4");
-//            request.put((String)"info_hash", infoHash);
-//            newPeerId = "lbdfgd1321-------002";
-//            request.put((String)"peerId",newPeerId);
-//            request.put((String)"",)
-//
-//            TreeMap result = instance.parseRequest();
-//
-//            assertEquals(expResult, result);
-//        } catch (Exception ex) {
-//            System.out.println(ex.getMessage());
-//            fail("Exception Caught");
-//        }
-//    }
-//
-//    /**
-//     * Test of parseRequest method with compact = 0, of class TrackerRequestParser.
-//     */
-//    @Test
-//    public void testParseRequestNoCompact() {
-//        try {
-//            System.out.println("parseRequest");
-//            TrackerRequestParser instance = new TrackerRequestParser();
-//            // populate request and address
-//            TreeMap request = new TreeMap();
-//            InetAddress address;
-//            TreeMap expResult = new TreeMap();
-//            String newPeerId = new String();
-//
-//            /**
-//             * For event = started
-//             */
-//            address = InetAddress.getByName("192.168.1.4");
-//            request.put((String)"info_hash", infoHash);
-//            newPeerId = "lbdfgd1321-------002";
-//            request.put((String)"peerId",newPeerId);
-//            request.put((String)"",)
-//
-//            TreeMap result = instance.parseRequest();
-//
-//            assertEquals(expResult, result);
-//        } catch (Exception ex) {
-//            System.out.println(ex.getMessage());
-//            fail("Exception Caught");
-//        }
-//    }
-//
+    /**
+     * Test of parseRequest method with no event, of class TrackerRequestParser.
+     */
+    @Test
+    public void testParseRequestEventNone() {
+        try {
+            System.out.println("parseRequestEventNone");
+            TrackerRequestParser instance = new TrackerRequestParser();
+            // populate request and address
+            TreeMap request, result;
+            InetAddress address;
+            TreeMap expResult = new TreeMap();
+            String newPeerId = new String();
+
+            /**
+             * For event = ""
+             */
+
+            System.out.println(" - Trying event=\"\"");
+            System.out.println(" -- populating address and request");
+            address = p.getIp();
+            newPeerId = p.getPeerId();
+
+            // first try with event=""
+            request = peerRequest(newPeerId, infoHash, "");
+            request.put((String)"left", (String)"999990000");
+            request.put((String)"downloaded", (String)"9999");
+            request.put((String)"uploaded", (String)"105068");
+
+            instance.setRemoteAddress(address);
+            instance.setRequestParams(request);
+
+            System.out.println(" -- populating expected result");
+            expResult.put((String)"complete",(String)"0");
+            expResult.put((String)"incomplete",(String)"1");
+            expResult.put((String)"interval",(String)"1800");
+            expResult.put((String)"min interval", (String)"180");
+            expResult.put((String)"peers","");
+
+            System.out.println(" -- parsing request");
+            result = instance.parseRequest();
+
+            assertEquals(expResult, result);
+
+            // check if the peer has been updated
+            System.out.println(" -- checking if the peer has been updated");
+            EntityManager em = emf.createEntityManager();
+            Query q = em.createQuery("SELECT p FROM Peer p WHERE p.peerId = :peerId");
+            q.setParameter("peerId", newPeerId);
+            try {
+                Peer tmp = (Peer) q.getSingleResult();
+                // make sure that we don't have some stale cache of this
+                em.refresh(tmp);
+                Long l = new Long(105068L);
+                assertEquals(l, tmp.getUploaded());
+                l = 9999L;
+                assertEquals(l, tmp.getDownloaded());
+                l = 999990000L;
+                assertEquals(l, tmp.getBytesLeft());
+            } catch(NoResultException ex) {
+                fail("did not find any peer: " + ex.getMessage());
+            }
+
+
+            /**
+             * for announce without event-key
+             */
+
+            System.out.println(" - Trying no event key");
+            System.out.println(" -- populating address and request");
+
+            // now try with no event key
+            request = peerRequest(newPeerId, infoHash, "");
+            request.remove((String)"event");
+            request.put((String)"left", (String)"999980000");
+            request.put((String)"downloaded", (String)"19999");
+            request.put((String)"uploaded", (String)"185068");
+
+            instance.setRemoteAddress(address);
+            instance.setRequestParams(request);
+
+            System.out.println(" -- populating expected result");
+            expResult.put((String)"complete",(String)"0");
+            expResult.put((String)"incomplete",(String)"1");
+            expResult.put((String)"interval",(String)"1800");
+            expResult.put((String)"min interval", (String)"180");
+            expResult.put((String)"peers","");
+
+            System.out.println(" -- parsing request");
+            result = instance.parseRequest();
+
+            assertEquals(expResult, result);
+
+            // check if the peer has been updated
+            System.out.println(" -- checking if the peer has been updated");
+            q = em.createQuery("SELECT p FROM Peer p WHERE p.peerId = :peerId");
+            q.setParameter("peerId", newPeerId);
+            try {
+                Peer tmp = (Peer) q.getSingleResult();
+                // make sure that we don't have some stale cache of this
+                em.refresh(tmp);
+                Long l = new Long(185068L);
+                assertEquals(l, tmp.getUploaded());
+                l = 19999L;
+                assertEquals(l, tmp.getDownloaded());
+                l = 999980000L;
+                assertEquals(l, tmp.getBytesLeft());
+            } catch(NoResultException ex) {
+                fail("did not find any peer: " + ex.getMessage());
+            }
+
+        } catch (Exception ex) {
+            String failMessage = "Exception Caught: ";
+            failMessage += ex.toString();
+            failMessage += " ";
+            failMessage += ex.getMessage();
+            ex.printStackTrace();
+            fail(failMessage);
+        }
+    }
+
+    /**
+     * Test of parseRequest method with compact=0, of class TrackerRequestParser.
+     */
+    @Test
+    public void testParseRequestNoCompact() {
+        try {
+            System.out.println("parseRequestNoCompact");
+            TrackerRequestParser instance = new TrackerRequestParser();
+            // populate request and address
+            TreeMap request, result;
+            InetAddress address;
+            TreeMap expResult = new TreeMap();
+            String newPeerId = new String();
+
+            /**
+             * For compact=0
+             */
+
+            System.out.println(" -- populating address and request");
+            address = p.getIp();
+            newPeerId = p.getPeerId();
+
+            request = peerRequest(newPeerId, infoHash, "");
+            request.put((String)"left", (String)"999990000");
+            request.put((String)"downloaded", (String)"9999");
+            request.put((String)"uploaded", (String)"105068");
+            request.put((String)"compact", (String)"0");
+
+            instance.setRemoteAddress(address);
+            instance.setRequestParams(request);
+
+            System.out.println(" -- populating expected result");
+            expResult.put((String)"failure reason",(String)"this tracker only supports compact responses");
+
+            System.out.println(" -- parsing request");
+            result = instance.parseRequest();
+
+            assertEquals(expResult, result);
+
+        } catch (Exception ex) {
+            String failMessage = "Exception Caught: ";
+            failMessage += ex.toString();
+            failMessage += " ";
+            failMessage += ex.getMessage();
+            ex.printStackTrace();
+            fail(failMessage);
+        }
+    }
+
 //    /**
 //     * Test of parseRequest method with errors, of class TrackerRequestParser.
 //     */
