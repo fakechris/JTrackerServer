@@ -9,11 +9,13 @@ import com.tracker.entity.Peer;
 import com.tracker.entity.Torrent;
 
 import java.io.UnsupportedEncodingException;
+import java.lang.Exception;
 import java.net.InetAddress;
 import java.util.TreeMap;
 import java.net.URLDecoder;
 import java.util.BitSet;
 import java.util.Calendar;
+import java.util.Iterator;
 import java.util.Random;
 import java.util.Vector;
 import java.util.logging.Level;
@@ -40,6 +42,78 @@ public class TrackerRequestParser {
 
     public TrackerRequestParser()
     {
+    }
+
+    /**
+     * Performs a scrape on all tracked torrents
+     * @return a TreeMap consisting of {infoHash,{complete,downloaded,incomplete}}
+     */
+    public TreeMap<String, TreeMap> scrape()
+    {
+        TreeMap<String, TreeMap> result = new TreeMap<String, TreeMap>();
+        TreeMap<String, Long> contents;
+
+        EntityManager em = emf.createEntityManager();
+
+        Query q = em.createQuery("SELECT t FROM Torrent t");
+
+        Vector<Torrent> torrents = (Vector<Torrent>) q.getResultList();
+        Iterator itr = torrents.iterator();
+        while(itr.hasNext()) {
+            Torrent t = (Torrent) itr.next();
+            contents = new TreeMap<String, Long>();
+            contents.put((String)"complete", t.getNumSeeders());
+            contents.put((String)"downloaded", t.getNumCompleted());
+            contents.put((String)"incomplete", t.getNumLeechers());
+
+            result.put(t.getInfoHash(), contents);
+        }
+
+        return result;
+    }
+
+    /**
+     * Performs a scrape on a specified torrent.
+     * @param infoHash the info hash to scrape
+     * @return a TreeMap consisting of {infoHash,{complete,downloaded,incomplete}}
+     * @throws java.lang.Exception if the torrent cannot be found.
+     */
+    public TreeMap<String, TreeMap> scrape(String infoHash) throws Exception
+    {
+        TreeMap<String, TreeMap> result = new TreeMap<String, TreeMap>();
+        TreeMap<String, Long> contents = new TreeMap<String, Long>();
+
+        EntityManager em = emf.createEntityManager();
+
+        Query q = em.createQuery("SELECT t FROM Torrent t WHERE t.infoHash = :infoHash");
+        q.setParameter("infoHash", infoHash);
+
+        try {
+            Torrent t = (Torrent) q.getSingleResult();
+
+            contents.put((String)"complete", t.getNumSeeders());
+            contents.put((String)"downloaded", t.getNumCompleted());
+            contents.put((String)"incomplete", t.getNumLeechers());
+
+            result.put(t.getInfoHash(), contents);
+        }
+        // no results found?
+        catch(NoResultException ex) {
+            Logger.getLogger(TrackerRequestParser.class.getName()).log(Level.FINE,
+                    "cannot find torrent scraped by " + remoteAddress.toString()
+                    + ": " + ex.getMessage());
+            Exception res = new Exception("Cannot find torrent",ex);
+            throw res;
+        }
+        // some other error?
+        catch(Exception ex) {
+            Logger.getLogger(TrackerRequestParser.class.getName()).log(Level.WARNING,
+                    "error when scraping info hash " + infoHash + ", request by "
+                    + remoteAddress.toString() + ": " + ex.getMessage());
+            throw ex;
+        }
+
+        return result;
     }
 
     public void setRequestParams(TreeMap<String,String> params)
@@ -168,7 +242,7 @@ public class TrackerRequestParser {
         }
         // cannot find torrent?
         catch(NoResultException ex) {
-            Logger.getLogger(TrackerRequestParser.class.getName()).log(Level.WARNING,
+            Logger.getLogger(TrackerRequestParser.class.getName()).log(Level.FINE,
                     "cannot find torrent requested by " + remoteAddress.toString()
                     + ": " + ex.getMessage());
             em.close();
@@ -206,7 +280,7 @@ public class TrackerRequestParser {
                     // check for inactivity
                     if(!peerIsInactive(p)) {
                         // not inactive yet, and attempts at a new started
-                        Logger.getLogger(TrackerRequestParser.class.getName()).log(Level.WARNING,
+                        Logger.getLogger(TrackerRequestParser.class.getName()).log(Level.FINE,
                             "event=started more than once. IP: " + remoteAddress.toString());
                         em.getTransaction().rollback();
                         em.close();
@@ -263,7 +337,7 @@ public class TrackerRequestParser {
                 }
                 // no peer found?
                 catch(NoResultException ex) {
-                    Logger.getLogger(TrackerRequestParser.class.getName()).log(Level.WARNING,
+                    Logger.getLogger(TrackerRequestParser.class.getName()).log(Level.FINE,
                             "event=stopped but no matching peer found. IP: " + 
                             remoteAddress.toString() + ex.getMessage());
                     em.getTransaction().rollback();
@@ -299,7 +373,7 @@ public class TrackerRequestParser {
                 catch(NoResultException ex) {
                     em.getTransaction().rollback();
                     em.close();
-                    Logger.getLogger(TrackerRequestParser.class.getName()).log(Level.WARNING,
+                    Logger.getLogger(TrackerRequestParser.class.getName()).log(Level.FINE,
                             "event=completed but no matching peer found. IP: " + 
                             remoteAddress.toString() + ex.getMessage());
                     return parseFailed("Cannot mark a peer as completed if it has not started.");
@@ -337,7 +411,7 @@ public class TrackerRequestParser {
             catch(NoResultException ex) {
                 em.getTransaction().rollback();
                 em.close();
-                Logger.getLogger(TrackerRequestParser.class.getName()).log(Level.WARNING,
+                Logger.getLogger(TrackerRequestParser.class.getName()).log(Level.FINE,
                         "no event but no matching peer found. IP: " +
                         remoteAddress.toString() + ex.getMessage());
                 return parseFailed("Start-event was not received, so you are not tracked.");

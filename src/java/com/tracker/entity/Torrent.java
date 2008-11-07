@@ -85,13 +85,13 @@ public class Torrent implements Serializable {
     private Collection<Peer> peersData;
     /**
      * The peers that are seeding this torrent
-     * bi-directional relationship with the Peer Entity class
+     * one-directional relationship with the Peer Entity class
      */
     @OneToMany
     private Collection<Peer> seedersData;
     /**
      * The peers that are leeching this torrent
-     * bi-directional relationship with the Peer Entity class
+     * one-directional relationship with the Peer Entity class
      */
     @OneToMany
     private Collection<Peer> leechersData;

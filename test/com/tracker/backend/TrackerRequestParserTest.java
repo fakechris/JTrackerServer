@@ -196,6 +196,160 @@ public class TrackerRequestParserTest {
     }
 
     /**
+     * Test of scrape() method of class TrackerRequestParser.
+     */
+    @Test
+    public void testScrapeVoid() {
+        try {
+            System.out.println("Scrape()");
+            TrackerRequestParser instance = new TrackerRequestParser();
+            TreeMap result;
+            TreeMap<String,TreeMap> expResult = new TreeMap<String,TreeMap>();
+            TreeMap<String,Long> expResultContents = new TreeMap<String,Long>();
+
+            // torrent from setUp()
+            expResultContents.put((String)"downloaded", 0L);
+            expResultContents.put((String)"incomplete", 1L);
+            expResultContents.put((String)"complete", 0L);
+
+            // weirdness to make *damn* sure that the info hash is not changed
+            String tmpInfoHash = new String(infoHash.getBytes("utf-8"), "utf-8");
+
+            expResult.put(tmpInfoHash, expResultContents);
+
+            // add some more torrents to properly test this
+            EntityManager em = emf.createEntityManager();
+
+            em.getTransaction().begin();
+
+            Torrent tmp = new Torrent();
+            expResultContents = new TreeMap<String,Long>();
+            tmp.setInfoHash((String)"fdsa-------------001");
+            tmp.setNumCompleted(65L);
+            expResultContents.put((String)"downloaded", 65L);
+
+            tmp.setNumLeechers(98L);
+            expResultContents.put((String)"incomplete", 98L);
+
+            tmp.setNumSeeders(12L);
+            expResultContents.put((String)"complete", 12L);
+
+            tmp.setNumPeers(110L);
+
+            expResult.put((String)"fdsa-------------001", expResultContents);
+
+            em.persist(tmp);
+            em.getTransaction().commit();
+
+            em.getTransaction().begin();
+            tmp = new Torrent();
+            expResultContents = new TreeMap<String,Long>();
+            tmp.setInfoHash((String)"fdsa-------------002");
+            tmp.setNumCompleted(82L);
+            expResultContents.put((String)"downloaded", 82L);
+
+            tmp.setNumLeechers(991L);
+            expResultContents.put((String)"incomplete", 991L);
+
+            tmp.setNumSeeders(520L);
+            expResultContents.put((String)"complete", 520L);
+
+            tmp.setNumPeers(1511L);
+
+            expResult.put((String)"fdsa-------------002", expResultContents);
+
+            em.persist(tmp);
+            em.getTransaction().commit();
+
+            // try to scrape this
+
+            result = instance.scrape();
+
+            assertEquals(expResult, result);
+        } catch(Exception ex) {
+            String failMessage = "Exception Caught: ";
+            failMessage += ex.toString();
+            failMessage += " ";
+            failMessage += ex.getMessage();
+            fail(failMessage);
+        }
+    }
+    
+    /**
+     * Test of scrape(String infoHash) method of class TrackerRequestParser.
+     */
+    @Test
+    public void testScrapeInfoHash() {
+        try {
+            System.out.println("Scrape()");
+            TrackerRequestParser instance = new TrackerRequestParser();
+            TreeMap result;
+            TreeMap<String,TreeMap> expResult = new TreeMap<String,TreeMap>();
+            TreeMap<String,Long> expResultContents = new TreeMap<String,Long>();
+
+            // add some more torrents to properly test this
+            EntityManager em = emf.createEntityManager();
+
+            em.getTransaction().begin();
+
+            Torrent tmp = new Torrent();
+            tmp.setInfoHash((String)"fdsa-------------001");
+            tmp.setNumCompleted(65L);
+            expResultContents.put((String)"downloaded", 65L);
+
+            tmp.setNumLeechers(98L);
+            expResultContents.put((String)"incomplete", 98L);
+
+            tmp.setNumSeeders(12L);
+            expResultContents.put((String)"complete", 12L);
+
+            tmp.setNumPeers(110L);
+
+            expResult.put((String)"fdsa-------------001", expResultContents);
+
+            em.persist(tmp);
+            em.getTransaction().commit();
+
+            // scrape the recently added torrent
+            result = instance.scrape((String)"fdsa-------------001");
+            assertEquals(expResult, result);
+
+            expResult.clear();
+            expResultContents.clear();
+
+            em.getTransaction().begin();
+            tmp = new Torrent();
+            tmp.setInfoHash((String)"fdsa-------------002");
+            tmp.setNumCompleted(82L);
+            expResultContents.put((String)"downloaded", 82L);
+
+            tmp.setNumLeechers(991L);
+            expResultContents.put((String)"incomplete", 991L);
+
+            tmp.setNumSeeders(520L);
+            expResultContents.put((String)"complete", 520L);
+
+            tmp.setNumPeers(1511L);
+
+            expResult.put((String)"fdsa-------------002", expResultContents);
+
+            em.persist(tmp);
+            em.getTransaction().commit();
+            
+            // scrape the recently added torrent
+            result = instance.scrape((String)"fdsa-------------002");
+            assertEquals(expResult, result);
+            
+        } catch(Exception ex) {
+            String failMessage = "Exception Caught: ";
+            failMessage += ex.toString();
+            failMessage += " ";
+            failMessage += ex.getMessage();
+            fail(failMessage);
+        }
+    }
+
+    /**
      * Test of parseRequest method with event=started, of class TrackerRequestParser.
      */
     @Test

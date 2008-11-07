@@ -4,6 +4,10 @@
         <servlet-name>Announce</servlet-name>
         <servlet-class>com.tracker.frontend.Announce</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>Scrape</servlet-name>
+        <servlet-class>com.tracker.frontend.Scrape</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>Announce</servlet-name>
         <url-pattern>/announce</url-pattern>
@@ -11,6 +15,14 @@
     <servlet-mapping>
         <servlet-name>Announce</servlet-name>
         <url-pattern>/Announce</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Scrape</servlet-name>
+        <url-pattern>/Scrape</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Scrape</servlet-name>
+        <url-pattern>/scrape</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

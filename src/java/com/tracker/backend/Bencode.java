@@ -36,6 +36,9 @@ public class Bencode {
         else if(java.lang.Integer.class.isInstance(arg)) {
             return encode((Integer)arg);
         }
+        else if(java.lang.Long.class.isInstance(arg)) {
+            return encode((Long)arg);
+        }
         else if(java.util.List.class.isInstance(arg)) {
             return encode((List)arg);
         }
@@ -65,6 +68,15 @@ public class Bencode {
      */
     public static String encode(Integer arg) {
         return("i" + Integer.toString(arg) + "e");
+    }
+
+    /**
+     * Bencodes a Long (as integer, funny enough)
+     * @param arg the Long to be bencoded
+     * @return a string containing the bencoded Long given in arg
+     */
+    public static String encode(Long arg) {
+        return("i" + Long.toString(arg) + "e");
     }
     
     /**
