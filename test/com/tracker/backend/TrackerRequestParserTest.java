@@ -206,6 +206,7 @@ public class TrackerRequestParserTest {
             TreeMap result;
             TreeMap<String,TreeMap> expResult = new TreeMap<String,TreeMap>();
             TreeMap<String,Long> expResultContents = new TreeMap<String,Long>();
+            String tmpInfoHash;
 
             // torrent from setUp()
             expResultContents.put((String)"downloaded", 0L);
@@ -213,8 +214,9 @@ public class TrackerRequestParserTest {
             expResultContents.put((String)"complete", 0L);
 
             // weirdness to make *damn* sure that the info hash is not changed
-            String tmpInfoHash = new String(infoHash.getBytes("utf-8"), "utf-8");
-
+            //String tmpInfoHash = new String(infoHash.getBytes("utf-8"), "utf-8");
+            tmpInfoHash = new String();
+            tmpInfoHash = URLEncoder.encode(infoHash, "utf-8");
             expResult.put(tmpInfoHash, expResultContents);
 
             // add some more torrents to properly test this
@@ -236,7 +238,9 @@ public class TrackerRequestParserTest {
 
             tmp.setNumPeers(110L);
 
-            expResult.put((String)"fdsa-------------001", expResultContents);
+            tmpInfoHash = new String();
+            tmpInfoHash = URLEncoder.encode((String)"fdsa-------------001", "utf-8");
+            expResult.put(tmpInfoHash, expResultContents);
 
             em.persist(tmp);
             em.getTransaction().commit();
@@ -256,7 +260,9 @@ public class TrackerRequestParserTest {
 
             tmp.setNumPeers(1511L);
 
-            expResult.put((String)"fdsa-------------002", expResultContents);
+            tmpInfoHash = new String();
+            tmpInfoHash = URLEncoder.encode((String)"fdsa-------------002", "utf-8");
+            expResult.put(tmpInfoHash, expResultContents);
 
             em.persist(tmp);
             em.getTransaction().commit();
@@ -286,6 +292,7 @@ public class TrackerRequestParserTest {
             TreeMap result;
             TreeMap<String,TreeMap> expResult = new TreeMap<String,TreeMap>();
             TreeMap<String,Long> expResultContents = new TreeMap<String,Long>();
+            String tmpInfoHash;
 
             // add some more torrents to properly test this
             EntityManager em = emf.createEntityManager();
@@ -311,7 +318,8 @@ public class TrackerRequestParserTest {
             em.getTransaction().commit();
 
             // scrape the recently added torrent
-            result = instance.scrape((String)"fdsa-------------001");
+            tmpInfoHash = URLEncoder.encode((String)"fdsa-------------001", "utf-8");
+            result = instance.scrape(tmpInfoHash);
             assertEquals(expResult, result);
 
             expResult.clear();
@@ -337,7 +345,8 @@ public class TrackerRequestParserTest {
             em.getTransaction().commit();
             
             // scrape the recently added torrent
-            result = instance.scrape((String)"fdsa-------------002");
+            tmpInfoHash = URLEncoder.encode((String)"fdsa-------------002", "utf-8");
+            result = instance.scrape(tmpInfoHash);
             assertEquals(expResult, result);
             
         } catch(Exception ex) {

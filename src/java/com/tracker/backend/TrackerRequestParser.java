@@ -9,10 +9,10 @@ import com.tracker.entity.Peer;
 import com.tracker.entity.Torrent;
 
 import java.io.UnsupportedEncodingException;
-import java.lang.Exception;
 import java.net.InetAddress;
 import java.util.TreeMap;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.BitSet;
 import java.util.Calendar;
 import java.util.Iterator;
@@ -65,8 +65,11 @@ public class TrackerRequestParser {
             contents.put((String)"complete", t.getNumSeeders());
             contents.put((String)"downloaded", t.getNumCompleted());
             contents.put((String)"incomplete", t.getNumLeechers());
-
-            result.put(t.getInfoHash(), contents);
+            try {
+                result.put(URLEncoder.encode(t.getInfoHash(), "utf-8"), contents);
+            } catch (UnsupportedEncodingException ex) {
+                Logger.getLogger(TrackerRequestParser.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
 
         return result;
@@ -78,15 +81,16 @@ public class TrackerRequestParser {
      * @return a TreeMap consisting of {infoHash,{complete,downloaded,incomplete}}
      * @throws java.lang.Exception if the torrent cannot be found.
      */
-    public TreeMap<String, TreeMap> scrape(String infoHash) throws Exception
+    public TreeMap<String, TreeMap> scrape(String encodedInfoHash) throws Exception
     {
         TreeMap<String, TreeMap> result = new TreeMap<String, TreeMap>();
         TreeMap<String, Long> contents = new TreeMap<String, Long>();
+        String decodedInfoHash = URLDecoder.decode(encodedInfoHash, "utf-8");
 
         EntityManager em = emf.createEntityManager();
 
         Query q = em.createQuery("SELECT t FROM Torrent t WHERE t.infoHash = :infoHash");
-        q.setParameter("infoHash", infoHash);
+        q.setParameter("infoHash", decodedInfoHash);
 
         try {
             Torrent t = (Torrent) q.getSingleResult();
@@ -95,7 +99,7 @@ public class TrackerRequestParser {
             contents.put((String)"downloaded", t.getNumCompleted());
             contents.put((String)"incomplete", t.getNumLeechers());
 
-            result.put(t.getInfoHash(), contents);
+            result.put(encodedInfoHash, contents);
         }
         // no results found?
         catch(NoResultException ex) {
@@ -108,8 +112,8 @@ public class TrackerRequestParser {
         // some other error?
         catch(Exception ex) {
             Logger.getLogger(TrackerRequestParser.class.getName()).log(Level.WARNING,
-                    "error when scraping info hash " + infoHash + ", request by "
-                    + remoteAddress.toString() + ": " + ex.getMessage());
+                    "error when scraping (encoded) info hash " + encodedInfoHash +
+                    ", request by " + remoteAddress.toString() + ": " + ex.getMessage());
             throw ex;
         }
 
