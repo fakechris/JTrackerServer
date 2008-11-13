@@ -8,11 +8,8 @@ package com.tracker.backend;
 import com.tracker.entity.Peer;
 import com.tracker.entity.Torrent;
 
-import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.util.TreeMap;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.util.BitSet;
 import java.util.Calendar;
 import java.util.Iterator;
@@ -65,11 +62,8 @@ public class TrackerRequestParser {
             contents.put((String)"complete", t.getNumSeeders());
             contents.put((String)"downloaded", t.getNumCompleted());
             contents.put((String)"incomplete", t.getNumLeechers());
-            try {
-                result.put(URLEncoder.encode(t.getInfoHash(), "utf-8"), contents);
-            } catch (UnsupportedEncodingException ex) {
-                Logger.getLogger(TrackerRequestParser.class.getName()).log(Level.SEVERE, null, ex);
-            }
+
+            result.put(StringUtils.URLEncodeFromHexString(t.getInfoHash()), contents);
         }
 
         return result;
@@ -78,28 +72,31 @@ public class TrackerRequestParser {
     /**
      * Performs a scrape on a specified torrent.
      * @param infoHash the info hash to scrape
-     * @return a TreeMap consisting of {infoHash,{complete,downloaded,incomplete}}
+     * @return a TreeMap consisting of {complete=x,downloaded=y,incomplete=z}}
      * @throws java.lang.Exception if the torrent cannot be found.
      */
-    public TreeMap<String, TreeMap> scrape(String encodedInfoHash) throws Exception
+    public TreeMap<String, Long> scrape(String infoHash) throws Exception
     {
-        TreeMap<String, TreeMap> result = new TreeMap<String, TreeMap>();
-        TreeMap<String, Long> contents = new TreeMap<String, Long>();
-        String decodedInfoHash = URLDecoder.decode(encodedInfoHash, "utf-8");
+        TreeMap<String, Long> results = new TreeMap<String, Long>();
 
         EntityManager em = emf.createEntityManager();
+        
+        byte[] rawInfoHash = new byte[20];
+        for(int i = 0; i < rawInfoHash.length; i++) {
+            rawInfoHash[i] = (byte) infoHash.charAt(i);
+        }
+
+        String encodedInfoHash = StringUtils.getHexString(rawInfoHash);
 
         Query q = em.createQuery("SELECT t FROM Torrent t WHERE t.infoHash = :infoHash");
-        q.setParameter("infoHash", decodedInfoHash);
+        q.setParameter("infoHash", encodedInfoHash);
 
         try {
             Torrent t = (Torrent) q.getSingleResult();
 
-            contents.put((String)"complete", t.getNumSeeders());
-            contents.put((String)"downloaded", t.getNumCompleted());
-            contents.put((String)"incomplete", t.getNumLeechers());
-
-            result.put(encodedInfoHash, contents);
+            results.put((String)"complete", t.getNumSeeders());
+            results.put((String)"downloaded", t.getNumCompleted());
+            results.put((String)"incomplete", t.getNumLeechers());
         }
         // no results found?
         catch(NoResultException ex) {
@@ -112,12 +109,12 @@ public class TrackerRequestParser {
         // some other error?
         catch(Exception ex) {
             Logger.getLogger(TrackerRequestParser.class.getName()).log(Level.WARNING,
-                    "error when scraping (encoded) info hash " + encodedInfoHash +
+                    "error when scraping info hash " + infoHash +
                     ", request by " + remoteAddress.toString() + ": " + ex.getMessage());
             throw ex;
         }
 
-        return result;
+        return results;
     }
 
     public void setRequestParams(TreeMap<String,String> params)
@@ -148,7 +145,7 @@ public class TrackerRequestParser {
 
         EntityManager em = emf.createEntityManager();
         TreeMap<String,String> responseParams = new TreeMap<String,String>();
-        String infoHash, peerId;
+        String encodedInfoHash, encodedPeerId;
         String event = new String();
         Long uploaded, downloaded, left, port;
         boolean returnSeeds = true;
@@ -164,15 +161,14 @@ public class TrackerRequestParser {
             return(parseFailed("missing info hash!"));
         }
 
-        // decode and store info hash for later
-        try {
-            infoHash = URLDecoder.decode(
-                    (String) requestParams.get((String)"info_hash"), "UTF-8");
-        } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(TrackerRequestParser.class.getName()).log(Level.SEVERE,
-                    "could not decode info hash", ex);
-            em.close();
-            return(parseFailed("Tracker error"));
+        // encode and store info hash for later
+        {
+            byte[] rawInfoHash = new byte[20];
+            String tmp = requestParams.get((String)"info_hash");
+            for(int i = 0; i < rawInfoHash.length; i++) {
+                rawInfoHash[i] = (byte) tmp.charAt(i);
+            }
+            encodedInfoHash = StringUtils.getHexString(rawInfoHash);
         }
 
         // check for peer id
@@ -180,7 +176,15 @@ public class TrackerRequestParser {
             return(parseFailed("missing peer_id!"));
         }
 
-        peerId = (String)requestParams.get((String)"peer_id");
+        // encode and store peer id for later
+        {
+            byte[] rawPeerId = new byte[20];
+            String tmp = requestParams.get((String)"peer_id");
+            for(int i = 0; i < rawPeerId.length; i++) {
+                rawPeerId[i] = (byte) tmp.charAt(i);
+            }
+            encodedPeerId = StringUtils.getHexString(rawPeerId);
+        }
 
         // check for port-number
         if(!requestParams.containsKey((String)"port")) {
@@ -241,7 +245,7 @@ public class TrackerRequestParser {
         // find torrent in database of tracked torrents
         try {
             Query q = em.createQuery("SELECT t FROM Torrent t WHERE t.infoHash = :infoHash");
-            q.setParameter("infoHash", infoHash);
+            q.setParameter("infoHash", encodedInfoHash);
             t = (Torrent) q.getSingleResult();
         }
         // cannot find torrent?
@@ -278,7 +282,7 @@ public class TrackerRequestParser {
                 // is the peer already on this torrent?
                 try {
                     Query q = em.createQuery("SELECT p FROM Peer p WHERE p.peerId = :peerId");
-                    q.setParameter("peerId", peerId);
+                    q.setParameter("peerId", encodedPeerId);
 
                     p = (Peer) q.getSingleResult();
                     // check for inactivity
@@ -305,7 +309,7 @@ public class TrackerRequestParser {
                 // add new peer
                 p = new Peer();
 
-                p.setPeerId(peerId);
+                p.setPeerId(encodedPeerId);
 
                 p.setBytesLeft(left);
                 p.setDownloaded(downloaded);
@@ -335,7 +339,7 @@ public class TrackerRequestParser {
                 // remove peer from database
                 try {
                     Query q = em.createQuery("SELECT p FROM Peer p WHERE p.peerId = :peerId");
-                    q.setParameter("peerId", peerId);
+                    q.setParameter("peerId", encodedPeerId);
                     
                     p = (Peer) q.getSingleResult();
                 }
@@ -370,7 +374,7 @@ public class TrackerRequestParser {
                 // try to find the peer
                 try {
                     Query q = em.createQuery("SELECT p FROM Peer p WHERE p.peerId = :peerId");
-                    q.setParameter("peerId", peerId);
+                    q.setParameter("peerId", encodedPeerId);
                     p = (Peer) q.getSingleResult();
                 }
                 // no peer found matching this peerid?
@@ -407,7 +411,7 @@ public class TrackerRequestParser {
             // update data for the peer
             try {
                 Query q = em.createQuery("SELECT p FROM Peer p WHERE p.peerId = :peerId");
-                q.setParameter("peerId", peerId);
+                q.setParameter("peerId", encodedPeerId);
 
                 p = (Peer) q.getSingleResult();
             }

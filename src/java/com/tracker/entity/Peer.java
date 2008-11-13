@@ -5,6 +5,7 @@
 
 package com.tracker.entity;
 
+import com.tracker.backend.StringUtils;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
@@ -27,14 +28,21 @@ import javax.persistence.Temporal;
 @Entity
 public class Peer implements Serializable {
     private static final long serialVersionUID = 1L;
+    /**
+     * Priamry key.
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     // fixes some errors about multiple write-able IDs
     @Column(nullable=false,insertable=false,updatable=false)
     private Long id;
 
+    /**
+     * Primary key, 40-byte hex representation of the peer-id
+     * stored as hex to make it easier with all the binary data
+     */
     @Id
-    @Column(length=20)
+    @Column(length=40)
     private String peerId;
 
     @ManyToOne(optional=false)
@@ -136,12 +144,46 @@ public class Peer implements Serializable {
         this.ip = ip;
     }
 
+    /**
+     * returns the hex representation of the peer id
+     * @return the hex string representing the peer id
+     */
     public String getPeerId() {
         return peerId;
     }
 
-    public void setPeerId(String peerId) {
-        this.peerId = peerId;
+    /**
+     * Takes either a raw peerId of length = 20 or an encoded peerId of length = 40
+     * and sets the hex-representation of the raw or the supplied encoded peerId
+     * to this objects peerId.
+     * @param peerId the peerId to set. Either a raw one (length = 20) or an
+     * already encoded one (length = 40).
+     * @return true if the peer id has been set, false if something went wrong
+     */
+    public boolean setPeerId(String peerId) {
+        // is the peer id raw?
+        if(peerId.length() == 20) {
+            try {
+                byte[] b = new byte[20];
+                // charAt is used instead of getBytes, because getBytes insists on
+                // going through the whole encoding thing
+                for(int i = 0; i < b.length; i++) {
+                    b[i] = (byte) peerId.charAt(i);
+                }
+                this.peerId = StringUtils.getHexString(b);
+            } catch (Exception ex) {
+                // something went wrong
+                return false;
+            }
+            // all good
+            return true;
+        } // if(length != 20)
+        // or already encoded?
+        else if(peerId.length() == 40) {
+            this.peerId = peerId;
+            return true;
+        }
+        return false;
     }
 
     public Long getPort() {

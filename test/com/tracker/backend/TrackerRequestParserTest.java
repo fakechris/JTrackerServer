@@ -10,7 +10,7 @@ import com.tracker.entity.Torrent;
 
 import java.net.InetAddress;
 import java.net.URLDecoder;
-import java.net.URLEncoder;
+import java.security.MessageDigest;
 import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
@@ -39,6 +39,8 @@ public class TrackerRequestParserTest {
 
     static String infoHash;
     static String peerId;
+    static byte[] rawInfoHash = new byte[20];
+    static byte[] rawPeerId = new byte[20];
 
     static EntityManagerFactory emf = Persistence.createEntityManagerFactory("TorrentTrackerPU");
 
@@ -46,13 +48,23 @@ public class TrackerRequestParserTest {
     public TrackerRequestParserTest() {
     }
 
+    public String getRawString(byte[] raw) {
+        StringBuffer result = new StringBuffer();
+
+        for(int i = 0; i < raw.length; i++) {
+            result.append((char) raw[i]);
+        }
+        return result.toString();
+    }
+
     public TreeMap peerRequest(String peerId, String infoHash, String event) throws Exception
     {
         TreeMap requestParams = new TreeMap();
 
         try {
-            // info hash must be url-encoded
-            requestParams.put((String) "info_hash", (String) URLEncoder.encode(infoHash, "utf-8"));
+            // info hash is not URL-encoded because it is automatically decoded
+            // by tomcat
+            requestParams.put((String) "info_hash", infoHash);
             requestParams.put((String)"peer_id", peerId);
             requestParams.put((String)"port", (String)"1234");
             requestParams.put((String)"uploaded", (String)"0");
@@ -89,9 +101,16 @@ public class TrackerRequestParserTest {
         t.setAdded(Calendar.getInstance().getTime());
         t.setDescription((String)"testing testing");
 
-        byte byteHash[] = new byte[20];
+        // fix up a convincing info hash
+        byte byteHash[] = new byte[1024];
         r.nextBytes(byteHash);
-        infoHash = new String(byteHash, "utf-8");
+        // get SHA-1 sum of byteHash
+        MessageDigest md;
+        md = MessageDigest.getInstance("SHA-1");
+        md.update(byteHash);
+        rawInfoHash = md.digest();
+
+        infoHash = StringUtils.getHexString(rawInfoHash);
 
         t.setInfoHash(infoHash);
 
@@ -106,8 +125,12 @@ public class TrackerRequestParserTest {
 
         p.setLastActionTime(Calendar.getInstance().getTime());
 
+        // set peer id and raw peer id
         peerId = new String();
         peerId = "lbdfgd1321-------001";
+        for(int i = 0; i < peerId.length(); i++) {
+            rawPeerId[i] = (byte) peerId.charAt(i);
+        }
         p.setPeerId(peerId);
 
         p.setSeed(false);
@@ -169,7 +192,7 @@ public class TrackerRequestParserTest {
         System.out.println("setRequestParams");
         TrackerRequestParser instance = new TrackerRequestParser();
         try {
-            TreeMap params = peerRequest(peerId, infoHash, "");
+            TreeMap params = peerRequest(peerId, getRawString(rawInfoHash), "");
             instance.setRequestParams(params);
             assertEquals(params, instance.getRequestParams());
         } catch(Exception ex) {
@@ -203,75 +226,21 @@ public class TrackerRequestParserTest {
         try {
             System.out.println("Scrape()");
             TrackerRequestParser instance = new TrackerRequestParser();
-            TreeMap result;
-            TreeMap<String,TreeMap> expResult = new TreeMap<String,TreeMap>();
+            TreeMap<String,TreeMap> results = new TreeMap<String,TreeMap>();
+            TreeMap<String,TreeMap> expResults = new TreeMap<String,TreeMap>();
             TreeMap<String,Long> expResultContents = new TreeMap<String,Long>();
-            String tmpInfoHash;
 
             // torrent from setUp()
             expResultContents.put((String)"downloaded", 0L);
             expResultContents.put((String)"incomplete", 1L);
             expResultContents.put((String)"complete", 0L);
 
-            // weirdness to make *damn* sure that the info hash is not changed
-            //String tmpInfoHash = new String(infoHash.getBytes("utf-8"), "utf-8");
-            tmpInfoHash = new String();
-            tmpInfoHash = URLEncoder.encode(infoHash, "utf-8");
-            expResult.put(tmpInfoHash, expResultContents);
+            expResults.put(StringUtils.URLEncodeFromHexString(infoHash), expResultContents);
 
-            // add some more torrents to properly test this
-            EntityManager em = emf.createEntityManager();
+            results = instance.scrape();
 
-            em.getTransaction().begin();
+            assertEquals(expResults, results);
 
-            Torrent tmp = new Torrent();
-            expResultContents = new TreeMap<String,Long>();
-            tmp.setInfoHash((String)"fdsa-------------001");
-            tmp.setNumCompleted(65L);
-            expResultContents.put((String)"downloaded", 65L);
-
-            tmp.setNumLeechers(98L);
-            expResultContents.put((String)"incomplete", 98L);
-
-            tmp.setNumSeeders(12L);
-            expResultContents.put((String)"complete", 12L);
-
-            tmp.setNumPeers(110L);
-
-            tmpInfoHash = new String();
-            tmpInfoHash = URLEncoder.encode((String)"fdsa-------------001", "utf-8");
-            expResult.put(tmpInfoHash, expResultContents);
-
-            em.persist(tmp);
-            em.getTransaction().commit();
-
-            em.getTransaction().begin();
-            tmp = new Torrent();
-            expResultContents = new TreeMap<String,Long>();
-            tmp.setInfoHash((String)"fdsa-------------002");
-            tmp.setNumCompleted(82L);
-            expResultContents.put((String)"downloaded", 82L);
-
-            tmp.setNumLeechers(991L);
-            expResultContents.put((String)"incomplete", 991L);
-
-            tmp.setNumSeeders(520L);
-            expResultContents.put((String)"complete", 520L);
-
-            tmp.setNumPeers(1511L);
-
-            tmpInfoHash = new String();
-            tmpInfoHash = URLEncoder.encode((String)"fdsa-------------002", "utf-8");
-            expResult.put(tmpInfoHash, expResultContents);
-
-            em.persist(tmp);
-            em.getTransaction().commit();
-
-            // try to scrape this
-
-            result = instance.scrape();
-
-            assertEquals(expResult, result);
         } catch(Exception ex) {
             String failMessage = "Exception Caught: ";
             failMessage += ex.toString();
@@ -290,63 +259,14 @@ public class TrackerRequestParserTest {
             System.out.println("Scrape()");
             TrackerRequestParser instance = new TrackerRequestParser();
             TreeMap result;
-            TreeMap<String,TreeMap> expResult = new TreeMap<String,TreeMap>();
-            TreeMap<String,Long> expResultContents = new TreeMap<String,Long>();
-            String tmpInfoHash;
+            TreeMap<String,Long> expResult = new TreeMap<String,Long>();
 
-            // add some more torrents to properly test this
-            EntityManager em = emf.createEntityManager();
+            expResult.put((String)"downloaded", 0L);
+            expResult.put((String)"incomplete", 1L);
+            expResult.put((String)"complete", 0L);
 
-            em.getTransaction().begin();
+            result = instance.scrape(getRawString(rawInfoHash));
 
-            Torrent tmp = new Torrent();
-            tmp.setInfoHash((String)"fdsa-------------001");
-            tmp.setNumCompleted(65L);
-            expResultContents.put((String)"downloaded", 65L);
-
-            tmp.setNumLeechers(98L);
-            expResultContents.put((String)"incomplete", 98L);
-
-            tmp.setNumSeeders(12L);
-            expResultContents.put((String)"complete", 12L);
-
-            tmp.setNumPeers(110L);
-
-            expResult.put((String)"fdsa-------------001", expResultContents);
-
-            em.persist(tmp);
-            em.getTransaction().commit();
-
-            // scrape the recently added torrent
-            tmpInfoHash = URLEncoder.encode((String)"fdsa-------------001", "utf-8");
-            result = instance.scrape(tmpInfoHash);
-            assertEquals(expResult, result);
-
-            expResult.clear();
-            expResultContents.clear();
-
-            em.getTransaction().begin();
-            tmp = new Torrent();
-            tmp.setInfoHash((String)"fdsa-------------002");
-            tmp.setNumCompleted(82L);
-            expResultContents.put((String)"downloaded", 82L);
-
-            tmp.setNumLeechers(991L);
-            expResultContents.put((String)"incomplete", 991L);
-
-            tmp.setNumSeeders(520L);
-            expResultContents.put((String)"complete", 520L);
-
-            tmp.setNumPeers(1511L);
-
-            expResult.put((String)"fdsa-------------002", expResultContents);
-
-            em.persist(tmp);
-            em.getTransaction().commit();
-            
-            // scrape the recently added torrent
-            tmpInfoHash = URLEncoder.encode((String)"fdsa-------------002", "utf-8");
-            result = instance.scrape(tmpInfoHash);
             assertEquals(expResult, result);
             
         } catch(Exception ex) {
@@ -371,6 +291,7 @@ public class TrackerRequestParserTest {
             InetAddress address;
             TreeMap expResult = new TreeMap();
             String newPeerId = new String();
+            byte[] newRawPeerId = new byte[20];
 
             /**
              * For event = started
@@ -378,8 +299,11 @@ public class TrackerRequestParserTest {
             System.out.println(" -- populating address and request");
             address = InetAddress.getByName("192.168.1.4");
             newPeerId = "lbdfgd1321-------002";
+            for(int i = 0; i < newRawPeerId.length; i++) {
+                newRawPeerId[i] = (byte) newPeerId.charAt(i);
+            }
 
-            request = peerRequest(newPeerId, infoHash, "started");
+            request = peerRequest(getRawString(newRawPeerId), getRawString(rawInfoHash), "started");
             request.put((String)"left", (String)"999999999");
 
             instance.setRemoteAddress(address);
@@ -404,7 +328,7 @@ public class TrackerRequestParserTest {
             System.out.println(" -- checking for new peer in DB");
             EntityManager em = emf.createEntityManager();
             Query q = em.createQuery("SELECT p FROM Peer p WHERE p.peerId = :peerId");
-            q.setParameter("peerId", newPeerId);
+            q.setParameter("peerId", StringUtils.getHexString(newRawPeerId));
             List<Peer> tmp = q.getResultList();
             assertEquals(tmp.size(), 1);
             
@@ -429,16 +353,14 @@ public class TrackerRequestParserTest {
             TreeMap request;
             InetAddress address;
             TreeMap expResult = new TreeMap();
-            String newPeerId = new String();
 
             /**
              * For event = stopped
              */
             System.out.println(" -- populating address and request");
             address = p.getIp();
-            newPeerId = p.getPeerId();
 
-            request = peerRequest(newPeerId, infoHash, "stopped");
+            request = peerRequest(getRawString(rawPeerId), getRawString(rawInfoHash), "stopped");
             request.put((String)"left", (String)"999999999");
 
             instance.setRemoteAddress(address);
@@ -461,7 +383,7 @@ public class TrackerRequestParserTest {
             System.out.println(" -- checking if the peer is gone from the DB");
             EntityManager em = emf.createEntityManager();
             Query q = em.createQuery("SELECT p FROM Peer p WHERE p.peerId = :peerId");
-            q.setParameter("peerId", newPeerId);
+            q.setParameter("peerId", StringUtils.getHexString(rawPeerId));
             List<Peer> tmp = q.getResultList();
             assertEquals(tmp.size(), 0);
 
@@ -487,16 +409,14 @@ public class TrackerRequestParserTest {
             TreeMap request;
             InetAddress address;
             TreeMap expResult = new TreeMap();
-            String newPeerId = new String();
 
             /**
              * For event = completed
              */
             System.out.println(" -- populating address and request");
             address = p.getIp();
-            newPeerId = p.getPeerId();
-
-            request = peerRequest(newPeerId, infoHash, "completed");
+            
+            request = peerRequest(getRawString(rawPeerId), getRawString(rawInfoHash), "completed");
             request.put((String)"left", (String)"999999999");
 
             instance.setRemoteAddress(address);
@@ -519,7 +439,7 @@ public class TrackerRequestParserTest {
             System.out.println(" -- checking if the peer is a seed");
             EntityManager em = emf.createEntityManager();
             Query q = em.createQuery("SELECT p FROM Peer p WHERE p.peerId = :peerId");
-            q.setParameter("peerId", newPeerId);
+            q.setParameter("peerId", StringUtils.getHexString(rawPeerId));
             try {
                 Peer tmp = (Peer) q.getSingleResult();
                 // make sure that we don't have some stale cache of this
@@ -551,7 +471,6 @@ public class TrackerRequestParserTest {
             TreeMap request, result;
             InetAddress address;
             TreeMap expResult = new TreeMap();
-            String newPeerId = new String();
 
             /**
              * For event = ""
@@ -560,10 +479,9 @@ public class TrackerRequestParserTest {
             System.out.println(" - Trying event=\"\"");
             System.out.println(" -- populating address and request");
             address = p.getIp();
-            newPeerId = p.getPeerId();
 
             // first try with event=""
-            request = peerRequest(newPeerId, infoHash, "");
+            request = peerRequest(getRawString(rawPeerId), getRawString(rawInfoHash), "");
             request.put((String)"left", (String)"999990000");
             request.put((String)"downloaded", (String)"9999");
             request.put((String)"uploaded", (String)"105068");
@@ -587,7 +505,7 @@ public class TrackerRequestParserTest {
             System.out.println(" -- checking if the peer has been updated");
             EntityManager em = emf.createEntityManager();
             Query q = em.createQuery("SELECT p FROM Peer p WHERE p.peerId = :peerId");
-            q.setParameter("peerId", newPeerId);
+            q.setParameter("peerId", StringUtils.getHexString(rawPeerId));
             try {
                 Peer tmp = (Peer) q.getSingleResult();
                 // make sure that we don't have some stale cache of this
@@ -611,7 +529,7 @@ public class TrackerRequestParserTest {
             System.out.println(" -- populating address and request");
 
             // now try with no event key
-            request = peerRequest(newPeerId, infoHash, "");
+            request = peerRequest(getRawString(rawPeerId), getRawString(rawInfoHash), "");
             request.remove((String)"event");
             request.put((String)"left", (String)"999980000");
             request.put((String)"downloaded", (String)"19999");
@@ -635,7 +553,7 @@ public class TrackerRequestParserTest {
             // check if the peer has been updated
             System.out.println(" -- checking if the peer has been updated");
             q = em.createQuery("SELECT p FROM Peer p WHERE p.peerId = :peerId");
-            q.setParameter("peerId", newPeerId);
+            q.setParameter("peerId", StringUtils.getHexString(rawPeerId));
             try {
                 Peer tmp = (Peer) q.getSingleResult();
                 // make sure that we don't have some stale cache of this
@@ -672,7 +590,6 @@ public class TrackerRequestParserTest {
             TreeMap request, result;
             InetAddress address;
             TreeMap expResult = new TreeMap();
-            String newPeerId = new String();
 
             /**
              * For compact=0
@@ -680,9 +597,8 @@ public class TrackerRequestParserTest {
 
             System.out.println(" -- populating address and request");
             address = p.getIp();
-            newPeerId = p.getPeerId();
-
-            request = peerRequest(newPeerId, infoHash, "");
+            
+            request = peerRequest(getRawString(rawPeerId), getRawString(rawInfoHash), "");
             request.put((String)"left", (String)"999990000");
             request.put((String)"downloaded", (String)"9999");
             request.put((String)"uploaded", (String)"105068");
