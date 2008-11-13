@@ -6,10 +6,11 @@
 package com.tracker.frontend;
 
 import com.tracker.backend.Bencode;
+import com.tracker.backend.StringUtils;
 import com.tracker.backend.TrackerRequestParser;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Enumeration;
+import java.net.InetAddress;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -23,6 +24,11 @@ import javax.servlet.http.HttpServletResponse;
  * @author bo
  */
 public class Scrape extends HttpServlet {
+
+    /**
+     * the remote address the request originated from.
+     */
+    private InetAddress remoteAddress;
    
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -33,28 +39,46 @@ public class Scrape extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
+        // store remote address in a useful form
+        remoteAddress = InetAddress.getByName(request.getRemoteAddr());
 
         TrackerRequestParser trp = new TrackerRequestParser();
-        Enumeration e = request.getAttributeNames();
+
+        // set remote address for logging purposes
+        trp.setRemoteAddress(remoteAddress);
+        
         TreeMap<String,TreeMap> innerDictionary = new TreeMap<String,TreeMap>();
+        TreeMap<String,TreeMap> outerDictionary = new TreeMap<String,TreeMap>();
+
+        TreeMap<String,String[]> requestMap = new TreeMap<String,String[]>(
+                request.getParameterMap());
         String responseString = new String();
 
         try {
-            while(e.hasMoreElements()) {
-                String name = (String) e.nextElement();
-                String value = request.getAttribute(name).toString();
-                if(name.equalsIgnoreCase("info_hash")) {
-                    innerDictionary.put(value, trp.scrape(value));
+            // is there a info_hash key present?
+            if(requestMap.containsKey((String)"info_hash")) {
+                String[] value = requestMap.get((String)"info_hash");
+                // scrape all requested info hashes
+                for(int i = 0; i < value.length; i++) {
+                    /**
+                     * tomcat automatically decodes the request as it comes in
+                     */
+                    // encode the info hash again
+                    byte[] rawInfoHash = new byte[20];
+                    for(int j = 0; i < rawInfoHash.length; i++) {
+                        rawInfoHash[j] = (byte) value[i].charAt(j);
+                    }
+                    String hexInfoHash = StringUtils.getHexString(rawInfoHash);
+                    innerDictionary.put(StringUtils.URLEncodeFromHexString(hexInfoHash),
+                            trp.scrape(value[i]));
                 }
             }
-
-            // no info_hashes present?
-            if(innerDictionary.isEmpty()) {
-                // scrape all torrents
+            
+            // no info_hash key, scrape all torrents
+            else {
                 innerDictionary = trp.scrape();
             }
 
-            TreeMap<String,TreeMap> outerDictionary = new TreeMap();
             outerDictionary.put((String)"files", innerDictionary);
 
             responseString = Bencode.encode(outerDictionary);

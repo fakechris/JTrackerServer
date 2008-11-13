@@ -5,10 +5,14 @@
 
 package com.tracker.entity;
 
+import com.tracker.backend.StringUtils;
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -34,10 +38,11 @@ public class Torrent implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     /**
-     * Primary key, 20-byte hash-string
+     * Primary key, 40-byte hex-representation of the info hash
+     * encoded as hex to make it easier with all the binary data
      */
     @Id
-    @Column(length=20)
+    @Column(length=40)
     private String infoHash;
 
     /**
@@ -328,12 +333,44 @@ public class Torrent implements Serializable {
         this.description = description;
     }
 
+    /**
+     * returns the hex representation of the info hash
+     * @return the hex string representing the info hash
+     */
     public String getInfoHash() {
         return infoHash;
     }
 
-    public void setInfoHash(String infoHash) {
-        this.infoHash = infoHash;
+    /**
+     * Takes the raw info hash supplied and turns it into a hex-string and sets
+     * the hex string.
+     * @param infoHash the raw info hash recevied.
+     * @return true if the info hash has been set, false if there is some error
+     */
+    public boolean setInfoHash(String infoHash) {
+        // is the info hash raw?
+        if(infoHash.length() == 20) {
+            try {
+                byte[] b = new byte[20];
+                // charAt is used instead of getBytes, because getBytes insists on
+                // going through the whole encoding thing
+                for(int i = 0; i < b.length; i++) {
+                    b[i] = (byte) infoHash.charAt(i);
+                }
+                this.infoHash = StringUtils.getHexString(b);
+            } catch (Exception ex) {
+                // something went wrong
+                return false;
+            }
+            // all good
+            return true;
+        } // if(length != 20)
+        // is the info hash already encoded?
+        if(infoHash.length() == 40) {
+            this.infoHash = infoHash;
+            return true;
+        }
+        return false;
     }
 
     public String getName() {

@@ -42,13 +42,13 @@ public class Announce extends HttpServlet {
         
         // parse request
         TrackerRequestParser trp = new TrackerRequestParser();
-        Enumeration e = request.getAttributeNames();
+        Enumeration e = request.getParameterNames();
         TreeMap<String, String> requestParams = new TreeMap<String,String>();
         TreeMap<String, String> responseParams;
         
         while(e.hasMoreElements()) {
             String name = (String)e.nextElement();
-            String value = request.getAttribute(name).toString();
+            String value = request.getParameter(name).toString();
             requestParams.put(name, value);
         }
         
@@ -75,7 +75,7 @@ public class Announce extends HttpServlet {
         } finally { 
             out.close();
         }
-    } 
+    }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /** 
