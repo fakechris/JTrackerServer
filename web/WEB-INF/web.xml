@@ -8,6 +8,21 @@
         <servlet-name>Scrape</servlet-name>
         <servlet-class>com.tracker.frontend.Scrape</servlet-class>
     </servlet>
+    <servlet>
+        <description>News and welcome file</description>
+        <servlet-name>News</servlet-name>
+        <jsp-file>/news.jsp</jsp-file>
+    </servlet>
+    <servlet>
+        <description>Browsing torrentlist</description>
+        <servlet-name>Browse</servlet-name>
+        <jsp-file>/browse.jsp</jsp-file>
+    </servlet>
+    <servlet>
+        <description>provides a JSON listing and search of torrents</description>
+        <servlet-name>Torrentlist</servlet-name>
+        <jsp-file>/torrentlist.jsp</jsp-file>
+    </servlet>
     <servlet-mapping>
         <servlet-name>Announce</servlet-name>
         <url-pattern>/announce</url-pattern>
@@ -24,12 +39,32 @@
         <servlet-name>Scrape</servlet-name>
         <url-pattern>/scrape</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>News</servlet-name>
+        <url-pattern>/News</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>News</servlet-name>
+        <url-pattern>/news</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Browse</servlet-name>
+        <url-pattern>/Browse</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Torrentlist</servlet-name>
+        <url-pattern>/torrentlist.json</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Browse</servlet-name>
+        <url-pattern>/browse</url-pattern>
+    </servlet-mapping>
     <session-config>
         <session-timeout>
             30
         </session-timeout>
     </session-config>
     <welcome-file-list>
-        <welcome-file>index.jsp</welcome-file>
+        <welcome-file>news.jsp</welcome-file>
         </welcome-file-list>
     </web-app>
