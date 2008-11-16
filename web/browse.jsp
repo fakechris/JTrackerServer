@@ -11,32 +11,7 @@ pageEncoding="UTF-8"
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
    "http://www.w3.org/TR/html4/loose.dtd">
 <script type="text/javascript" src="resources/jquery_1.2.6/jquery-1.2.6.js"></script>
-<script type="text/javascript">
-    function getTorrentList(searchParameters) {
-        $.getJSON("torrentlist.json", searchParameters, function(json) {
-            // run on successful completion
-            $.each(json.name, function(i, name) {
-                $("#torrentName").append("#" + i + " " +name + "<br />");
-            });
-            $.each(json.date, function(i, date) {
-                $("#torrentDate").append("#" + i + " " +date + "<br />");
-            });
-            $("div:hidden").fadeIn("fast");
-        });
-    }
-
-    $(document).ready(function() {
-        getTorrentList({});
-
-        $("#submit").click(function() {
-            getTorrentList({
-                searchField: $("#searchField").val(),
-                searchDescriptions: $("#searchDescriptions").val(),
-                includeDead: $("#includeDead").val()
-            });
-        });
-    });
-</script>
+<script type="text/javascript" src="resources/behaviour/browse.js"></script>
 
 <html>
     <head>
@@ -64,10 +39,12 @@ pageEncoding="UTF-8"
                     </th>
                 </tr>
                 <td>
+                    <!-- content provided by JS -->
                     <div id="torrentName" style="display:none">
                     </div>
                 </td>
                 <td>
+                    <!-- content provided by JS -->
                     <div id="torrentDate" style="display:none">
                     </div>
                 </td>
