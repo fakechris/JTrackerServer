@@ -98,6 +98,7 @@ result = (Vector<Torrent>) q.getResultList();
 itr = result.iterator();
 
 {
+    // TODO: replace with the JSON*-classes
     StringBuilder name = new StringBuilder();
     StringBuilder date = new StringBuilder();
     jsonResponse.append("{\n");
