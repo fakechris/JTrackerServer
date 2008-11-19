@@ -5,13 +5,16 @@
 
 package com.tracker.backend;
 
+import java.io.InputStream;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.Vector;
 
 /**
- * <p>Handles bencoding of Strings, Integers, Lists and Maps (dictionaries)
+ * <p>Handles encoding and decoding of Strings, Integers, Lists and Maps
+ * (dictionaries) from/into their respective Bencode variants
  * through static methods. Does not particularly require instantiation.
  * @author bo
  */
@@ -24,10 +27,10 @@ public class Bencode {
      * Convenience method for bencoding different types of contents.
      * @param arg the general Object to bencode.
      * @return returns a String with the bencoded data if the object can be
-     * encoded (ie, is one of String, Integer, List or Map.) Throws an exception
-     * if the object cannot be bencoded.
+     * encoded (ie, is one of String, Integer, Long, List or Map.) Throws an
+     * exception if the object cannot be bencoded.
      * @throws java.lang.Exception if the argument is not an instance of
-     * either String, Integer, List or Map.
+     * either String, Integer, Long, List or Map.
      */
     private static String encode(Object arg) throws Exception {      
         if(java.lang.String.class.isInstance(arg)) {
@@ -109,7 +112,8 @@ public class Bencode {
      * @param arg the map to bencode.
      * @return a string containing the bencoded dictionary if the map only
      * contains elements which can be bencoded.
-     * @throws java.lang.Exception if an element of the map cannot be bencoded.
+     * @throws java.lang.Exception if an element of the map cannot be bencoded
+     * or if the keys does not implement Comparable.
      */
     public static String encode(Map arg) throws Exception {
         String result = "d";
@@ -138,5 +142,267 @@ public class Bencode {
         result += "e";
         
         return(result);
+    }
+
+    /**
+     * Decodes a bencoded InputStream into its constituent parts
+     * @param stream the InputStream to decode
+     * @return a Map containing indexes of the different values in the list, and
+     * the decoded values generated from the InputStream.
+     * @throws java.lang.Exception if the InputStream contains malformed bencoded
+     * data or throws an I/O error.
+     */
+    public static Map decode(InputStream stream) throws Exception {
+        TreeMap result = new TreeMap();
+        char readByte;
+        int index = 0;
+        try {
+            // read the whole stream until the end or an error occurs
+            while((readByte = (char) stream.read()) != -1) {
+                switch(readByte) {
+                    case 'd':
+                        result.put(index, decodeDictionary(stream));
+                        break;
+                    case 'l':
+                        result.put(index, decodeList(stream));
+                        break;
+                    case 'i':
+                        result.put(index, decodeInteger(stream));
+                        break;
+                    default:
+                        if(Character.isDigit(readByte)) {
+                            result.put(index, decodeString(readByte, stream));
+                        }
+                        else {
+                            throw new Exception(Character.toString(readByte)
+                                        + " found when expecting 'i', 'l', 'd'" +
+                                        "or a string-length?");
+                        }
+                        break;
+                }
+            }
+        }
+        catch(Exception ex) {
+            throw new Exception("Error when decoding bencoded input stream", ex);
+        }
+
+        return result;
+    }
+
+    /**
+     * Decodes a bencoded dictionary into a java.util.Map object.
+     * @param stream the input stream containing the bencoded dictionary.
+     * @return a Map containing the decoded contents of the bencoded dictionary.
+     * @throws java.lang.Exception if the dictionary ended unexpectedly, any key
+     * of the dictionary was not a string or the contents of the dictionary are
+     * malformed.
+     */
+    private static Map decodeDictionary(InputStream stream) throws Exception {
+        TreeMap result = new TreeMap();
+        char readByte;
+
+        try {
+            readByte = (char) stream.read();
+
+            // parse the dictionary
+            while(readByte != 'e') {
+                // check if the stream ended prematurely
+                if(readByte == -1) {
+                    throw new Exception("Dictionary ended prematurely?");
+                }
+
+                // parse the key
+                // keys must be bencoded strings, strings starts with an
+                // identifier specifying length
+                String key;
+                Object value;
+                if(Character.isDigit(readByte)) {
+                    key = decodeString(readByte, stream);
+                }
+                else {
+                    // key not a string?
+                    throw new Exception("Key in bencoded dictionary not a string?");
+                }
+
+                // read the value
+                if((readByte = (char) stream.read()) != -1) {
+                    switch(readByte) {
+                        case 'i':
+                            value = decodeInteger(stream);
+                            break;
+                        case 'l':
+                            value = decodeList(stream);
+                            break;
+                        case 'd':
+                            value = decodeDictionary(stream);
+                            break;
+                        default:
+                            if(Character.isDigit(readByte)) {
+                                value = decodeString(readByte, stream);
+                            }
+                            else {
+                                // unknown content/broken dictionary
+                                throw new Exception(Character.toString(readByte)
+                                        + " found when expecting 'i', 'l', 'd'" +
+                                        "or a string-length?");
+                            }
+                            break;
+                    }
+                }
+                else {
+                    // missing a value from the dictionary? Something is amiss.
+                    throw new Exception("Missing a value in bencoded dictionary?");
+                }
+
+                // add key/value pair to result
+                result.put(key, value);
+                // read next iterations key
+                readByte = (char) stream.read();
+            } // while
+        }
+
+        catch(Exception ex) {
+            throw new Exception("Error when decoding bencoded dictionary", ex);
+        }
+
+        return result;
+    }
+
+    /**
+     * decodes a bencoded list into a java.util.List object.
+     * @param stream the InputStream to read the list from.
+     * @return a List representing the bencoded list in the input stream
+     * @throws java.lang.Exception if the list ends unexpectedly, or if the
+     * content is malformed.
+     */
+    private static List decodeList(InputStream stream) throws Exception {
+        List result = new Vector();
+        char readByte;
+
+        try {
+            readByte = (char) stream.read();
+            while(readByte != 'e') {
+                // check if the list ended prematurely
+                if(readByte == -1) {
+                    throw new Exception("List ended prematurely?");
+                }
+
+                switch(readByte) {
+                    case 'i':
+                        result.add(decodeInteger(stream));
+                        break;
+                    case 'l':
+                        result.add(decodeList(stream));
+                        break;
+                    case 'd':
+                        result.add(decodeDictionary(stream));
+                        break;
+                    default:
+                        if(Character.isDigit(readByte)) {
+                            result.add(decodeString(readByte, stream));
+                        }
+                        else {
+                            // unknown content/borked list
+                            throw new Exception(Character.toString(readByte)
+                                        + " found when expecting 'i', 'l', 'd'" +
+                                        "or a string-length?");
+                        }
+                        break;
+                }
+            }
+        }
+        catch(Exception ex) {
+            throw new Exception("Error when decoding bencoded list", ex);
+        }
+
+        return result;
+    }
+
+    /**
+     * Decodes a bencoded integer into a java.lang.Long object.
+     * @param stream the input stream to decode the integer from.
+     * @return a Long representing the bencoded integer in the input stream.
+     * @throws java.lang.Exception if the Integer ended unexpectedly, contains
+     * non-number data or due to problems converting to Long.
+     */
+    private static Long decodeInteger(InputStream stream) throws Exception {
+        Long result = new Long(0);
+        StringBuilder stringResult = new StringBuilder();
+        char readByte;
+
+        try {
+            readByte = (char) stream.read();
+            while(readByte != 'e') {
+                // check if the integer ended before 'e'
+                if(readByte == -1) {
+                    throw new Exception("Integer ended prematurely?");
+                }
+                // check for non-digits
+                if(!Character.isDigit(readByte)) {
+                    throw new Exception("Non-number data in a bencoded integer?");
+                }
+                stringResult.append(readByte);
+            }
+
+            // convert to Long, throws exception if the integer to too big or
+            // malformed
+            result = Long.parseLong(stringResult.toString());
+        }
+        catch(Exception ex) {
+            throw new Exception("Error when decoding bencoded integer", ex);
+        }
+
+        return result;
+    }
+
+    /**
+     * Decodes a bencoded string into a java.lang.String object.
+     * @param firstLengthDigit the first digit of the length parameter, used
+     * since we cannot easily rewind the input stream, and marking may not be
+     * available (I haven't tested this)
+     * @param stream the input stream to parse the string from
+     * @return a String representing the bencoded string given in the input stream
+     * @throws java.lang.Exception
+     */
+    private static String decodeString(char firstLengthDigit, InputStream stream) throws Exception {
+        // since we cannot rewind the input stream, we need to get the first
+        // digit of the length as a parameter.
+        StringBuilder lengthString = new StringBuilder();
+        lengthString.append(firstLengthDigit);
+
+        StringBuilder result = new StringBuilder();
+
+        try {
+            // get the rest of the length
+            char readByte = (char) stream.read();
+            while(readByte != ':') {
+                // premature end of stream?
+                if(readByte == -1) {
+                    throw new Exception("String-length ended prematurely?");
+                }
+                lengthString.append(readByte);
+                readByte = (char) stream.read();
+            }
+            // parse length
+            int length = Integer.parseInt(lengthString.toString());
+
+            // read the string
+            for(int i = 0; i < length; i++) {
+                readByte = (char) stream.read();
+                if(readByte != -1) {
+                    throw new Exception("String ended prematurely?");
+                }
+                result.append(readByte);
+            }
+            if((readByte = (char) stream.read()) != 'e') {
+                throw new Exception("Length parameter incorrect? String did not " +
+                        "end at given length");
+            }
+        }
+        catch(Exception ex) {
+            throw new Exception("Error when decoding bencoded string", ex);
+        }
+
+        return result.toString();
     }
 }
