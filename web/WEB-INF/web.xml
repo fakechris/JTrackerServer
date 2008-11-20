@@ -21,14 +21,19 @@
         <jsp-file>/browse.jsp</jsp-file>
     </servlet>
     <servlet>
-        <description>provides a JSON listing and search of torrents</description>
-        <servlet-name>Torrentlist</servlet-name>
-        <jsp-file>/resources/json/torrentlist.jsp</jsp-file>
-    </servlet>
-    <servlet>
         <description>Frontend of uploading</description>
         <servlet-name>Upload</servlet-name>
         <jsp-file>/upload.jsp</jsp-file>
+    </servlet>
+    <servlet>
+        <description>Provides the torrentlist in XML</description>
+        <servlet-name>XML TorrentList</servlet-name>
+        <jsp-file>/resources/xml/torrentlist.jsp</jsp-file>
+    </servlet>
+    <servlet>
+        <description>Provides the torrentlist in JSON</description>
+        <servlet-name>JSON Torrentlist</servlet-name>
+        <jsp-file>/resources/json/torrentlist.jsp</jsp-file>
     </servlet>
     <servlet-mapping>
         <servlet-name>Announce</servlet-name>
@@ -59,16 +64,20 @@
         <url-pattern>/Browse</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>Torrentlist</servlet-name>
-        <url-pattern>/torrentlist.json</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
         <servlet-name>Browse</servlet-name>
         <url-pattern>/browse</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>Upload</servlet-name>
         <url-pattern>/Upload</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>XML TorrentList</servlet-name>
+        <url-pattern>/xml/torrentlist</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>JSON Torrentlist</servlet-name>
+        <url-pattern>/json/torrentlist</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

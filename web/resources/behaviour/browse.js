@@ -5,7 +5,7 @@
 
 // behaviour for browse.jsp
 function getTorrentList(searchParameters) {
-    $.getJSON("torrentlist.json", searchParameters, function(json) {
+    $.getJSON("json/torrentlist", searchParameters, function(json) {
         // run on successful completion
         $.each(json.name, function(i, name) {
             $("#torrentName").append("#" + i + " " +name + "<br />");
