@@ -14,10 +14,26 @@ import java.util.Map;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.json.JSONWriter;
 
 /**
  * Implements a searchable torrentlist with the result being given in the JSON
  * format for use in different frontends or applications.
+ *
+ * <p>The format for the JSON stream is like this (liable to change):</p>
+ * <code>
+ * "torrents" : [
+ *  "torrent" : {
+ *      "id" : id
+ *      "name" : name
+ *      "numSeeders" : numSeeders
+ *      "numLeechers" : numLeechers
+ *      "numCompleted" : numCompleted
+ *      "dateAdded" : dateAdded
+ *  }
+ * ]
+ * </code>
+ * and so on.
  * @author bo
  */
 public class JSONTorrentList implements TorrentList {
@@ -37,7 +53,8 @@ public class JSONTorrentList implements TorrentList {
             boolean searchDescriptions = false;
             boolean includeDead = false;
 
-            StringBuilder jsonResponse = new StringBuilder();
+            // our json writer
+            JSONWriter json = new JSONWriter(out);
 
             // do we search for anything?
             if(requestMap.containsKey((String)"searchField")) {
@@ -70,35 +87,32 @@ public class JSONTorrentList implements TorrentList {
 
             itr = result.iterator();
 
-            {
-                // TODO: replace with the JSON*-classes
-                StringBuilder name = new StringBuilder();
-                StringBuilder date = new StringBuilder();
+            // torrents array
+            json.object().key("torrents");
+            json.array();
 
-                jsonResponse.append("{\n");
-                name.append("\t\"name\": [\n");
-                date.append("\t\"date\": [\n");
+            while(itr.hasNext()) {
+                Torrent t = (Torrent) itr.next();
 
-                char delim = ' ';
-                while(itr.hasNext()) {
-                    Torrent t = (Torrent) itr.next();
-                    name.append(delim + "\n\t\t\"" + t.getName() + "\"");
-                    date.append(delim + "\n\t\t\"" + t.getAdded().toString() + "\"");
-                    delim = ',';
-                }
+                // torrent object
+                json.object().key("torrent");
+                json.object();
 
-                name.append("\n\t],\n");
-                date.append("\n\t]\n");
-                
-                jsonResponse.append(name);
-                jsonResponse.append(date);
-                jsonResponse.append("}");
+                json.object().key("id").value(t.getId()).endObject();
+                json.object().key("name").value(t.getName()).endObject();
+                json.object().key("numSeeders").value(t.getNumSeeders()).endObject();
+                json.object().key("numLeechers").value(t.getNumLeechers()).endObject();
+                json.object().key("numCompleted").value(t.getNumCompleted()).endObject();
+                json.object().key("dateAdded").value(t.getAdded().toString()).endObject();
+
+                // end torrent object
+                json.endObject();
             }
+            // end torrents array
+            json.endArray();
 
-            out.print(jsonResponse.toString());
         } catch (Exception ex) {
             log.log(Level.SEVERE, "Exception caught when trying to form JSON", ex);
         }
     }
-
 }
