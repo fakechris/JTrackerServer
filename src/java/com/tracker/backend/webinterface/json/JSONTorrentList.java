@@ -16,13 +16,18 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
+ * Implements a searchable torrentlist with the result being given in the JSON
+ * format for use in different frontends or applications.
  * @author bo
  */
 public class JSONTorrentList implements TorrentList {
 
     Logger log = Logger.getLogger(JSONTorrentList.class.getName());
 
+    /**
+     * Implements printTorrentList from com.tracker.backend.webinterface.TorrentList
+     * @see com.tracker.backend.webinterface.TorrentList
+     */
     public void printTorrentList(Map<String, String[]> requestMap, PrintWriter out) {
         try {
             // query result
@@ -56,11 +61,11 @@ public class JSONTorrentList implements TorrentList {
                     }
                 }
 
-                result = TorrentSearch.getList(searchString, searchDescriptions, includeDead);
+                result = (Vector<Torrent>) TorrentSearch.getList(searchString, searchDescriptions, includeDead);
             }
             // no search string given
             else {
-                result = TorrentSearch.getList();
+                result = (Vector<Torrent>) TorrentSearch.getList();
             }
 
             itr = result.iterator();
