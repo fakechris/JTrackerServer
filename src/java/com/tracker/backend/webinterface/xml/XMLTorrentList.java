@@ -26,6 +26,28 @@ import org.xml.sax.helpers.AttributesImpl;
 /**
  * Implements a searchable torrentlist with the results given in XML for use in
  * different frontends or applications.
+ *
+ * <p>The format of the XML-stream is like this (liable to change):</p>
+ * &lt torrents &gt <br />
+ *  &lt torrent id=1 &gt <br />
+ *      &lt name &gt <br />
+ *          Torrentname <br />
+ *      &lt /name &gt <br />
+ *      &lt numSeeders &gt <br />
+ *          1 <br />
+ *      &lt /numSeeders &gt <br />
+ *      &lt numLeechers &gt <br />
+ *          2 <br />
+ *      &lt /numLeechers &gt <br />
+ *      &lt numCompleted &gt <br />
+ *          10 <br />
+ *      &lt /numCompleted &gt <br />
+ *      &lt dateAdded &gt <br />
+ *          Thu Nov 13 20:06:20 CET 2008 <br />
+ *      &lt /dateAdded &gt <br />
+ *  &lt /torrent &gt <br />
+ * &lt /torrents &gt <br />
+ * And so on.
  * @author bo
  */
 public class XMLTorrentList implements TorrentList {
@@ -122,12 +144,6 @@ public class XMLTorrentList implements TorrentList {
                 tHandler.startElement("", "", "name", attr);
                 tHandler.characters(t.getName().toCharArray(), 0, t.getName().length());
                 tHandler.endElement("", "", "name");
-
-                // don't include the description for the browse list, only
-                // for details
-                /*tHandler.startElement("", "", "description", attr);
-                tHandler.characters(t.getDescription().toCharArray(), 0, t.getDescription().length());
-                tHandler.endElement("", "", "description");*/
 
                 tHandler.startElement("", "", "numSeeders", attr);
                 tHandler.characters(t.getNumSeeders().toString().toCharArray(),
