@@ -7,22 +7,37 @@ package com.tracker.backend.webinterface;
 
 import com.tracker.entity.Torrent;
 import java.util.Date; // TODO: remove test stuff
-import java.util.Vector;
+import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
 
 /**
- *
+ * Provides a simple way to search the torrents currently in the database.
+ * Implements this as a static method, so it does not particularly require
+ * instantiation.
  * @author bo
  */
 public class TorrentSearch {
-    // Persistence stuff
+    // keep one copy of the entity manager factory
     static EntityManagerFactory emf = Persistence.createEntityManagerFactory("TorrentTrackerPU");
 
-    public static Vector<Torrent> getList(String searchString, boolean searchDescriptions, boolean includeDead) {
-        Vector<Torrent> result;
+    /**
+     * Gets a list of torrents from the database with the given searchstring
+     * and instructions on how to search (include dead, search descriptions).
+     * @param searchString The string to search for in the list of torrents in
+     * the database. If searchDescriptions is false, this only searches the names
+     * of torrents. If searchDescriptions is true, this also searches through
+     * descriptions.
+     * @param searchDescriptions Whether to search the descriptions of torrents
+     * instead of just the names.
+     * @param includeDead Whether to include results that does not have any
+     * activity - in other words, torrents with 0 seeds and 0 leechers.
+     * @return a List of torrents containing the result of the database query.
+     */
+    public static List<Torrent> getList(String searchString, boolean searchDescriptions, boolean includeDead) {
+        List<Torrent> result;
 
         EntityManager em = emf.createEntityManager();
 
@@ -42,7 +57,7 @@ public class TorrentSearch {
         }
 
         q = em.createQuery(query.toString());
-        result = (Vector<Torrent>) q.getResultList();
+        result = q.getResultList();
 
         // TODO: remove test stuff
         {
@@ -70,14 +85,19 @@ public class TorrentSearch {
         return result;
     }
 
-    public static Vector<Torrent> getList() {
-        Vector<Torrent> result;
+    /**
+     * Gets a simple list of all torrents in the database.
+     * @return a List of torrents containing all torrents currently in the
+     * database.
+     */
+    public static List<Torrent> getList() {
+        List<Torrent> result;
 
         EntityManager em = emf.createEntityManager();
 
         Query q = em.createQuery("SELECT t FROM Torrent t");
 
-        result = (Vector<Torrent>) q.getResultList();
+        result = q.getResultList();
 
 
         // TODO: remove test stuff
