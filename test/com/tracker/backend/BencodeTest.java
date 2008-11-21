@@ -5,6 +5,7 @@
 
 package com.tracker.backend;
 
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,9 +60,12 @@ public class BencodeTest {
     @Test
     public void testEncode_Integer() {
         System.out.println("encode(Integer arg)");
-        Integer arg = -1;
+        Integer intArg = -1;
+        Long longArg = -1L;
         String expResult = "i-1e";
-        String result = Bencode.encode(arg);
+        String result = Bencode.encode(intArg);
+        assertEquals(expResult, result);
+        result = Bencode.encode(longArg);
         assertEquals(expResult, result);
     }
 
@@ -105,6 +109,20 @@ public class BencodeTest {
         String expResult = "d4:eggs4:spam4:listl6:vectori2ee3:onei1ee";
         String result = Bencode.encode(arg);
         assertEquals(expResult, result);
+    }
+
+    /**
+     * Test of decode method, of class Bencode.
+     */
+    @Test
+    public void testDecode() throws Exception {
+        System.out.println("decode");
+        InputStream stream = null;
+        Map expResult = null;
+        //Map result = Bencode.decode(stream);
+        //assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
     }
 
 }
