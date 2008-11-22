@@ -411,7 +411,7 @@ public class Torrent implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.Torrent[id=" + id + ",info_hash=" + infoHash + "]";
+        return "entity.Torrent[id=" + id + ",info_hash=" + infoHash + ",name=" + name + "]";
     }
 
 }
