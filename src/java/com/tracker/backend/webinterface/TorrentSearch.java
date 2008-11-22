@@ -6,7 +6,6 @@
 package com.tracker.backend.webinterface;
 
 import com.tracker.entity.Torrent;
-import java.util.Date; // TODO: remove test stuff
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -35,51 +34,38 @@ public class TorrentSearch {
      * @param includeDead Whether to include results that does not have any
      * activity - in other words, torrents with 0 seeds and 0 leechers.
      * @return a List of torrents containing the result of the database query.
+     * @throws Exception if the query cannot be created or if the execution failed.
      */
-    public static List<Torrent> getList(String searchString, boolean searchDescriptions, boolean includeDead) {
+    public static List<Torrent> getList(String searchString, boolean searchDescriptions, boolean includeDead) throws Exception {
         List<Torrent> result;
 
         EntityManager em = emf.createEntityManager();
+
+        // make sure the searchstring does not contain the character ' ('_'
+        // matches any single character so it should work out)
+        searchString = searchString.replaceAll("'", "_");
 
         // building the query
         Query q;
         StringBuilder query = new StringBuilder();
 
         query.append("SELECT t FROM Torrent t WHERE t.name LIKE ");
-        // horrible SQL-injection waiting to happen? :D
-        query.append("%" + searchString + "%");
+        query.append("'%" + searchString + "%'");
         if(searchDescriptions) {
             query.append(" OR t.description LIKE ");
-            query.append("%" + searchString + "%");
+            query.append("'%" + searchString + "%'");
         }
         if(!includeDead) {
-            query.append(" AND t.numSeeders > 0 OR t.numLeechers > 0");
+            query.append(" AND (t.numSeeders > 0 OR t.numLeechers > 0)");
         }
 
-        q = em.createQuery(query.toString());
-        result = q.getResultList();
-
-        // TODO: remove test stuff
-        {
-            // add some torrents to test
-            Date d = new Date();
-            d.setTime(1226703180000L);
-            Torrent t = new Torrent();
-            // fill in an ID, since this is not from the DB
-            t.setId(1L);
-            t.setName("test-torrent1");
-            t.setDescription("dafdasfdasfas");
-            t.setAdded(d);
-            result.add(t);
-
-            d = new Date();
-            t = new Torrent();
-            t.setId(2L);
-            d.setTime(1226603180000L);
-            t.setName("test-torrent2");
-            t.setDescription("fdsfgsfdsfs");
-            t.setAdded(d);
-            result.add(t);
+        try {
+            q = em.createQuery(query.toString());
+            result = q.getResultList();
+        }
+        catch(Exception ex) {
+            throw new Exception("Exception caught when trying to get result. " +
+                    "Query = " + query.toString(), ex);
         }
 
         return result;
@@ -98,30 +84,6 @@ public class TorrentSearch {
         Query q = em.createQuery("SELECT t FROM Torrent t");
 
         result = q.getResultList();
-
-
-        // TODO: remove test stuff
-        {
-            // add some torrents to test
-            Date d = new Date();
-            d.setTime(1226703180000L);
-            Torrent t = new Torrent();
-            // fill in an ID, since this is not from the DB
-            t.setId(1L);
-            t.setName("test-torrent1");
-            t.setDescription("dafdasfdasfas");
-            t.setAdded(d);
-            result.add(t);
-
-            d = new Date();
-            t = new Torrent();
-            t.setId(2L);
-            d.setTime(1226603180000L);
-            t.setName("test-torrent2");
-            t.setDescription("fdsfgsfdsfs");
-            t.setAdded(d);
-            result.add(t);
-        }
 
         return result;
     }

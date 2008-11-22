@@ -33,7 +33,7 @@ import static org.junit.Assert.*;
 public class TorrentSearchTest {
 
     static Peer p;
-    static Vector<Torrent> torrents;
+    static Vector<Torrent> torrents = new Vector<Torrent>();
 
 
     static EntityManagerFactory emf = Persistence.createEntityManagerFactory("TorrentTrackerPU");
@@ -109,12 +109,12 @@ public class TorrentSearchTest {
 
         t.addLeecher(p);
 
-        torrents.add(t);
-
         em.getTransaction().begin();
         em.persist(t);
         em.persist(p);
         em.getTransaction().commit();
+
+        torrents.add(t);
 
         // I need at least two torrents to test this class
         t = new Torrent();
@@ -125,16 +125,17 @@ public class TorrentSearchTest {
         infoHash = StringUtils.getHexString(rawInfoHash);
         t.setInfoHash(infoHash);
 
-        t.setName((String)"This name contains the word 'Awful");
+        t.setName((String)"This name contains the word 'Awful'");
         t.setDescription((String)"This description contains the word 'Horrible'");
         t.setTorrentSize(965485654L);
         t.setAdded(Calendar.getInstance().getTime());
 
-        torrents.add(t);
 
         em.getTransaction().begin();
         em.persist(t);
         em.getTransaction().commit();
+
+        torrents.add(t);
 
         em.close();
     }
@@ -173,6 +174,9 @@ public class TorrentSearchTest {
 
         em.getTransaction().commit();
         em.close();
+
+        // clear out the torrents array
+        torrents.clear();
     }
 
     /**
@@ -180,15 +184,83 @@ public class TorrentSearchTest {
      */
     @Test
     public void testGetList_3args() {
+        /*
+         * current layout of the database is this:
+         * name             description         seeds       leechers
+         * ...brilliant     ...fabulous         0           1       <-- alive
+         * ...awful         ...horrible         0           0       <-- dead
+         *
+         * common strings:
+         * "this name contains the word"
+         * "this description contains the word"
+         */
         System.out.println("getList");
-        String searchString = "";
+
+        // should be the first entry
+        Torrent brilliant = torrents.get(0);
+        Torrent awful = torrents.get(1);
+
+        // try to get the 'brilliant' torrent by name only
+        String searchString = "Brilliant";
         boolean searchDescriptions = false;
         boolean includeDead = false;
         List<Torrent> expResult = new Vector<Torrent>();
-        List<Torrent> result = TorrentSearch.getList(searchString, searchDescriptions, includeDead);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        List<Torrent> result;
+
+        try {
+            // I do not guarantee the ordering of the result, so do not simply
+            // compare it to the expected result array, but instead check to
+            // see if they contain the same amount and the same elements,
+            // regardless of index
+
+            expResult.add(brilliant);
+            result = TorrentSearch.getList(searchString, searchDescriptions, includeDead);
+            assertTrue(result.containsAll(expResult));
+
+            // now try it with includeDead = true to make sure that the other one does
+            // not match
+            includeDead = true;
+            result = TorrentSearch.getList(searchString, searchDescriptions, includeDead);
+            assertTrue(result.containsAll(expResult));
+
+            includeDead = false;
+
+            // try to find the brilliant torrent by description
+            searchString = "fabulous";
+            searchDescriptions = true;
+            result = TorrentSearch.getList(searchString, searchDescriptions, includeDead);
+            assertTrue("cannot find the torrent based on description search", result.containsAll(expResult));
+            searchDescriptions = false;
+
+            // try to find both torrents by searching for common strings, first only
+            // the brilliant one, then include dead for the awful one
+
+            // test if it can match % by replacing 'name' and 'description'
+            searchString = "this % contains";
+            result = TorrentSearch.getList(searchString, searchDescriptions, includeDead);
+            assertTrue(result.containsAll(expResult));
+
+            // search description
+            // look for the 'description' word which only happens in the description
+            searchString = "'description'";
+            searchDescriptions = true;
+            result = TorrentSearch.getList(searchString, searchDescriptions, includeDead);
+            assertTrue(result.containsAll(expResult));
+
+            // include dead, this should find 'awful'
+            includeDead = true;
+            expResult.add(awful);
+            result = TorrentSearch.getList(searchString, searchDescriptions, includeDead);
+            assertTrue(result.containsAll(expResult));
+        }
+        catch(Exception ex) {
+            String failMessage = "Exception Caught: ";
+            failMessage += ex.toString();
+            failMessage += " ";
+            failMessage += ex.getMessage();
+            ex.printStackTrace();
+            fail(failMessage);
+        }
     }
 
     /**
@@ -200,7 +272,17 @@ public class TorrentSearchTest {
         // this should give back a list of all torrents.
         List<Torrent> expResult = torrents;
         List<Torrent> result = TorrentSearch.getList();
-        assertEquals(expResult, result);
-    }
 
+        // i don't want/need to guarantee the ordering of torrents
+        assertEquals(expResult.size(), result.size());
+        Iterator itr = expResult.iterator();
+
+        // iterate over expected result to see if the result contains all the
+        // expected entries
+        while(itr.hasNext()) {
+            Torrent t = (Torrent) itr.next();
+            System.out.println("Does result contain " + t.toString() + "?");
+            assertTrue(result.contains(t));
+        }
+    }
 }
