@@ -236,7 +236,7 @@ public class TorrentSearchTest {
             // the brilliant one, then include dead for the awful one
 
             // test if it can match % by replacing 'name' and 'description'
-            searchString = "this % contains";
+            searchString = "this contains";
             result = TorrentSearch.getList(searchString, searchDescriptions, includeDead);
             assertTrue(result.containsAll(expResult));
 

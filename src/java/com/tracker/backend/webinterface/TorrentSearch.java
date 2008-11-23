@@ -45,6 +45,10 @@ public class TorrentSearch {
         // matches any single character so it should work out)
         searchString = searchString.replaceAll("'", "_");
 
+        // make sure that we can match missing words, for example;
+        // user searches for "van graaf" and should find "van der graaf generator"
+        searchString = searchString.replaceAll(" ", "%");
+
         // building the query
         Query q;
         StringBuilder query = new StringBuilder();
