@@ -8,6 +8,8 @@ package com.tracker.backend;
 import com.tracker.entity.Peer;
 import com.tracker.entity.Torrent;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.InetAddress;
 import java.net.URLDecoder;
 import java.security.MessageDigest;
@@ -242,11 +244,14 @@ public class TrackerRequestParserTest {
             assertEquals(expResults, results);
 
         } catch(Exception ex) {
-            String failMessage = "Exception Caught: ";
-            failMessage += ex.toString();
-            failMessage += " ";
-            failMessage += ex.getMessage();
-            fail(failMessage);
+            StringWriter s = new StringWriter();
+            s.append("Exception Caught: ");
+            s.append(ex.toString());
+            s.append(" ");
+            s.append(ex.getMessage());
+            PrintWriter w = new PrintWriter(s);
+            ex.printStackTrace(w);
+            fail(s.toString());
         }
     }
     
@@ -270,11 +275,14 @@ public class TrackerRequestParserTest {
             assertEquals(expResult, result);
             
         } catch(Exception ex) {
-            String failMessage = "Exception Caught: ";
-            failMessage += ex.toString();
-            failMessage += " ";
-            failMessage += ex.getMessage();
-            fail(failMessage);
+            StringWriter s = new StringWriter();
+            s.append("Exception Caught: ");
+            s.append(ex.toString());
+            s.append(" ");
+            s.append(ex.getMessage());
+            PrintWriter w = new PrintWriter(s);
+            ex.printStackTrace(w);
+            fail(s.toString());
         }
     }
 
@@ -333,11 +341,14 @@ public class TrackerRequestParserTest {
             assertEquals(tmp.size(), 1);
             
         } catch (Exception ex) {
-            String failMessage = "Exception Caught: ";
-            failMessage += ex.toString();
-            failMessage += " ";
-            failMessage += ex.getMessage();
-            fail(failMessage);
+            StringWriter s = new StringWriter();
+            s.append("Exception Caught: ");
+            s.append(ex.toString());
+            s.append(" ");
+            s.append(ex.getMessage());
+            PrintWriter w = new PrintWriter(s);
+            ex.printStackTrace(w);
+            fail(s.toString());
         }
     }
 
@@ -388,12 +399,14 @@ public class TrackerRequestParserTest {
             assertEquals(tmp.size(), 0);
 
         } catch (Exception ex) {
-            String failMessage = "Exception Caught: ";
-            failMessage += ex.toString();
-            failMessage += " ";
-            failMessage += ex.getMessage();
-            ex.printStackTrace();
-            fail(failMessage);
+            StringWriter s = new StringWriter();
+            s.append("Exception Caught: ");
+            s.append(ex.toString());
+            s.append(" ");
+            s.append(ex.getMessage());
+            PrintWriter w = new PrintWriter(s);
+            ex.printStackTrace(w);
+            fail(s.toString());
         }
     }
 
@@ -450,12 +463,14 @@ public class TrackerRequestParserTest {
             }
 
         } catch (Exception ex) {
-            String failMessage = "Exception Caught: ";
-            failMessage += ex.toString();
-            failMessage += " ";
-            failMessage += ex.getMessage();
-            ex.printStackTrace();
-            fail(failMessage);
+            StringWriter s = new StringWriter();
+            s.append("Exception Caught: ");
+            s.append(ex.toString());
+            s.append(" ");
+            s.append(ex.getMessage());
+            PrintWriter w = new PrintWriter(s);
+            ex.printStackTrace(w);
+            fail(s.toString());
         }
     }
 
@@ -569,12 +584,14 @@ public class TrackerRequestParserTest {
             }
 
         } catch (Exception ex) {
-            String failMessage = "Exception Caught: ";
-            failMessage += ex.toString();
-            failMessage += " ";
-            failMessage += ex.getMessage();
-            ex.printStackTrace();
-            fail(failMessage);
+            StringWriter s = new StringWriter();
+            s.append("Exception Caught: ");
+            s.append(ex.toString());
+            s.append(" ");
+            s.append(ex.getMessage());
+            PrintWriter w = new PrintWriter(s);
+            ex.printStackTrace(w);
+            fail(s.toString());
         }
     }
 
@@ -616,12 +633,14 @@ public class TrackerRequestParserTest {
             assertEquals(expResult, result);
 
         } catch (Exception ex) {
-            String failMessage = "Exception Caught: ";
-            failMessage += ex.toString();
-            failMessage += " ";
-            failMessage += ex.getMessage();
-            ex.printStackTrace();
-            fail(failMessage);
+            StringWriter s = new StringWriter();
+            s.append("Exception Caught: ");
+            s.append(ex.toString());
+            s.append(" ");
+            s.append(ex.getMessage());
+            PrintWriter w = new PrintWriter(s);
+            ex.printStackTrace(w);
+            fail(s.toString());
         }
     }
 
