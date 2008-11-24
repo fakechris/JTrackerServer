@@ -5,7 +5,11 @@
 
 package com.tracker.backend;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -117,12 +121,32 @@ public class BencodeTest {
     @Test
     public void testDecode() throws Exception {
         System.out.println("decode");
-        InputStream stream = null;
-        Map expResult = null;
-        //Map result = Bencode.decode(stream);
-        //assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+        try {
+            File f = new File("./test/com/tracker/backend/Testtorrent.torrent");
+            if(!f.canRead()) {
+                fail("Cannot open testtorrent");
+            }
 
+            InputStream stream = new FileInputStream(f);
+            Map result = Bencode.decode(stream);
+
+            // the resultmap is huge (mostly made up of the pieces dictionary),
+            // so only check some keys (however, only two keys is a pretty
+            // shitty test).
+
+            Map dictionary = (Map) result.get(0);
+
+            assertEquals(dictionary.get("announce"), "http://slappserv.sexypenguins.com:8080/TorrentTracker/Announce");
+
+            assertEquals(dictionary.get("creation date"), 1227549680L);
+        }
+        catch(Exception ex) {
+            StringWriter s = new StringWriter();
+            s.append("Exception caught!\n");
+            s.append(ex.toString() + "\n");
+            s.append(ex.getMessage() + "\n");
+            ex.printStackTrace(new PrintWriter(s));
+            fail(s.toString());
+        }
+    }
 }

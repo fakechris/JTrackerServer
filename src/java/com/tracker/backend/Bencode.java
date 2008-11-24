@@ -154,12 +154,15 @@ public class Bencode {
      */
     public static Map decode(InputStream stream) throws Exception {
         TreeMap result = new TreeMap();
-        char readByte;
+        int readByte;
+        char charByte;
         int index = 0;
         try {
             // read the whole stream until the end or an error occurs
-            while((readByte = (char) stream.read()) != -1) {
-                switch(readByte) {
+            readByte = stream.read();
+            charByte = (char) readByte;
+            while(readByte != -1) {
+                switch(charByte) {
                     case 'd':
                         result.put(index, decodeDictionary(stream));
                         break;
@@ -170,16 +173,18 @@ public class Bencode {
                         result.put(index, decodeInteger(stream));
                         break;
                     default:
-                        if(Character.isDigit(readByte)) {
-                            result.put(index, decodeString(readByte, stream));
+                        if(Character.isDigit(charByte)) {
+                            result.put(index, decodeString(charByte, stream));
                         }
                         else {
-                            throw new Exception(Character.toString(readByte)
+                            throw new Exception(Character.toString(charByte)
                                         + " found when expecting 'i', 'l', 'd'" +
                                         "or a string-length?");
                         }
                         break;
                 }
+                readByte = stream.read();
+                charByte = (char) readByte;
             }
         }
         catch(Exception ex) {
@@ -199,13 +204,15 @@ public class Bencode {
      */
     private static Map decodeDictionary(InputStream stream) throws Exception {
         TreeMap result = new TreeMap();
-        char readByte;
+        int readByte;
+        char charByte;
 
         try {
-            readByte = (char) stream.read();
+            readByte = stream.read();
+            charByte = (char) readByte;
 
             // parse the dictionary
-            while(readByte != 'e') {
+            while(charByte != 'e') {
                 // check if the stream ended prematurely
                 if(readByte == -1) {
                     throw new Exception("Dictionary ended prematurely?");
@@ -216,8 +223,8 @@ public class Bencode {
                 // identifier specifying length
                 String key;
                 Object value;
-                if(Character.isDigit(readByte)) {
-                    key = decodeString(readByte, stream);
+                if(Character.isDigit(charByte)) {
+                    key = decodeString(charByte, stream);
                 }
                 else {
                     // key not a string?
@@ -225,8 +232,9 @@ public class Bencode {
                 }
 
                 // read the value
-                if((readByte = (char) stream.read()) != -1) {
-                    switch(readByte) {
+                if((readByte = stream.read()) != -1) {
+                    charByte = (char) readByte;
+                    switch(charByte) {
                         case 'i':
                             value = decodeInteger(stream);
                             break;
@@ -237,12 +245,12 @@ public class Bencode {
                             value = decodeDictionary(stream);
                             break;
                         default:
-                            if(Character.isDigit(readByte)) {
-                                value = decodeString(readByte, stream);
+                            if(Character.isDigit(charByte)) {
+                                value = decodeString(charByte, stream);
                             }
                             else {
                                 // unknown content/broken dictionary
-                                throw new Exception(Character.toString(readByte)
+                                throw new Exception(Character.toString(charByte)
                                         + " found when expecting 'i', 'l', 'd'" +
                                         "or a string-length?");
                             }
@@ -257,7 +265,8 @@ public class Bencode {
                 // add key/value pair to result
                 result.put(key, value);
                 // read next iterations key
-                readByte = (char) stream.read();
+                readByte = stream.read();
+                charByte = (char) readByte;
             } // while
         }
 
@@ -277,17 +286,19 @@ public class Bencode {
      */
     private static List decodeList(InputStream stream) throws Exception {
         List result = new Vector();
-        char readByte;
+        int readByte;
+        char charByte;
 
         try {
-            readByte = (char) stream.read();
-            while(readByte != 'e') {
+            readByte = stream.read();
+            charByte = (char) readByte;
+            while(charByte != 'e') {
                 // check if the list ended prematurely
                 if(readByte == -1) {
                     throw new Exception("List ended prematurely?");
                 }
 
-                switch(readByte) {
+                switch(charByte) {
                     case 'i':
                         result.add(decodeInteger(stream));
                         break;
@@ -298,17 +309,19 @@ public class Bencode {
                         result.add(decodeDictionary(stream));
                         break;
                     default:
-                        if(Character.isDigit(readByte)) {
-                            result.add(decodeString(readByte, stream));
+                        if(Character.isDigit(charByte)) {
+                            result.add(decodeString(charByte, stream));
                         }
                         else {
                             // unknown content/borked list
-                            throw new Exception(Character.toString(readByte)
+                            throw new Exception(Character.toString(charByte)
                                         + " found when expecting 'i', 'l', 'd'" +
                                         "or a string-length?");
                         }
                         break;
                 }
+                readByte = stream.read();
+                charByte = (char) readByte;
             }
         }
         catch(Exception ex) {
@@ -328,20 +341,26 @@ public class Bencode {
     private static Long decodeInteger(InputStream stream) throws Exception {
         Long result = new Long(0);
         StringBuilder stringResult = new StringBuilder();
-        char readByte;
+        int readByte;
+        char charByte;
 
         try {
-            readByte = (char) stream.read();
-            while(readByte != 'e') {
+            readByte = stream.read();
+            charByte = (char) readByte;
+            while(charByte != 'e') {
                 // check if the integer ended before 'e'
                 if(readByte == -1) {
                     throw new Exception("Integer ended prematurely?");
                 }
                 // check for non-digits
-                if(!Character.isDigit(readByte)) {
+                if(!Character.isDigit(charByte)) {
                     throw new Exception("Non-number data in a bencoded integer?");
                 }
-                stringResult.append(readByte);
+                stringResult.append(charByte);
+
+                // read the next byte
+                readByte = stream.read();
+                charByte = (char) readByte;
             }
 
             // convert to Long, throws exception if the integer to too big or
@@ -374,29 +393,28 @@ public class Bencode {
 
         try {
             // get the rest of the length
-            char readByte = (char) stream.read();
-            while(readByte != ':') {
+            int readByte = stream.read();
+            char charByte = (char) readByte;
+            while(charByte != ':') {
                 // premature end of stream?
                 if(readByte == -1) {
                     throw new Exception("String-length ended prematurely?");
                 }
-                lengthString.append(readByte);
-                readByte = (char) stream.read();
+                lengthString.append(charByte);
+                readByte = stream.read();
+                charByte = (char) readByte;
             }
             // parse length
             int length = Integer.parseInt(lengthString.toString());
 
             // read the string
             for(int i = 0; i < length; i++) {
-                readByte = (char) stream.read();
-                if(readByte != -1) {
+                readByte = stream.read();
+                charByte = (char) readByte;
+                if(readByte == -1) {
                     throw new Exception("String ended prematurely?");
                 }
-                result.append(readByte);
-            }
-            if((readByte = (char) stream.read()) != 'e') {
-                throw new Exception("Length parameter incorrect? String did not " +
-                        "end at given length");
+                result.append(charByte);
             }
         }
         catch(Exception ex) {
