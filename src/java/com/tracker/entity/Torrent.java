@@ -81,14 +81,14 @@ public class Torrent implements Serializable {
     private Long torrentSize;
 
     /**
-     * All peers connected with this torrent
+     * All peers connected with this torrent,
      * bi-directional relationship with the Peer Entity class
      */
     @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "torrent")
     private List<Peer> peersData;
     /**
-     * The peers that are seeding this torrent
-     * one-directional relationship with the Peer Entity class
+     * The peers that are seeding this torrent,
+     * one-directional relationship with the Peer Entity class.
      * We have to specify the table used to avoid sharing the default name with
      * the leech-data.
      */
@@ -96,8 +96,8 @@ public class Torrent implements Serializable {
     @OneToMany
     private List<Peer> seedersData;
     /**
-     * The peers that are leeching this torrent
-     * one-directional relationship with the Peer Entity class
+     * The peers that are leeching this torrent,
+     * one-directional relationship with the Peer Entity class.
      * We have to specify the table used to avoid sharing the default name with
      * the seed-data.
      */
@@ -116,9 +116,7 @@ public class Torrent implements Serializable {
     }
 
     /**
-     * marks a leecher as completed (turns into a seed).
-     * This is necessary since removePeer() + addSeed() confuses JPA and it's
-     * mapping-table.
+     * Convenience method for converting a leecher to a seed.
      * @param p the leecher that has completed this torrent
      * @return true if the leecher is on this torrent and has been changed to a
      * seed, false if the peer is not a leecher of this torrent.
@@ -276,9 +274,7 @@ public class Torrent implements Serializable {
     }
     
     /**
-     * Removes a peer from the list of peers
-     * private method only, use removeSeed() or removeLeecher() for everyone
-     * else
+     * Removes a peer from the list of peers. Handles both seeds and leechers.
      * @param p the peer to remove from the list
      * @return true if the peer has been removed, false if the peer is not
      * on this torrent
