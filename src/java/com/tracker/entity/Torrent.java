@@ -7,8 +7,8 @@ package com.tracker.entity;
 
 import com.tracker.backend.StringUtils;
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.Vector;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -17,6 +17,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.CascadeType;
+import javax.persistence.JoinTable;
 import javax.persistence.Temporal;
 
 
@@ -84,19 +85,25 @@ public class Torrent implements Serializable {
      * bi-directional relationship with the Peer Entity class
      */
     @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "torrent")
-    private Collection<Peer> peersData;
+    private List<Peer> peersData;
     /**
      * The peers that are seeding this torrent
      * one-directional relationship with the Peer Entity class
+     * We have to specify the table used to avoid sharing the default name with
+     * the leech-data.
      */
+    @JoinTable(name="TORRENT_SEED")
     @OneToMany
-    private Collection<Peer> seedersData;
+    private List<Peer> seedersData;
     /**
      * The peers that are leeching this torrent
      * one-directional relationship with the Peer Entity class
+     * We have to specify the table used to avoid sharing the default name with
+     * the seed-data.
      */
+    @JoinTable(name="TORRENT_LEECH")
     @OneToMany
-    private Collection<Peer> leechersData;
+    private List<Peer> leechersData;
 
     /**
      * default constructor
@@ -136,7 +143,7 @@ public class Torrent implements Serializable {
      * Gets the leechers data
      * @return a Collection of Peers that are leeching this torrent
      */
-    public Collection<Peer> getLeechersData() {
+    public List<Peer> getLeechersData() {
         return leechersData;
     }
 
@@ -210,7 +217,7 @@ public class Torrent implements Serializable {
      * gets the data of the seeding peers
      * @return a Collection of Peers that is currently seeding this torrent
      */
-    public Collection<Peer> getSeedersData() {
+    public List<Peer> getSeedersData() {
         return seedersData;
     }
 
@@ -253,7 +260,7 @@ public class Torrent implements Serializable {
      * @return a Collection of Peers that is all the peers connected with the
      * torrent
      */
-    public Collection<Peer> getPeersData() {
+    public List<Peer> getPeersData() {
         return peersData;
     }
     

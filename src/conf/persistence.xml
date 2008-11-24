@@ -12,6 +12,7 @@
       <property name="toplink.jdbc.driver" value="com.mysql.jdbc.Driver"/>
       <!-- <property name="toplink.logging.level" value="FINE"/> -->
       <property name="toplink.logging.level" value="FINE"/>
+      <property name="toplink.ddl-generation" value="create-tables"/>
     </properties>
   </persistence-unit>
 </persistence>
