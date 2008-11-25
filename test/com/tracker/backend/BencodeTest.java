@@ -195,7 +195,6 @@ public class BencodeTest {
             input = new FileInputStream(in);
             InputStream input2 = new FileInputStream(out);
 
-            int readByte;
             int length = (int) in.length();
             if(length > Integer.MAX_VALUE) {
                 fail("file size too large");
