@@ -7,9 +7,12 @@ package com.tracker.backend;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.security.MessageDigest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -139,6 +142,81 @@ public class BencodeTest {
             assertEquals(dictionary.get("announce"), "http://slappserv.sexypenguins.com:8080/TorrentTracker/Announce");
 
             assertEquals(dictionary.get("creation date"), 1227549680L);
+        }
+        catch(Exception ex) {
+            StringWriter s = new StringWriter();
+            s.append("Exception caught!\n");
+            s.append(ex.toString() + "\n");
+            s.append(ex.getMessage() + "\n");
+            ex.printStackTrace(new PrintWriter(s));
+            fail(s.toString());
+        }
+    }
+
+    /**
+     * Test to see if decode of a torrentfile and encode of the data does not
+     * change any part of the torrentfile.
+     */
+    @Test
+    public void testDecodeEncode() throws Exception {
+        System.out.println("decode-encode");
+        try {
+            File in = new File("./test/com/tracker/backend/Testtorrent.torrent");
+            File out = new File("./test/com/tracker/backend/Testtorrent2.torrent");
+
+            if(!in.canRead()) {
+                fail("Cannot open testtorrent");
+            }
+            if(out.exists() && !out.delete()) {
+                fail("Cannot delete temporary file Testtorrent2.torrent");
+            }
+            if(!out.createNewFile()) {
+                fail("Cannot create new temporary file Testtorrent2.torrent");
+            }
+            if(!out.canWrite()) {
+                fail("Cannot write to testtorrent2");
+            }
+
+            InputStream input = new FileInputStream(in);
+            Map result = Bencode.decode(input);
+
+            Map dictionary = (Map) result.get(0);
+
+            OutputStream output = new FileOutputStream(out);
+
+            // get the encoded version of the Testtorrent dictionary
+            String encoded = Bencode.encode(dictionary);
+
+            // write this to the other file
+            for (int i = 0; i < encoded.length(); i++) {
+                output.write(encoded.charAt(i));
+            }
+
+            input = new FileInputStream(in);
+            InputStream input2 = new FileInputStream(out);
+
+            int readByte;
+            int length = (int) in.length();
+            if(length > Integer.MAX_VALUE) {
+                fail("file size too large");
+            }
+            byte[] file1 = new byte[length];
+
+            length = (int) out.length();
+            if(length > Integer.MAX_VALUE) {
+                fail("file size too large");
+            }
+            byte[] file2 = new byte[length];
+
+            input.read(file1);
+            input2.read(file2);
+
+            assertTrue("are the files equal?", MessageDigest.isEqual(file1, file2));
+
+            // try to delete the temp-file
+            if(!out.delete()) {
+                fail("Cannot delete temporary file Testtorrent2.torrent");
+            }
         }
         catch(Exception ex) {
             StringWriter s = new StringWriter();
