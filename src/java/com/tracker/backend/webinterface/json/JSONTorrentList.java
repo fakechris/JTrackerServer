@@ -22,15 +22,21 @@ import org.json.JSONWriter;
  *
  * <p>The format for the JSON stream is like this (liable to change):</p>
  * <code>
- * "torrents" : [
- *  "torrent" : {
+ * [
+ *   { "torrent" : {
  *      "id" : id
  *      "name" : name
  *      "numSeeders" : numSeeders
  *      "numLeechers" : numLeechers
  *      "numCompleted" : numCompleted
  *      "dateAdded" : dateAdded
- *  }
+ *     }
+ *   },
+ *   { "torrent" : {
+ *      "id" : id
+ *      .....
+ *     }
+ *   }
  * ]
  * </code>
  * and so on.
@@ -88,7 +94,6 @@ public class JSONTorrentList implements TorrentList {
             itr = result.iterator();
 
             // torrents array
-            json.object().key("torrents");
             json.array();
 
             while(itr.hasNext()) {
@@ -96,14 +101,15 @@ public class JSONTorrentList implements TorrentList {
 
                 // torrent object
                 json.object().key("torrent");
-                json.object();
 
-                json.object().key("id").value(t.getId()).endObject();
-                json.object().key("name").value(t.getName()).endObject();
-                json.object().key("numSeeders").value(t.getNumSeeders()).endObject();
-                json.object().key("numLeechers").value(t.getNumLeechers()).endObject();
-                json.object().key("numCompleted").value(t.getNumCompleted()).endObject();
-                json.object().key("dateAdded").value(t.getAdded().toString()).endObject();
+                json.object();
+                json.key("id").value(t.getId());
+                json.key("name").value(t.getName());
+                json.key("numSeeders").value(t.getNumSeeders());
+                json.key("numLeechers").value(t.getNumLeechers());
+                json.key("numCompleted").value(t.getNumCompleted());
+                json.key("dateAdded").value(t.getAdded().toString());
+                json.endObject();
 
                 // end torrent object
                 json.endObject();
