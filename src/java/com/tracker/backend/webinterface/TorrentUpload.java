@@ -8,6 +8,8 @@ package com.tracker.backend.webinterface;
 import com.tracker.backend.Bencode;
 import com.tracker.backend.StringUtils;
 import com.tracker.backend.entity.Torrent;
+import com.tracker.backend.webinterface.entity.TorrentData;
+import com.tracker.backend.webinterface.entity.TorrentFile;
 import java.io.InputStream;
 import java.security.MessageDigest;
 import java.util.Calendar;
@@ -44,9 +46,11 @@ public class TorrentUpload {
             String torrentName, String torrentDescription, String contextPath) throws Exception {
         Long torrentLength = new Long(0L);
         Torrent t;
+        TorrentData tData;
+        TorrentFile tFile;
 
         // list of files and their lengths
-        Vector<Map<String, Long> > torrentFiles = new Vector<Map<String, Long> >();
+        Map<String, Long> torrentFiles = new TreeMap<String, Long>();
 
         // the URL of this trackers announce, used for comparison with the
         // URL given in the torrentfile.
@@ -63,6 +67,9 @@ public class TorrentUpload {
         // by the decoded torrent
         Map infoDictionary = null;
 
+        // for generating the info_hash
+        MessageDigest md = MessageDigest.getInstance("SHA-1");
+        
         // process the input stream
         try {
             /*
@@ -234,10 +241,8 @@ public class TorrentUpload {
                         path += pathItr.next();
                     }
 
-                    // populate the torrentFiles array
-                    Map<String, Long> oneFile = new TreeMap<String, Long>();
-                    oneFile.put(path, length);
-                    torrentFiles.add(oneFile);
+                    // populate the map
+                    torrentFiles.put(path, length);
                 }
             }
             // single file torrent - see diagram above
@@ -247,10 +252,8 @@ public class TorrentUpload {
 
                 torrentLength = length;
 
-                // populate the torrentfiles array
-                Map<String, Long> oneFile = new TreeMap<String, Long>();
-                oneFile.put(name, length);
-                torrentFiles.add(oneFile);
+                // populate the map
+                torrentFiles.put(name, length);
             }
         }
         catch(Exception ex) {
@@ -259,6 +262,57 @@ public class TorrentUpload {
         }
 
         // persist!
+               // add the torrent to the database.
+        EntityManager em = emf.createEntityManager();
+        try {
+            t = new Torrent();
+            tData = new TorrentData();
+            tFile = new TorrentFile();
+            // grab the SHA1 hash of the (bencoded) info dictionary.
+            // the simplest way is to simply encode the info dictionary again
+            // (things may have changed), then do a SHA1-hash of the result.
+            String info = Bencode.encode(infoDictionary);
+            byte[] rawInfo = new byte[info.length()];
+            byte[] rawInfoHash = new byte[20];
+            for (int i = 0; i < rawInfo.length; i++) {
+                rawInfo[i] = (byte) info.charAt(i);
+            }
+            md.update(rawInfo);
+            rawInfoHash = md.digest();
+            // set the info hash.
+            t.setInfoHash(StringUtils.getHexString(rawInfoHash));
+            // num seeders and all that is set by the Torrent constructor.
+            
+            tData.setName(torrentName);
+            tData.setDescription(torrentDescription);
+            tData.setAdded(Calendar.getInstance().getTime());
+            tData.setTorrentSize(torrentLength);
+
+            t.setTorrentData(tData);
+
+            // set the torrentfile
+            String bencodedTorrent = Bencode.encode(decodedTorrent);
+            tFile.setTorrentFile(bencodedTorrent);
+
+            t.setTorrentFile(tFile);
+
+            // persist this
+            em.getTransaction().begin();
+            em.persist(t);
+            em.persist(tData);
+            em.persist(tFile);
+            em.getTransaction().commit();
+        }
+        catch(Exception ex) {
+            if(em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            log.log(Level.WARNING, "Error when persisting the uploaded torrent.", ex);
+            throw new Exception("Error when persising torrent given in upload", ex);
+        }
+        finally {
+            em.close();
+        }
 
         return response;
     }
@@ -505,7 +559,7 @@ public class TorrentUpload {
             } // file field
         } // while(itr.hasNext())
 
-        // files processed.
+  /*      // files processed.
         // add the torrent to the database.
         EntityManager em = emf.createEntityManager();
         try {
@@ -546,7 +600,7 @@ public class TorrentUpload {
         }
         finally {
             em.close();
-        }
+        }*/
 
         return response;
     }

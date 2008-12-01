@@ -142,7 +142,8 @@ public class XMLTorrentList implements TorrentList {
                 attr.clear();
 
                 tHandler.startElement("", "", "name", attr);
-                tHandler.characters(t.getName().toCharArray(), 0, t.getName().length());
+                tHandler.characters(t.getTorrentData().getName().toCharArray(),
+                        0, t.getTorrentData().getName().length());
                 tHandler.endElement("", "", "name");
 
                 tHandler.startElement("", "", "numSeeders", attr);
@@ -163,8 +164,8 @@ public class XMLTorrentList implements TorrentList {
                 // data moved?
 
                 tHandler.startElement("", "", "dateAdded", attr);
-                tHandler.characters(t.getAdded().toString().toCharArray(),
-                        0, t.getAdded().toString().length());
+                tHandler.characters(t.getTorrentData().getAdded().toString().toCharArray(),
+                        0, t.getTorrentData().getAdded().toString().length());
                 tHandler.endElement("", "", "dateAdded");
 
                 tHandler.endElement("", "", "torrent");

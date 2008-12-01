@@ -5,6 +5,7 @@
 
 package com.tracker.backend.webinterface.entity;
 
+import com.tracker.backend.entity.Torrent;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -14,6 +15,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
+import javax.persistence.OneToOne;
 
 /**
  * This entity class contains the torrentfile to be downloaded.
@@ -46,6 +48,12 @@ public class TorrentFile implements Serializable {
     int fileLength;
 
     /**
+     * the torrent this torrentfile belongs to
+     */
+    @OneToOne(mappedBy = "torrentFile")
+    private Torrent torrent;
+
+    /**
      * Gets the OutputStream connected with this torrentfile.
      * @return an OutputStream containing this torrentfile.
      * @throws java.lang.Exception if an I/O error occurs when writing to the
@@ -76,6 +84,22 @@ public class TorrentFile implements Serializable {
      */
     public int getFileLength() {
         return fileLength;
+    }
+
+    /**
+     * Sets the Torrent object connected with this torrentfile.
+     * @param t the Torrent connected with this torrentfile.
+     */
+    public void setTorrent(Torrent t) {
+        torrent = t;
+    }
+
+    /**
+     * Gets the Torrent object connected with this torrentfile.
+     * @return a Torrent object this torrentfile is connected to.
+     */
+    public Torrent getTorrent() {
+        return torrent;
     }
 
     @Override
