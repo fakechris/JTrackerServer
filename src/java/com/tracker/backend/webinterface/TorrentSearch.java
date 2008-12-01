@@ -5,7 +5,7 @@
 
 package com.tracker.backend.webinterface;
 
-import com.tracker.entity.Torrent;
+import com.tracker.backend.entity.Torrent;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;

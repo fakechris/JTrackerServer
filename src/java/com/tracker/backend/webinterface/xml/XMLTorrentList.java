@@ -7,7 +7,7 @@ package com.tracker.backend.webinterface.xml;
 
 import com.tracker.backend.webinterface.TorrentList;
 import com.tracker.backend.webinterface.TorrentSearch;
-import com.tracker.entity.Torrent;
+import com.tracker.backend.entity.Torrent;
 import java.io.PrintWriter;
 import java.util.Iterator;
 import java.util.Map;

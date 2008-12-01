@@ -6,8 +6,8 @@
 package com.tracker.backend.webinterface.json;
 
 import com.tracker.backend.StringUtils;
-import com.tracker.entity.Peer;
-import com.tracker.entity.Torrent;
+import com.tracker.backend.entity.Peer;
+import com.tracker.backend.entity.Torrent;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.InetAddress;
