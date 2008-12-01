@@ -104,11 +104,11 @@ public class JSONTorrentList implements TorrentList {
 
                 json.object();
                 json.key("id").value(t.getId());
-                json.key("name").value(t.getName());
+                json.key("name").value(t.getTorrentData().getName());
                 json.key("numSeeders").value(t.getNumSeeders());
                 json.key("numLeechers").value(t.getNumLeechers());
                 json.key("numCompleted").value(t.getNumCompleted());
-                json.key("dateAdded").value(t.getAdded().toString());
+                json.key("dateAdded").value(t.getTorrentData().getAdded().toString());
                 json.endObject();
 
                 // end torrent object

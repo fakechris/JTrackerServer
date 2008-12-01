@@ -7,6 +7,7 @@ package com.tracker.backend.entity;
 
 import com.tracker.backend.StringUtils;
 import com.tracker.backend.webinterface.entity.TorrentData;
+import com.tracker.backend.webinterface.entity.TorrentFile;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Vector;
@@ -90,6 +91,9 @@ public class Torrent implements Serializable {
      */
     @OneToOne
     private TorrentData torrentData;
+
+    @OneToOne
+    private TorrentFile torrentFile;
 
     /**
      * default constructor
@@ -261,6 +265,40 @@ public class Torrent implements Serializable {
         }
         else
             return(false);
+    }
+
+    /**
+     * Gets the torrent meta-data connected with this torrent.
+     * @return a TorrentData object containing the torrent metadata.
+     */
+    public TorrentData getTorrentData() {
+        return torrentData;
+    }
+
+    /**
+     * Sets the torrent metadata connected with this torrent.
+     * @param td
+     */
+    public void setTorrentData(TorrentData td) {
+        torrentData = td;
+        torrentData.setTorrent(this);
+    }
+
+    /**
+     * Gets the torrentfile of this torrent.
+     * @return the TorrentFile this torrent is connected to.
+     */
+    public TorrentFile getTorrentFile() {
+        return torrentFile;
+    }
+
+    /**
+     * Sets the TorrentFile this torrent is connected to.
+     * @param tf the TorrentFile to set.
+     */
+    public void setTorrentFile(TorrentFile tf) {
+        torrentFile = tf;
+        torrentFile.setTorrent(this);
     }
 
     public Long getNumPeers() {
