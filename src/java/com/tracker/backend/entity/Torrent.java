@@ -6,8 +6,8 @@
 package com.tracker.backend.entity;
 
 import com.tracker.backend.StringUtils;
+import com.tracker.backend.webinterface.entity.TorrentData;
 import java.io.Serializable;
-import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 import javax.persistence.Column;
@@ -18,7 +18,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.CascadeType;
 import javax.persistence.JoinTable;
-import javax.persistence.Temporal;
+import javax.persistence.OneToOne;
 
 
 
@@ -42,21 +42,6 @@ public class Torrent implements Serializable {
     @Id
     @Column(length=40)
     private String infoHash;
-
-    /**
-     * Name of the torrent
-     */
-    private String name;
-    /**
-     * Description of the torrent contents
-     */
-    private String description;
-    
-    /**
-     * Date and time the torrent was added
-     */
-    @Temporal(javax.persistence.TemporalType.TIMESTAMP)
-    private Date added;
     
     /**
      * Number of seeders seeding this torrent
@@ -74,11 +59,6 @@ public class Torrent implements Serializable {
      * How many have completed this torrent over its lifetime
      */
     private Long numCompleted;
-    
-    /**
-     * Size of the torrent in bytes
-     */
-    private Long torrentSize;
 
     /**
      * All peers connected with this torrent,
@@ -104,6 +84,12 @@ public class Torrent implements Serializable {
     @JoinTable(name="TORRENT_LEECH")
     @OneToMany
     private List<Peer> leechersData;
+    /**
+     * A link to the metadata about this torrent. Name, description and such
+     * are contained in this table.
+     */
+    @OneToOne
+    private TorrentData torrentData;
 
     /**
      * default constructor
@@ -179,22 +165,6 @@ public class Torrent implements Serializable {
             return(false);
     }
 
-    /**
-     * Gets the size of the torrent in bytes
-     * @return the size of the torrent in bytes
-     */
-    public Long getTorrentSize() {
-        return torrentSize;
-    }
-
-    /**
-     * sets the size of the torrent in bytes
-     * @param torrentSize the new size of the torrent
-     */
-    public void setTorrentSize(Long torrentSize) {
-        this.torrentSize = torrentSize;
-    }
-    
     /**
      * Gives the number of leechers
      * @return the number of leechers this torrent has
@@ -317,22 +287,6 @@ public class Torrent implements Serializable {
         this.numCompleted = completed;
     }
 
-    public Date getAdded() {
-        return added;
-    }
-
-    public void setAdded(Date added) {
-        this.added = added;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
     /**
      * returns the hex representation of the info hash
      * @return the hex string representing the info hash
@@ -373,14 +327,6 @@ public class Torrent implements Serializable {
         return false;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-    
     public Long getId() {
         return id;
     }
@@ -414,7 +360,7 @@ public class Torrent implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.Torrent[id=" + id + ",info_hash=" + infoHash + ",name=" + name + "]";
+        return "entity.Torrent[id=" + id + ",info_hash=" + infoHash + "]";
     }
 
 }
