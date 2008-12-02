@@ -8,6 +8,7 @@ package com.tracker.backend.webinterface.xml;
 import com.tracker.backend.StringUtils;
 import com.tracker.backend.entity.Peer;
 import com.tracker.backend.entity.Torrent;
+import com.tracker.backend.webinterface.entity.TorrentData;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -58,6 +59,7 @@ public class XMLTorrentListTest {
         // we need to add some torrents and peers to test this
         // in setUp to have the same environment before each test
         Torrent t;
+        TorrentData tData;
         Peer p;
 
         String infoHash;
@@ -71,6 +73,7 @@ public class XMLTorrentListTest {
         Random r = new Random(Calendar.getInstance().getTimeInMillis());
 
         t = new Torrent();
+        tData = new TorrentData();
         p = new Peer();
 
         // fix up a convincing info hash
@@ -86,13 +89,15 @@ public class XMLTorrentListTest {
 
         t.setInfoHash(infoHash);
 
-        t.setName((String)"This name contains the word 'Brilliant'");
-        t.setTorrentSize((long)999999999);
+        tData.setName((String)"This name contains the word 'Brilliant'");
+        tData.setTorrentSize((long)999999999);
 
-        t.setAdded(Calendar.getInstance().getTime());
-        t.setDescription((String)"This description contains the word 'fabulous'.");
+        tData.setAdded(Calendar.getInstance().getTime());
+        tData.setDescription((String)"This description contains the word 'fabulous'.");
 
-        p.setBytesLeft(t.getTorrentSize());
+        t.setTorrentData(tData);
+
+        p.setBytesLeft(tData.getTorrentSize());
         p.setIp(InetAddress.getByName("192.168.1.3"));
 
         Long port = (long) 63049;
@@ -115,6 +120,7 @@ public class XMLTorrentListTest {
 
         em.getTransaction().begin();
         em.persist(t);
+        em.persist(tData);
         em.persist(p);
         em.getTransaction().commit();
     }

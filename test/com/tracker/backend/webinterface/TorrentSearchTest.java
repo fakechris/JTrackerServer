@@ -8,6 +8,7 @@ package com.tracker.backend.webinterface;
 import com.tracker.backend.StringUtils;
 import com.tracker.backend.entity.Peer;
 import com.tracker.backend.entity.Torrent;
+import com.tracker.backend.webinterface.entity.TorrentData;
 import java.net.InetAddress;
 import java.security.MessageDigest;
 import java.util.Calendar;
@@ -34,6 +35,7 @@ public class TorrentSearchTest {
 
     static Peer p;
     static Vector<Torrent> torrents = new Vector<Torrent>();
+    static Vector<TorrentData> torrentMetaData = new Vector<TorrentData>();
 
 
     static EntityManagerFactory emf = Persistence.createEntityManagerFactory("TorrentTrackerPU");
@@ -55,6 +57,7 @@ public class TorrentSearchTest {
         // we need to add some torrents and peers to test this
         // in setUp to have the same environment before each test
         Torrent t;
+        TorrentData tData;
 
         String infoHash;
         String peerId;
@@ -67,6 +70,7 @@ public class TorrentSearchTest {
         Random r = new Random(Calendar.getInstance().getTimeInMillis());
 
         t = new Torrent();
+        tData = new TorrentData();
         p = new Peer();
 
         // fix up a convincing info hash
@@ -82,13 +86,15 @@ public class TorrentSearchTest {
 
         t.setInfoHash(infoHash);
 
-        t.setName((String)"This name contains the word 'Brilliant'");
-        t.setTorrentSize((long)999999999);
+        tData.setName((String)"This name contains the word 'Brilliant'");
+        tData.setTorrentSize((long)999999999);
 
-        t.setAdded(Calendar.getInstance().getTime());
-        t.setDescription((String)"This description contains the word 'fabulous'.");
+        tData.setAdded(Calendar.getInstance().getTime());
+        tData.setDescription((String)"This description contains the word 'fabulous'.");
 
-        p.setBytesLeft(t.getTorrentSize());
+        t.setTorrentData(tData);
+
+        p.setBytesLeft(tData.getTorrentSize());
         p.setIp(InetAddress.getByName("192.168.1.3"));
 
         Long port = (long) 63049;
@@ -111,13 +117,16 @@ public class TorrentSearchTest {
 
         em.getTransaction().begin();
         em.persist(t);
+        em.persist(tData);
         em.persist(p);
         em.getTransaction().commit();
 
         torrents.add(t);
+        torrentMetaData.add(tData);
 
         // I need at least two torrents to test this class
         t = new Torrent();
+        tData = new TorrentData();
         r.nextBytes(byteHash);
         md.update(byteHash);
         rawInfoHash = md.digest();
@@ -125,14 +134,16 @@ public class TorrentSearchTest {
         infoHash = StringUtils.getHexString(rawInfoHash);
         t.setInfoHash(infoHash);
 
-        t.setName((String)"This name contains the word 'Awful'");
-        t.setDescription((String)"This description contains the word 'Horrible'");
-        t.setTorrentSize(965485654L);
-        t.setAdded(Calendar.getInstance().getTime());
+        tData.setName((String)"This name contains the word 'Awful'");
+        tData.setDescription((String)"This description contains the word 'Horrible'");
+        tData.setTorrentSize(965485654L);
+        tData.setAdded(Calendar.getInstance().getTime());
 
+        t.setTorrentData(tData);
 
         em.getTransaction().begin();
         em.persist(t);
+        em.persist(tData);
         em.getTransaction().commit();
 
         torrents.add(t);

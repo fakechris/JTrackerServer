@@ -7,7 +7,6 @@ package com.tracker.backend.webinterface.entity;
 
 import com.tracker.backend.entity.Torrent;
 import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import javax.persistence.Entity;
