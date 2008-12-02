@@ -91,7 +91,10 @@ public class Torrent implements Serializable {
      */
     @OneToOne
     private TorrentData torrentData;
-
+    /**
+     * The torrentile itself which maps to this torrent (ie, the SHA-1 hash of
+     * the info dictionary equals the info hash contained here).
+     */
     @OneToOne
     private TorrentFile torrentFile;
 

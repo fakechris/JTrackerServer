@@ -8,6 +8,7 @@ package com.tracker.backend;
 import com.tracker.backend.entity.Peer;
 import com.tracker.backend.entity.Torrent;
 
+import com.tracker.backend.webinterface.entity.TorrentData;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.InetAddress;
@@ -38,6 +39,7 @@ public class TrackerRequestParserTest {
 
     static Peer p;
     static Torrent t;
+    static TorrentData tData;
 
     static String infoHash;
     static String peerId;
@@ -99,9 +101,10 @@ public class TrackerRequestParserTest {
         Random r = new Random(Calendar.getInstance().getTimeInMillis());
 
         t = new Torrent();
+        tData = new TorrentData();
         p = new Peer();
-        t.setAdded(Calendar.getInstance().getTime());
-        t.setDescription((String)"testing testing");
+        tData.setAdded(Calendar.getInstance().getTime());
+        tData.setDescription((String)"testing testing");
 
         // fix up a convincing info hash
         byte byteHash[] = new byte[1024];
@@ -116,10 +119,12 @@ public class TrackerRequestParserTest {
 
         t.setInfoHash(infoHash);
 
-        t.setName((String)"testing torrent");
-        t.setTorrentSize((long)999999999);
+        tData.setName((String)"testing torrent");
+        tData.setTorrentSize((long)999999999);
 
-        p.setBytesLeft(t.getTorrentSize());
+        t.setTorrentData(tData);
+
+        p.setBytesLeft(tData.getTorrentSize());
         p.setIp(InetAddress.getByName("192.168.1.3"));
 
         Long port = (long) 63049;
@@ -142,6 +147,7 @@ public class TrackerRequestParserTest {
 
         em.getTransaction().begin();
         em.persist(t);
+        em.persist(tData);
         em.persist(p);
         em.getTransaction().commit();
         em.close();

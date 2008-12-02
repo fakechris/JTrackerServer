@@ -53,10 +53,10 @@ public class TorrentSearch {
         Query q;
         StringBuilder query = new StringBuilder();
 
-        query.append("SELECT t FROM Torrent t WHERE t.name LIKE ");
+        query.append("SELECT t FROM Torrent t WHERE t.torrentData.name LIKE ");
         query.append("'%" + searchString + "%'");
         if(searchDescriptions) {
-            query.append(" OR t.description LIKE ");
+            query.append(" OR t.torrentData.description LIKE ");
             query.append("'%" + searchString + "%'");
         }
         if(!includeDead) {
