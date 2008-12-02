@@ -145,8 +145,8 @@ public class TorrentUploadTest {
                     "when creating this.";
             // context path is the same
 
-            expResult.put("warning reason", "The torrentfile did" +
-                            "not contain the correct announce URL, this" +
+            expResult.put("warning reason", "The torrentfile did " +
+                            "not contain the correct announce URL, this " +
                             "has been changed.\n");
             expResult.put("redownload", "true");
 
@@ -185,8 +185,8 @@ public class TorrentUploadTest {
                     "may cause trouble!";
             // context is the same
 
-            expResult.put("warning reason", "The torrentfile" +
-                                "did not contain the correct announce URL" +
+            expResult.put("warning reason", "The torrentfile " +
+                                "did not contain the correct announce URL " +
                                 "in it's announce list. This has been changed.\n");
             expResult.put("redownload", "true");
 
