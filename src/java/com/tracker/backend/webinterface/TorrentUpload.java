@@ -150,7 +150,7 @@ public class TorrentUpload {
 
         TreeMap<String,String> response = new TreeMap<String,String>();
         // set some default replies
-        response.put("warning_reason", "");
+        response.put("warning reason", "");
         response.put("error reason", "");
         response.put("redownload", "false");
 
@@ -209,7 +209,7 @@ public class TorrentUpload {
              * announce-list.
              */
 
-            decodedTorrent = Bencode.decode(torrent);
+            decodedTorrent = (Map) Bencode.decode(torrent).get(0);
             String announceURL;
 
             // make sure that the torrentfile contains a bare minimum
@@ -272,10 +272,10 @@ public class TorrentUpload {
                         log.log(Level.WARNING, "Uploaded torrent does not" +
                                 "have our announce in announce-list (given" +
                                 "was: " + announceList.toString() +").");
-                        // add our announce URL to the list
-                        Vector<String> appendedAnnounce = new Vector<String>();
-                        appendedAnnounce.add(ourAnnounce);
-                        announceList.add(appendedAnnounce);
+                        // add our announce URL to the top of the list
+                        Vector<String> prependedAnnounce = new Vector<String>();
+                        prependedAnnounce.add(ourAnnounce);
+                        announceList.add(0, prependedAnnounce);
 
                         // TODO: apply i10n
                         response.put("warning reason", "The torrentfile" +
@@ -290,7 +290,7 @@ public class TorrentUpload {
             infoDictionary = (Map) decodedTorrent.get("info");
 
             if(infoDictionary.containsKey("private")) {
-                Integer privateField = (Integer) infoDictionary.get("private");
+                Long privateField = (Long) infoDictionary.get("private");
                 // is private enabled?
                 if(privateField == 1) {
                     // remove the private key and set appropriate warnings
@@ -400,13 +400,9 @@ public class TorrentUpload {
             // persist this
             em.getTransaction().begin();
             em.persist(t);
-            em.persist(tData);
-            em.persist(tFile);
-
-            // persist all of the files
-            for(TorrentContent c : torrentFiles) {
-                em.persist(c);
-            }
+            // torrentData, torrentFile and torrentContent is automatically
+            // persisted through the Cascade operations specified in the
+            // entity classes.
 
             em.getTransaction().commit();
         }

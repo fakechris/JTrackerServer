@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -40,7 +41,7 @@ public class TorrentData implements Serializable {
     /**
      * The files this torrent contains.
      */
-    @OneToMany
+    @OneToMany(cascade=CascadeType.ALL)
     private List<TorrentContent> torrentFiles;
 
     /**
