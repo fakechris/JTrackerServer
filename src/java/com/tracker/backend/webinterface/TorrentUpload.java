@@ -72,6 +72,13 @@ public class TorrentUpload {
         ServletFileUpload upload = new ServletFileUpload();
         FileItemIterator itr = upload.getItemIterator(request);
 
+        // set the maximum size of the torrentfile, avoid loading hundreds of
+        // megs into memory. A size limit of 10MB seems decent enough (the
+        // biggest .torrent files I could find through some quick searching were
+        // just below 2MB.
+        // TODO: read from config?
+        upload.setFileSizeMax(10485760L);
+
         while(itr.hasNext()) {
             FileItemStream item = itr.next();
             String name = item.getFieldName();
