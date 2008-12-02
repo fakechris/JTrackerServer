@@ -235,8 +235,8 @@ public class TorrentUpload {
                     decodedTorrent.put("announce", ourAnnounce);
 
                     // TODO: apply i10n here
-                    response.put("warning reason", "The torrentfile did" +
-                            "not contain the correct announce URL, this" +
+                    response.put("warning reason", "The torrentfile did " +
+                            "not contain the correct announce URL, this " +
                             "has been changed.\n");
                     response.put("redownload", "true");
                 }
@@ -269,8 +269,8 @@ public class TorrentUpload {
                             break;
                     }
                     if(!valid) {
-                        log.log(Level.WARNING, "Uploaded torrent does not" +
-                                "have our announce in announce-list (given" +
+                        log.log(Level.WARNING, "Uploaded torrent does not " +
+                                "have our announce in announce-list (given " +
                                 "was: " + announceList.toString() +").");
                         // add our announce URL to the top of the list
                         Vector<String> prependedAnnounce = new Vector<String>();
@@ -278,8 +278,8 @@ public class TorrentUpload {
                         announceList.add(0, prependedAnnounce);
 
                         // TODO: apply i10n
-                        response.put("warning reason", "The torrentfile" +
-                                "did not contain the correct announce URL" +
+                        response.put("warning reason", "The torrentfile " +
+                                "did not contain the correct announce URL " +
                                 "in it's announce list. This has been changed.\n");
                         response.put("redownload", "true");
                     }
