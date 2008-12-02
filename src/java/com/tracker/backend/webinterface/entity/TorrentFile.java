@@ -66,6 +66,14 @@ public class TorrentFile implements Serializable {
     }
 
     /**
+     * Convenience method for raw access to the torrent file data.
+     * @return a byte array containing the torrentfile.
+     */
+    public byte[] getTorrentFileRaw() {
+        return torrentFile;
+    }
+
+    /**
      * Stores the torrentfile given in the bencoded string.
      * @param bencodedTorrent the Bencoded string containing the torrentfile.
      */

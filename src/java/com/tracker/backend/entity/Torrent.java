@@ -89,13 +89,13 @@ public class Torrent implements Serializable {
      * A link to the metadata about this torrent. Name, description and such
      * are contained in this table.
      */
-    @OneToOne
+    @OneToOne(cascade=CascadeType.ALL)
     private TorrentData torrentData;
     /**
      * The torrentile itself which maps to this torrent (ie, the SHA-1 hash of
      * the info dictionary equals the info hash contained here).
      */
-    @OneToOne
+    @OneToOne(cascade=CascadeType.ALL)
     private TorrentFile torrentFile;
 
     /**
