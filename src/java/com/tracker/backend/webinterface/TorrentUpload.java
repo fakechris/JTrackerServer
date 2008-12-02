@@ -8,6 +8,7 @@ package com.tracker.backend.webinterface;
 import com.tracker.backend.Bencode;
 import com.tracker.backend.StringUtils;
 import com.tracker.backend.entity.Torrent;
+import com.tracker.backend.webinterface.entity.TorrentContent;
 import com.tracker.backend.webinterface.entity.TorrentData;
 import com.tracker.backend.webinterface.entity.TorrentFile;
 import java.io.InputStream;
@@ -141,7 +142,7 @@ public class TorrentUpload {
         TorrentFile tFile;
 
         // list of files and their lengths
-        Map<String, Long> torrentFiles = new TreeMap<String, Long>();
+        Vector<TorrentContent> torrentFiles = new Vector<TorrentContent>();
 
         // the URL of this trackers announce, used for comparison with the
         // URL given in the torrentfile.
@@ -332,8 +333,12 @@ public class TorrentUpload {
                         path += pathItr.next();
                     }
 
-                    // populate the map
-                    torrentFiles.put(path, length);
+                    TorrentContent c = new TorrentContent();
+                    c.setFileName(path);
+                    c.setFileSize(length);
+
+                    // populate the list
+                    torrentFiles.add(c);
                 }
             }
             // single file torrent - see diagram above
@@ -343,8 +348,12 @@ public class TorrentUpload {
 
                 torrentLength = length;
 
-                // populate the map
-                torrentFiles.put(name, length);
+                TorrentContent c = new TorrentContent();
+                c.setFileName(name);
+                c.setFileSize(length);
+
+                // populate the list
+                torrentFiles.add(c);
             }
         }
         catch(Exception ex) {
@@ -378,6 +387,7 @@ public class TorrentUpload {
             tData.setDescription(torrentDescription);
             tData.setAdded(Calendar.getInstance().getTime());
             tData.setTorrentSize(torrentLength);
+            tData.setTorrentContent(torrentFiles);
 
             t.setTorrentData(tData);
 
@@ -392,6 +402,12 @@ public class TorrentUpload {
             em.persist(t);
             em.persist(tData);
             em.persist(tFile);
+
+            // persist all of the files
+            for(TorrentContent c : torrentFiles) {
+                em.persist(c);
+            }
+
             em.getTransaction().commit();
         }
         catch(Exception ex) {

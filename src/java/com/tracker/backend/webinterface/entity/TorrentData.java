@@ -110,21 +110,6 @@ public class TorrentData implements Serializable {
     }
 
     /**
-     * Convenience method for setting the torrent content.
-     * @param files a Map containing the paths and sizes of the files this
-     * torrent contains.
-     */
-    public void addFiles(Map<String,Long> files) {
-        for(Map.Entry<String, Long> entry : files.entrySet()) {
-            TorrentContent oneFile = new TorrentContent();
-            oneFile.setFileName(entry.getKey());
-            oneFile.setFileSize(entry.getValue());
-            
-            torrentFiles.add(oneFile);
-        }
-    }
-
-    /**
      * Gets the Date the torrent was added.
      * @return Date when the torrent was added.
      */
