@@ -27,6 +27,7 @@ pageEncoding="UTF-8"
         <input type="submit" value="Submit" />
         <input type="checkbox" name="searchDescriptions" value="checked" checked />
         <input type="checkbox" name="includeDead" value="checked" />
+        <div id="loading"><img src="images/ajax-loader.gif" alt="loading..."/></div>
 
         <div id="torrentList" style="display:none">
             <table border="0">
