@@ -22,12 +22,18 @@
             <jsp:param name="caller" value="News" />
         </jsp:include>
         <!-- do some checking on size of torrentfile in javascript -->
-        <form name="uploadForm" action="" method="POST" enctype="multipart/form-data">
-            <input type="file" name="torrentFile" value="" />
-            <input type="text" name="torrentName" value="" />
-            <textarea name="torrentDescription" rows="4" cols="20">
-            </textarea>
+        <form name="xmlUploadForm" action="xml/TakeUpload" method="POST" enctype="multipart/form-data">
+            <em>TorrentFile:</em> <input type="file" name="torrentFile" value="" /> <br />
+            <em>Torrent Name:</em> <input type="text" name="torrentName" value="" /> <br />
+            <em>Torrent Description:</em> <textarea name="torrentDescription" rows="4" cols="20">
+            </textarea> <br />
             <input type="submit" value="Submit" name="torrentSubmit" />
         </form>
+
+        <div id="content">
+            <div id="errorDiv" style="display: none"></div>
+            <div id="warningDiv" style="display: none"></div>
+            <div id="redownloadDiv" style="display: none"></div>
+        </div>
     </body>
 </html>
