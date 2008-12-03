@@ -104,7 +104,7 @@ public class TorrentUploadTest {
             expResult.put("error reason", "");
             expResult.put("redownload", "false");
 
-            TreeMap<String, String> result = TorrentUpload.addTorrent(torrent, torrentName, torrentDescription, contextPath);
+            Map<String, String> result = TorrentUpload.addTorrent(torrent, torrentName, torrentDescription, contextPath);
             assertEquals(expResult, result);
 
             // now check the contents of the database.

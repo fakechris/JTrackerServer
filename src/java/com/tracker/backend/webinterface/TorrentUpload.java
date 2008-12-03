@@ -134,7 +134,7 @@ public class TorrentUpload {
      * @throws java.lang.Exception if there is some problem with the given
      * torrentfile or the persisting operation.
      */
-    public static TreeMap<String,String> addTorrent(InputStream torrent,
+    public static Map<String,String> addTorrent(InputStream torrent,
             String torrentName, String torrentDescription, String contextPath) throws Exception {
         Long torrentLength = new Long(0L);
         Torrent t;
