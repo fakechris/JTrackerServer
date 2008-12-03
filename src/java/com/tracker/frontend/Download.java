@@ -77,8 +77,8 @@ public class Download extends HttpServlet {
             fileName = fileName.replaceAll("<.*>", "");
             // remove everything that is not suitable for filenames and replace
             // with '_'
-            fileName = fileName.replaceAll("[^\\w\\(\\)\\_\\[\\]] ", "_");
-            response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+            fileName = fileName.replaceAll("[^\\w\\(\\)\\_\\[\\]\\.\\-\\:\\;] ", "_");
+            response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + ".torrent\"");
 
             // finally write the torrentfile.
             file.writeTorrentFile(out);
