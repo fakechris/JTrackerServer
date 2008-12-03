@@ -40,6 +40,10 @@
         <servlet-name>Download</servlet-name>
         <servlet-class>com.tracker.frontend.Download</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>XMLTakeUpload</servlet-name>
+        <servlet-class>com.tracker.backend.webinterface.xml.XMLTakeUpload</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>Announce</servlet-name>
         <url-pattern>/announce</url-pattern>
@@ -91,6 +95,14 @@
     <servlet-mapping>
         <servlet-name>Download</servlet-name>
         <url-pattern>/download</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>XMLTakeUpload</servlet-name>
+        <url-pattern>/xml/TakeUpload</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>XMLTakeUpload</servlet-name>
+        <url-pattern>/xml/takeupload</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
