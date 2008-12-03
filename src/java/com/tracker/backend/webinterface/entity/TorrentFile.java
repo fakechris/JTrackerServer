@@ -6,7 +6,6 @@
 package com.tracker.backend.webinterface.entity;
 
 import com.tracker.backend.entity.Torrent;
-import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import javax.persistence.Entity;
@@ -53,16 +52,20 @@ public class TorrentFile implements Serializable {
     private Torrent torrent;
 
     /**
-     * Gets the OutputStream connected with this torrentfile.
-     * @return an OutputStream containing this torrentfile.
+     * Writes this torrent to a given output stream. Convenience method for
+     * writing the torrent to a ServletOutputStream easily.
+     * @param out the output stream to write the torrentfile data to.
+     * @return the same OutputStream as provided by the user.
      * @throws java.lang.Exception if an I/O error occurs when writing to the
-     * output stream.
+     * output stream or if the given output stream was null.
      */
-    public OutputStream getTorrentFileOutputStream() throws Exception {
-        ByteArrayOutputStream output = new ByteArrayOutputStream(torrentFile.length);
-        output.write(torrentFile);
+    public OutputStream writeTorrentFile(OutputStream out) throws Exception {
+        if(out == null) {
+            throw new Exception("OutputStream given in writeTorrentFile was null?");
+        }
+        out.write(torrentFile);
 
-        return output;
+        return out;
     }
 
     /**

@@ -27,7 +27,7 @@ public interface TorrentList {
      * equals "checked", includes "dead" torrents in the resultset (ie, torrents
      * which do not have any seeds or leechers.)
      * @param out The output writer to write the torrentlist to. If used in jsp-
-     * files, the easiest way to get this i by doing a new PrintWriter(out),
+     * files, the easiest way to get this is by doing a new PrintWriter(out),
      * since "out" in that context is a JspWriter.
      * @see XMLTorrentList
      * @see JSONTorrentList
