@@ -35,6 +35,11 @@
         <servlet-name>JSON Torrentlist</servlet-name>
         <jsp-file>/resources/json/torrentlist.jsp</jsp-file>
     </servlet>
+    <servlet>
+        <description>Frontend for downloading .torrent files.</description>
+        <servlet-name>Download</servlet-name>
+        <servlet-class>com.tracker.frontend.Download</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>Announce</servlet-name>
         <url-pattern>/announce</url-pattern>
@@ -78,6 +83,14 @@
     <servlet-mapping>
         <servlet-name>JSON Torrentlist</servlet-name>
         <url-pattern>/json/torrentlist</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Download</servlet-name>
+        <url-pattern>/Download</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Download</servlet-name>
+        <url-pattern>/download</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
