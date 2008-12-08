@@ -148,6 +148,7 @@ public class XMLTakeUpload extends HttpServlet implements TakeUpload {
             // add results to XML
             /*
              * markup looks like this:
+             * <response>
              * <errorReason>
              * errors go here
              * </errorReason>
@@ -157,10 +158,16 @@ public class XMLTakeUpload extends HttpServlet implements TakeUpload {
              * <redownload>
              * true/false
              * </redownload>
+             * </response>
+             *
+             * (the response-tags are there because jquery gets confused without
+             * them.)
              */
             String errorReason = response.get("error reason");
             String warningReason = response.get("warning reason");
             String redownload = response.get("redownload");
+
+            tHandler.startElement("", "", "response", attr);
 
             tHandler.startElement("", "", "errorReason", attr);
             tHandler.characters(errorReason.toCharArray(), 0, errorReason.length());
@@ -173,6 +180,8 @@ public class XMLTakeUpload extends HttpServlet implements TakeUpload {
             tHandler.startElement("", "", "redownload", attr);
             tHandler.characters(redownload.toCharArray(), 0, redownload.length());
             tHandler.endElement("", "", "redownload");
+
+            tHandler.endElement("", "", "response");
 
         }
         catch (SAXException ex) {

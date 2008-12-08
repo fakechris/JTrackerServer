@@ -411,7 +411,7 @@ public class TrackerRequestParser {
                 // turn peer into a seed, also increments the completed counter.
                 if(!p.getTorrent().leecherCompleted(p)) {
                     log.log(Level.SEVERE,
-                            "cannot turn leech into seed?");
+                            "cannot turn leech (" + p.toString() + ") into seed?");
                     em.getTransaction().rollback();
                     em.close();
                     return parseFailed("Tracker error.");
