@@ -520,6 +520,8 @@ public class TrackerRequestParser {
             // remove from persistence
             EntityManager em = emf.createEntityManager();
             em.getTransaction().begin();
+            // merge in the changes to make it managed, then call remove
+            p = em.merge(p);
             em.remove(p);
             em.getTransaction().commit();
             em.close();
