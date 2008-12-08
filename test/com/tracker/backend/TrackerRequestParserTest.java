@@ -12,7 +12,6 @@ import com.tracker.backend.webinterface.entity.TorrentData;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.InetAddress;
-import java.net.URLDecoder;
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.util.Calendar;
@@ -31,6 +30,8 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
+
+// TODO: test that the purging of inactive peers work.
 
 /**
  *
