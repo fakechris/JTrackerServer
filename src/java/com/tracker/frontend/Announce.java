@@ -9,7 +9,7 @@ import com.tracker.backend.Bencode;
 import com.tracker.backend.TrackerRequestParser;
 
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.OutputStream;
 import java.net.InetAddress;
 import java.util.Enumeration;
 import java.util.TreeMap;
@@ -44,7 +44,7 @@ public class Announce extends HttpServlet {
         TrackerRequestParser trp = new TrackerRequestParser();
         Enumeration e = request.getParameterNames();
         TreeMap<String, String> requestParams = new TreeMap<String,String>();
-        TreeMap<String, String> responseParams;
+        TreeMap<String, ?> responseParams;
         
         while(e.hasMoreElements()) {
             String name = (String)e.nextElement();
@@ -69,9 +69,14 @@ public class Announce extends HttpServlet {
         }
         
         response.setContentType("text/plain");
-        PrintWriter out = response.getWriter();
+        // the peers key will contain binary data, so we want to avoid the
+        // inevitable encoding the getWriter() PrintWriter performs at the
+        // Servlet-Container level.
+        OutputStream out = response.getOutputStream();
         try {
-            out.print(responseString);
+            for(int i = 0; i < responseString.length(); i++) {
+                out.write(responseString.charAt(i));
+            }
         } finally { 
             out.close();
         }
