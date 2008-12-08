@@ -66,6 +66,16 @@ public class Announce extends HttpServlet {
         } catch (Exception ex) {
             Logger.getLogger(Announce.class.getName()).log(Level.SEVERE,
                     "Exception caught", ex);
+            // set a simple failure reason response
+            TreeMap<String,String> failureResponse = new TreeMap<String,String>();
+            failureResponse.put("failure reason", "Internal tracker error.");
+
+            try {
+                responseString = Bencode.encode(failureResponse);
+            } catch (Exception ex1) {
+                Logger.getLogger(Announce.class.getName()).log(Level.SEVERE,
+                        "Error when constructing failure response?", ex1);
+            }
         }
         
         response.setContentType("text/plain");
