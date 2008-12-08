@@ -9,6 +9,7 @@ import com.tracker.backend.webinterface.TakeUpload;
 import com.tracker.backend.webinterface.TorrentUpload;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -47,7 +48,15 @@ public class XMLTakeUpload extends HttpServlet implements TakeUpload {
             parseUpload(request, out);
         }
         catch(Exception ex) {
-            out.println("Internal error.");
+            StringWriter s = new StringWriter();
+            s.append("Exception Caught: ");
+            s.append(ex.toString());
+            s.append(" ");
+            s.append(ex.getMessage());
+            PrintWriter w = new PrintWriter(s);
+            ex.printStackTrace(w);
+            out.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+            out.println("<errorReason>Internal error:" + s.toString() + "</errorReason>");
         }
         finally {
             out.close();
@@ -115,7 +124,7 @@ public class XMLTakeUpload extends HttpServlet implements TakeUpload {
             }
             URL += contextPath;
             // parse the request
-            response = TorrentUpload.addTorrent(data.stream, data.name,
+            response = TorrentUpload.addTorrent(data.decodedTorrent, data.name,
                     data.description, URL);
 
             // Set-up JAXP + SAX
@@ -139,12 +148,12 @@ public class XMLTakeUpload extends HttpServlet implements TakeUpload {
             // add results to XML
             /*
              * markup looks like this:
-             * <error reason>
+             * <errorReason>
              * errors go here
-             * </error reason>
-             * <warning reason>
+             * </errorReason>
+             * <warningReason>
              * warnings go here
-             * </warning reason>
+             * </warningReason>
              * <redownload>
              * true/false
              * </redownload>
@@ -153,13 +162,13 @@ public class XMLTakeUpload extends HttpServlet implements TakeUpload {
             String warningReason = response.get("warning reason");
             String redownload = response.get("redownload");
 
-            tHandler.startElement("", "", "error reason", attr);
+            tHandler.startElement("", "", "errorReason", attr);
             tHandler.characters(errorReason.toCharArray(), 0, errorReason.length());
-            tHandler.endElement("", "", "error reason");
+            tHandler.endElement("", "", "errorReason");
 
-            tHandler.startElement("", "", "warning reason", attr);
+            tHandler.startElement("", "", "warningReason", attr);
             tHandler.characters(warningReason.toCharArray(), 0, warningReason.length());
-            tHandler.endElement("", "", "warning reason");
+            tHandler.endElement("", "", "warningReason");
 
             tHandler.startElement("", "", "redownload", attr);
             tHandler.characters(redownload.toCharArray(), 0, redownload.length());
