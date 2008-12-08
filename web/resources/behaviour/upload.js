@@ -11,15 +11,17 @@ $(document).ready(function() {
         // expected content of server response
         dataType: 'xml',
 
+        // error function
+        error: displayError,
         // success function
         success: processUploadResult
     });
 });
 
-function ProcessUploadResult(responseXML) {
+function processUploadResult(responseXML) {
     // populate some div's with the information received from the server
-    var error = $('error reason', responseXML).text();
-    var warning = $('warning reason', responseXML).text();
+    var error = $('errorReason', responseXML).text();
+    var warning = $('warningReason', responseXML).text();
     var redownload = $('redownload', responseXML).text();
     if(redownload == "true") {
         $("#redownloadDiv").append("<b>You must redownload the torrentfile.</b>");
@@ -36,4 +38,14 @@ function ProcessUploadResult(responseXML) {
         $("#warningDiv").append(warning);
         $("#warningDiv").show();
     }
+}
+
+/**
+ * displays an error in case AJAX failed horribly.
+ */
+function displayError(XMLHttpRequest, textStatus, errorThrown) {
+    var error = errorThrown.toString();
+    $("#errorDiv").append("An error occured while getting AJAX response.<br />");
+    $("#errorDiv").append(textStatus + " - " + error);
+    $("div:hidden").show();
 }

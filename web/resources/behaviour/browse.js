@@ -10,6 +10,7 @@
  */
 function getTorrentList(searchParameters) {
     $.ajax({
+        url: 'xml/torrentlist',
         type: 'GET',
         dataType: 'xml',
         error: displayError,
@@ -20,10 +21,12 @@ function getTorrentList(searchParameters) {
 /**
  * processes the XML received from the server and populates the torrentlist.
  */
-function processBrowseResult(reponseXML) {
-    $(responseXML).label('torrent').each(function(index) {
-        $("#torrentName").append("<a href=/Download?id=" + $(this).attr("id") +
-            ">" + "#" + i + " " + $(this).find("name").text() + "</a><br />");
+function processBrowseResult(xml) {
+    $(xml).find('torrent').each(function(index) {
+        // list of all torrents including links to the relevant download.
+        $("#torrentName").append("<a href=" + contextPath + "/Download?id=" 
+            + $(this).attr("id") + ">" + "#" + index + " "
+            + $(this).find("name").text() + "</a><br />");
         $("#torrentDate").append($(this).find("dateAdded").text() + "<br />");
     });
     $("div:hidden").fadeIn("fast");
@@ -32,8 +35,9 @@ function processBrowseResult(reponseXML) {
 /**
  * displays an error in case AJAX failed horribly.
  */
-function displayError() {
+function displayError(XMLHttpRequest, textStatus, errorThrown) {
     $("#torrentName").append("An error occured while getting AJAX response.");
+    $("#torrentDate").append(textStatus + " - " + errorThrown);
     $("div:hidden").show();
 }
 
