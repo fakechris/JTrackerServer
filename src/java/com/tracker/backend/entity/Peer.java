@@ -7,12 +7,9 @@ package com.tracker.backend.entity;
 
 import com.tracker.backend.StringUtils;
 import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -235,7 +232,7 @@ public class Peer implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.Peers[id=" + id + "]";
+        return "entity.Peers[id=" + id + " peer_id=" + peerId + "]";
     }
 
 }
