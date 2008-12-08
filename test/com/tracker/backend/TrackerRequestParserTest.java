@@ -13,6 +13,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.InetAddress;
 import java.net.URLDecoder;
+import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.util.Calendar;
 import java.util.Iterator;
@@ -43,6 +44,7 @@ public class TrackerRequestParserTest {
 
     static String infoHash;
     static String peerId;
+    static String peerAddress; /** used for validating peers response. */
     static byte[] rawInfoHash = new byte[20];
     static byte[] rawPeerId = new byte[20];
 
@@ -126,9 +128,26 @@ public class TrackerRequestParserTest {
 
         p.setBytesLeft(tData.getTorrentSize());
         p.setIp(InetAddress.getByName("192.168.1.3"));
+        // 192.168.1.3 in bigendian bytes are 0xC0A80103
 
         Long port = (long) 63049;
         p.setPort(port);
+        // 63049 in bigendian bytes are 0xF649
+
+        // setting the peer address to compare to
+        StringBuilder sb = new StringBuilder();
+        byte[] addr = InetAddress.getByName("192.168.1.3").getAddress();
+        for(int i = 0; i < addr.length; i++) {
+            char charByte = (char) addr[i];
+            sb.append(charByte);
+        }
+        // and for the port
+        ByteBuffer bb = ByteBuffer.allocate(8);
+        bb.putLong(port);
+        sb.append((char)bb.get(6));
+        sb.append((char)bb.get(7));
+
+        peerAddress = sb.toString();
 
         p.setLastActionTime(Calendar.getInstance().getTime());
 
@@ -324,14 +343,15 @@ public class TrackerRequestParserTest {
             instance.setRequestParams(request);
 
             System.out.println(" -- populating expected result");
-            expResult.put((String)"complete",(String)"0");
+            expResult.put((String)"complete", 0L);
             // the new peer and the default peer
-            expResult.put((String)"incomplete",(String)"2");
-            expResult.put((String)"interval",(String)"1800");
-            expResult.put((String)"min interval", (String)"180");
+            expResult.put((String)"incomplete", 2L);
+            expResult.put((String)"interval", 1800L);
+            expResult.put((String)"min interval", 180L);
             // grabbed from output
-            expResult.put((String)"peers", 
-                    URLDecoder.decode("%28%01%03%00%00", "utf-8"));
+            /*expResult.put((String)"peers",
+                    URLDecoder.decode("%28%01%03%00%00", "utf-8"));*/
+            expResult.put((String)"peers", peerAddress);
 
             System.out.println(" -- parsing request");
             TreeMap result = instance.parseRequest();
@@ -384,11 +404,11 @@ public class TrackerRequestParserTest {
             instance.setRequestParams(request);
 
             System.out.println(" -- populating expected result");
-            expResult.put((String)"complete",(String)"0");
+            expResult.put((String)"complete", 0L);
             // no peers left after this one was removed
-            expResult.put((String)"incomplete",(String)"0");
-            expResult.put((String)"interval",(String)"1800");
-            expResult.put((String)"min interval", (String)"180");
+            expResult.put((String)"incomplete", 0L);
+            expResult.put((String)"interval", 1800L);
+            expResult.put((String)"min interval", 180L);
             expResult.put((String)"peers","");
 
             System.out.println(" -- parsing request");
@@ -442,11 +462,11 @@ public class TrackerRequestParserTest {
             instance.setRequestParams(request);
 
             System.out.println(" -- populating expected result");
-            expResult.put((String)"complete",(String)"1");
+            expResult.put((String)"complete", 1L);
             // no leechers left after this one turned into a seed
-            expResult.put((String)"incomplete",(String)"0");
-            expResult.put((String)"interval",(String)"1800");
-            expResult.put((String)"min interval", (String)"180");
+            expResult.put((String)"incomplete", 0L);
+            expResult.put((String)"interval", 1800L);
+            expResult.put((String)"min interval", 180L);
             expResult.put((String)"peers","");
 
             System.out.println(" -- parsing request");
@@ -511,10 +531,10 @@ public class TrackerRequestParserTest {
             instance.setRequestParams(request);
 
             System.out.println(" -- populating expected result");
-            expResult.put((String)"complete",(String)"0");
-            expResult.put((String)"incomplete",(String)"1");
-            expResult.put((String)"interval",(String)"1800");
-            expResult.put((String)"min interval", (String)"180");
+            expResult.put((String)"complete", 0L);
+            expResult.put((String)"incomplete", 1L);
+            expResult.put((String)"interval", 1800L);
+            expResult.put((String)"min interval", 180L);
             expResult.put((String)"peers","");
 
             System.out.println(" -- parsing request");
@@ -560,10 +580,10 @@ public class TrackerRequestParserTest {
             instance.setRequestParams(request);
 
             System.out.println(" -- populating expected result");
-            expResult.put((String)"complete",(String)"0");
-            expResult.put((String)"incomplete",(String)"1");
-            expResult.put((String)"interval",(String)"1800");
-            expResult.put((String)"min interval", (String)"180");
+            expResult.put((String)"complete", 0L);
+            expResult.put((String)"incomplete", 1L);
+            expResult.put((String)"interval", 1800L);
+            expResult.put((String)"min interval", 180L);
             expResult.put((String)"peers","");
 
             System.out.println(" -- parsing request");
