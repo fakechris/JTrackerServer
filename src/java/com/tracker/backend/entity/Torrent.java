@@ -65,7 +65,7 @@ public class Torrent implements Serializable {
      * All peers connected with this torrent,
      * bi-directional relationship with the Peer Entity class
      */
-    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "torrent")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "torrent")
     private List<Peer> peersData;
     /**
      * The peers that are seeding this torrent,
