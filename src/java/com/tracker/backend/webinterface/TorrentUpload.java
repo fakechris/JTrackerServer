@@ -23,6 +23,7 @@ import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import javax.persistence.Query;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.FileItemStream;
@@ -50,7 +51,7 @@ public class TorrentUpload {
         public String name;
         public String description;
 
-        public InputStream stream;
+        public Map decodedTorrent;
     }
 
     /**
@@ -94,6 +95,8 @@ public class TorrentUpload {
                 else if(name.equalsIgnoreCase("torrentDescription")) {
                     data.description = Streams.asString(stream);
                 }
+                // ignore the submit button, no logging for you!
+                else if(name.equalsIgnoreCase("torrentSubmit")) {}
                 // some weird data?
                 else {
                     log.log(Level.INFO, "Unknown field (" + name + ") in upload request?");
@@ -101,7 +104,8 @@ public class TorrentUpload {
             }
             // file field
             else {
-                data.stream = stream;
+                // This MUST be processed before hasNext is called next
+                data.decodedTorrent = (Map) Bencode.decode(stream).get(0);
             }
         }
 
@@ -111,7 +115,7 @@ public class TorrentUpload {
     /**
      * Reads a torrent given in the request, makes changes if necessary, then
      * adds it to the database of tracked torrents.
-     * @param torrent the input stream to read the torrent from.
+     * @param decodedTorrent the torrent decoded from original bencoded form.
      * @param torrentDescription the torrent description to persist in the database.
      * @param torrentName the torrent name to persist in the database.
      * @param contextPath the context path of the running servlet. Used for
@@ -134,7 +138,7 @@ public class TorrentUpload {
      * @throws java.lang.Exception if there is some problem with the given
      * torrentfile or the persisting operation.
      */
-    public static Map<String,String> addTorrent(InputStream torrent,
+    public static Map<String,String> addTorrent(Map decodedTorrent,
             String torrentName, String torrentDescription, String contextPath) throws Exception {
         Long torrentLength = new Long(0L);
         Torrent t;
@@ -154,7 +158,6 @@ public class TorrentUpload {
         response.put("error reason", "");
         response.put("redownload", "false");
 
-        Map decodedTorrent;
         // set as null to avoid some nonsense when persisting, will be set
         // by the decoded torrent
         Map infoDictionary = null;
@@ -209,7 +212,6 @@ public class TorrentUpload {
              * announce-list.
              */
 
-            decodedTorrent = (Map) Bencode.decode(torrent).get(0);
             String announceURL;
 
             // make sure that the torrentfile contains a bare minimum
@@ -362,25 +364,41 @@ public class TorrentUpload {
         }
 
         // persist!
-               // add the torrent to the database.
+        // add the torrent to the database.
         EntityManager em = emf.createEntityManager();
+        // grab the SHA1 hash of the (bencoded) info dictionary.
+        // the simplest way is to simply encode the info dictionary again
+        // (things may have changed), then do a SHA1-hash of the result.
+        String info = Bencode.encode(infoDictionary);
+        byte[] rawInfo = new byte[info.length()];
+        byte[] rawInfoHash = new byte[20];
+        for (int i = 0; i < rawInfo.length; i++) {
+            rawInfo[i] = (byte) info.charAt(i);
+        }
+        md.update(rawInfo);
+        rawInfoHash = md.digest();
+
+        String infoHash = StringUtils.getHexString(rawInfoHash);
+        
+        // look for the info hash in the database to avoid duplicates,
+        // we can't have more than one torrent with a given info hash.
+        Query q = em.createQuery("SELECT COUNT(t) FROM Torrent t WHERE " +
+                "t.infoHash = '" + infoHash + "'");
+
+        Long numElements = (Long) q.getSingleResult();
+        if(numElements >= 1) {
+            response.put("error reason", "We are already tracking this torrent! " +
+                    "Please download and seed the existing torrent instead.");
+            return response;
+        }
+
         try {
             t = new Torrent();
             tData = new TorrentData();
             tFile = new TorrentFile();
-            // grab the SHA1 hash of the (bencoded) info dictionary.
-            // the simplest way is to simply encode the info dictionary again
-            // (things may have changed), then do a SHA1-hash of the result.
-            String info = Bencode.encode(infoDictionary);
-            byte[] rawInfo = new byte[info.length()];
-            byte[] rawInfoHash = new byte[20];
-            for (int i = 0; i < rawInfo.length; i++) {
-                rawInfo[i] = (byte) info.charAt(i);
-            }
-            md.update(rawInfo);
-            rawInfoHash = md.digest();
+            
             // set the info hash.
-            t.setInfoHash(StringUtils.getHexString(rawInfoHash));
+            t.setInfoHash(infoHash);
             // num seeders and all that is set by the Torrent constructor.
             
             tData.setName(torrentName);

@@ -92,6 +92,7 @@ public class TorrentUploadTest {
             File torrentFile = new File("./test/com/tracker/backend/webinterface/SingleFileValid.torrent");
 
             InputStream torrent = new FileInputStream(torrentFile);
+            Map decodedTorrent = (Map) Bencode.decode(torrent).get(0);
             String torrentName = "A Perfectly valid single file torrent!";
             String torrentDescription = "Yep, that's right, all valid.";
             String contextPath = "http://testing";
@@ -104,7 +105,7 @@ public class TorrentUploadTest {
             expResult.put("error reason", "");
             expResult.put("redownload", "false");
 
-            Map<String, String> result = TorrentUpload.addTorrent(torrent, torrentName, torrentDescription, contextPath);
+            Map<String, String> result = TorrentUpload.addTorrent(decodedTorrent, torrentName, torrentDescription, contextPath);
             assertEquals(expResult, result);
 
             // now check the contents of the database.
@@ -119,6 +120,7 @@ public class TorrentUploadTest {
             // now try a multifile torrent
             torrentFile = new File("./test/com/tracker/backend/webinterface/MultipleFileValid.torrent");
             torrent = new FileInputStream(torrentFile);
+            decodedTorrent = (Map) Bencode.decode(torrent).get(0);
             torrentName = "A perfectly fine torrent with multiple files!";
             torrentDescription = "just because you can transfer more than" +
                     "one file at the time with the lovelyness that is bittorrent.";
@@ -126,7 +128,7 @@ public class TorrentUploadTest {
 
             // expResult is the same
 
-            result = TorrentUpload.addTorrent(torrent, torrentName, torrentDescription, contextPath);
+            result = TorrentUpload.addTorrent(decodedTorrent, torrentName, torrentDescription, contextPath);
             assertEquals(expResult, result);
 
             // check the contents of the database
@@ -140,6 +142,7 @@ public class TorrentUploadTest {
             // now try something we have to rewrite. This contains the wrong announce
             torrentFile = new File("./test/com/tracker/backend/webinterface/SingleFileWrongAnnounce.torrent");
             torrent = new FileInputStream(torrentFile);
+            decodedTorrent = (Map) Bencode.decode(torrent).get(0);
             torrentName = "I find that the keys are small and tricky to hit.";
             torrentDescription = "So I may very well have mistyped something" +
                     "when creating this.";
@@ -150,7 +153,7 @@ public class TorrentUploadTest {
                             "has been changed.\n");
             expResult.put("redownload", "true");
 
-            result = TorrentUpload.addTorrent(torrent, torrentName, torrentDescription, contextPath);
+            result = TorrentUpload.addTorrent(decodedTorrent, torrentName, torrentDescription, contextPath);
             assertEquals(expResult, result);
 
             // check the contents of the database.
@@ -166,6 +169,7 @@ public class TorrentUploadTest {
             // now try some announce list torrents
             torrentFile = new File("./test/com/tracker/backend/webinterface/AnnounceList.torrent");
             torrent = new FileInputStream(torrentFile);
+            decodedTorrent = (Map) Bencode.decode(torrent).get(0);
             torrentName = "We like announce lists!";
             torrentDescription = "they make things more distributed and resistant to" +
                     "takedown.";
@@ -174,12 +178,13 @@ public class TorrentUploadTest {
             expResult.put("warning reason", "");
             expResult.put("redownload", "false");
 
-            result = TorrentUpload.addTorrent(torrent, torrentName, torrentDescription, contextPath);
+            result = TorrentUpload.addTorrent(decodedTorrent, torrentName, torrentDescription, contextPath);
             assertEquals(expResult, result);
 
             // try some announce lists lacking our announce
             torrentFile = new File("./test/com/tracker/backend/webinterface/AnnounceListWrong.torrent");
             torrent = new FileInputStream(torrentFile);
+            decodedTorrent = (Map) Bencode.decode(torrent).get(0);
             torrentName = "however, announce lists does not make typos any less likely.";
             torrentDescription = "on the contrary - having to type up all announce URLs" +
                     "may cause trouble!";
@@ -190,7 +195,7 @@ public class TorrentUploadTest {
                                 "in it's announce list. This has been changed.\n");
             expResult.put("redownload", "true");
 
-            result = TorrentUpload.addTorrent(torrent, torrentName, torrentDescription, contextPath);
+            result = TorrentUpload.addTorrent(decodedTorrent, torrentName, torrentDescription, contextPath);
             assertEquals(expResult, result);
         }
         catch(Exception ex) {
