@@ -104,6 +104,14 @@
         <servlet-name>XMLTakeUpload</servlet-name>
         <url-pattern>/xml/takeupload</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>XML TorrentList</servlet-name>
+        <url-pattern>/xml/TorrentList</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>JSON Torrentlist</servlet-name>
+        <url-pattern>/json/TorrentList</url-pattern>
+    </servlet-mapping>
     <session-config>
         <session-timeout>
             30
