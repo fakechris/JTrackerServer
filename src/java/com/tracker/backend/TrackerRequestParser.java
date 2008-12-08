@@ -32,6 +32,8 @@ public class TrackerRequestParser {
     private InetAddress remoteAddress;
     private static EntityManagerFactory emf = Persistence.createEntityManagerFactory("TorrentTrackerPU");
 
+    private Logger log = Logger.getLogger(TrackerRequestParser.class.getName());
+
     // TODO: get from config or some such
     /// intervals between announces
     private Long minInterval = (long)180;
@@ -100,7 +102,7 @@ public class TrackerRequestParser {
         }
         // no results found?
         catch(NoResultException ex) {
-            Logger.getLogger(TrackerRequestParser.class.getName()).log(Level.FINE,
+            log.log(Level.FINE,
                     "cannot find torrent scraped by " + remoteAddress.toString()
                     + ": " + ex.getMessage());
             Exception res = new Exception("Cannot find torrent",ex);
@@ -108,7 +110,7 @@ public class TrackerRequestParser {
         }
         // some other error?
         catch(Exception ex) {
-            Logger.getLogger(TrackerRequestParser.class.getName()).log(Level.WARNING,
+            log.log(Level.WARNING,
                     "error when scraping info hash " + infoHash +
                     ", request by " + remoteAddress.toString() + ": " + ex.getMessage());
             throw ex;
@@ -137,14 +139,17 @@ public class TrackerRequestParser {
         return(remoteAddress);
     }
 
-    public TreeMap<String,String> parseRequest() throws Exception
+    public TreeMap<String,? extends Object> parseRequest() throws Exception
     {
         if(requestParams == null || remoteAddress == null) {
             return(null);
         }
 
         EntityManager em = emf.createEntityManager();
-        TreeMap<String,String> responseParams = new TreeMap<String,String>();
+        // cannot use generics here because the value must be able to hold
+        // several different classes, and one cannot instantiate a collection
+        // without a concrete generic class (ie, no new TreeMap<String,?>();).
+        TreeMap responseParams = new TreeMap();
         String encodedInfoHash, encodedPeerId;
         String event = new String();
         Long uploaded, downloaded, left, port;
@@ -234,10 +239,18 @@ public class TrackerRequestParser {
             }
         }
 
+        // check for ip
+        if(requestParams.containsKey((String)"ip")) {
+            // is this on the local LAN?
+            if(remoteAddress.isSiteLocalAddress()) {
+                // honour the ip setting
+                remoteAddress = InetAddress.getByName(requestParams.get((String)"ip"));
+            }
+        }
+
         /*
          * ignored optional keys:
          * - no_peer_id (only compact responses)
-         * - ip (no checks implemented)
          * - key (no need for reliable identification)
          * - trackerid (samesame)
          */
@@ -250,7 +263,7 @@ public class TrackerRequestParser {
         }
         // cannot find torrent?
         catch(NoResultException ex) {
-            Logger.getLogger(TrackerRequestParser.class.getName()).log(Level.FINE,
+            log.log(Level.FINE,
                     "cannot find torrent requested by " + remoteAddress.toString()
                     + ": " + ex.getMessage());
             em.close();
@@ -258,7 +271,7 @@ public class TrackerRequestParser {
         } 
         // some other error occurred
         catch(Exception ex) {
-            Logger.getLogger(TrackerRequestParser.class.getName()).log(Level.SEVERE,
+            log.log(Level.SEVERE,
                     "error when looking for torrent in database", ex);
             em.close();
             return(parseFailed("Tracker error."));
@@ -288,7 +301,7 @@ public class TrackerRequestParser {
                     // check for inactivity
                     if(!peerIsInactive(p)) {
                         // not inactive yet, and attempts at a new started
-                        Logger.getLogger(TrackerRequestParser.class.getName()).log(Level.FINE,
+                        log.log(Level.FINE,
                             "event=started more than once. IP: " + remoteAddress.toString());
                         em.getTransaction().rollback();
                         em.close();
@@ -299,7 +312,7 @@ public class TrackerRequestParser {
                 catch(NoResultException ex) {}
                 // oh dear! some other error.
                 catch(Exception ex) {
-                    Logger.getLogger(TrackerRequestParser.class.getName()).log(Level.SEVERE,
+                    log.log(Level.SEVERE,
                             "error when looking for peer in database", ex);
                     em.getTransaction().rollback();
                     em.close();
@@ -345,7 +358,7 @@ public class TrackerRequestParser {
                 }
                 // no peer found?
                 catch(NoResultException ex) {
-                    Logger.getLogger(TrackerRequestParser.class.getName()).log(Level.FINE,
+                    log.log(Level.FINE,
                             "event=stopped but no matching peer found. IP: " + 
                             remoteAddress.toString() + ex.getMessage());
                     em.getTransaction().rollback();
@@ -354,7 +367,7 @@ public class TrackerRequestParser {
                 }
                 // oh dear! some other error.
                 catch(Exception ex) {
-                    Logger.getLogger(TrackerRequestParser.class.getName()).log(Level.SEVERE,
+                    log.log(Level.SEVERE,
                             "error when looking for peer in database", ex);
                     em.getTransaction().rollback();
                     em.close();
@@ -381,14 +394,14 @@ public class TrackerRequestParser {
                 catch(NoResultException ex) {
                     em.getTransaction().rollback();
                     em.close();
-                    Logger.getLogger(TrackerRequestParser.class.getName()).log(Level.FINE,
+                    log.log(Level.FINE,
                             "event=completed but no matching peer found. IP: " + 
                             remoteAddress.toString() + ex.getMessage());
                     return parseFailed("Cannot mark a peer as completed if it has not started.");
                 }
                 // some other error occurred
                 catch(Exception ex) {
-                    Logger.getLogger(TrackerRequestParser.class.getName()).log(Level.SEVERE,
+                    log.log(Level.SEVERE,
                             "error when looking for peer in database", ex);
                     em.getTransaction().rollback();
                     em.close();
@@ -396,7 +409,7 @@ public class TrackerRequestParser {
                 }
 
                 if(!p.getTorrent().leecherCompleted(p)) {
-                    Logger.getLogger(TrackerRequestParser.class.getName()).log(Level.SEVERE,
+                    log.log(Level.SEVERE,
                             "cannot turn leech into seed?");
                     em.getTransaction().rollback();
                     em.close();
@@ -419,14 +432,14 @@ public class TrackerRequestParser {
             catch(NoResultException ex) {
                 em.getTransaction().rollback();
                 em.close();
-                Logger.getLogger(TrackerRequestParser.class.getName()).log(Level.FINE,
+                log.log(Level.FINE,
                         "no event but no matching peer found. IP: " +
                         remoteAddress.toString() + ex.getMessage());
                 return parseFailed("Start-event was not received, so you are not tracked.");
             }
             // some other error occurred
             catch(Exception ex) {
-                Logger.getLogger(TrackerRequestParser.class.getName()).log(Level.SEVERE,
+                log.log(Level.SEVERE,
                         "error when looking for peer in database", ex);
                 em.getTransaction().rollback();
                 em.close();
@@ -446,9 +459,7 @@ public class TrackerRequestParser {
         }
         // commit the changes made so far and close the EntityManager
         try {
-            synchronized(this) {
-                em.getTransaction().commit();
-            }
+            em.getTransaction().commit();
         } catch(Exception ex) {
             if(em.getTransaction().isActive())
                 em.getTransaction().rollback();
@@ -460,14 +471,14 @@ public class TrackerRequestParser {
         em.refresh(t);
 
         // populate the response
-        responseParams.put((String)"complete", t.getNumSeeders().toString());
-        responseParams.put((String)"incomplete", t.getNumLeechers().toString());
-        responseParams.put((String)"interval", defaultInterval.toString());
-        responseParams.put((String)"min interval", minInterval.toString());
+        responseParams.put((String)"complete", t.getNumSeeders());
+        responseParams.put((String)"incomplete", t.getNumLeechers());
+        responseParams.put((String)"interval", defaultInterval);
+        responseParams.put((String)"min interval", minInterval);
 
         // find some peers!
-        String peerList;
-        if(returnSeeds) {
+        String peerList = new String();
+        if(!returnSeeds) {
             // only return leechers
             Vector<Peer> v = (Vector<Peer>) t.getLeechersData();
             peerList = getCompactPeerList(v, numPeersToReturn, p);
