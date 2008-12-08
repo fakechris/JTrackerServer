@@ -26,6 +26,7 @@ public interface TakeUpload {
      * of an error, and a redownload key which defines whether the .torrent-file
      * will have to be redownloaded or not - for example through having to change
      * the announce URL or deactivate the private key.
+     * @throws java.lang.Exception
      */
     public abstract void parseUpload(HttpServletRequest request, PrintWriter out) throws Exception;
 }

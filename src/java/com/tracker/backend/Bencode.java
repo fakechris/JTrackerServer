@@ -156,6 +156,8 @@ public class Bencode {
         TreeMap result = new TreeMap();
         int readByte;
         char charByte;
+        // TODO: this whole index thing is silly and has bitten me too many
+        // times now, please eliminate.
         int index = 0;
         try {
             // read the whole stream until the end or an error occurs
