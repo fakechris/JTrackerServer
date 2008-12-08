@@ -65,7 +65,7 @@ public class Scrape extends HttpServlet {
                      */
                     // encode the info hash again
                     byte[] rawInfoHash = new byte[20];
-                    for(int j = 0; i < rawInfoHash.length; i++) {
+                    for(int j = 0; j < rawInfoHash.length; j++) {
                         rawInfoHash[j] = (byte) value[i].charAt(j);
                     }
                     String hexInfoHash = StringUtils.getHexString(rawInfoHash);
