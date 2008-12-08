@@ -67,37 +67,29 @@ public class Peer implements Serializable {
     /**
      * gives a compact representation of this peer in a String format
      * @return a String containing 6-bytes; the first 4 being the ip-address,
-     * and the last 2 be    ing the port number.
+     * and the last 2 being the port number.
      */
     public String getCompactAddressPort()
     {
-        byte[] buf = new byte[6];
+        StringBuilder result = new StringBuilder();
         byte address[] = ip.getAddress();
-        // ipv6?
+
         if(address.length > 4) {
-            // no compact for you!
             return null;
         }
 
         for(int i = 0; i < address.length; i++) {
-            buf[i] = address[i];
+            char charByte = (char) address[i];
+            result.append(charByte);
         }
 
-        ByteBuffer bb = ByteBuffer.allocateDirect(8);
+        // do port
+        ByteBuffer bb = ByteBuffer.allocate(8);
         bb.putLong(port);
-        buf[4] = bb.get(0);
-        buf[5] = bb.get(1);
+        result.append((char)bb.get(6));
+        result.append((char)bb.get(7));
 
-        String ret;
-        try {
-            ret = new String(buf, "utf-8");
-        } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(Peer.class.getName()).log(Level.SEVERE, 
-                    "no utf-8 for making compact peerlist?", ex);
-            return(null);
-        }
-
-        return ret;
+        return result.toString();
     }
 
     public Date getLastActionTime() {
