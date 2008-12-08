@@ -408,6 +408,7 @@ public class TrackerRequestParser {
                     return parseFailed("Tracker error.");
                 }
 
+                // turn peer into a seed, also increments the completed counter.
                 if(!p.getTorrent().leecherCompleted(p)) {
                     log.log(Level.SEVERE,
                             "cannot turn leech into seed?");
@@ -415,6 +416,7 @@ public class TrackerRequestParser {
                     em.close();
                     return parseFailed("Tracker error.");
                 }
+
                 returnSeeds = false;
             }
         } // if(event)

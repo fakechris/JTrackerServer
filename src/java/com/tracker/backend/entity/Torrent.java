@@ -109,7 +109,8 @@ public class Torrent implements Serializable {
     }
 
     /**
-     * Convenience method for converting a leecher to a seed.
+     * Convenience method for converting a leecher to a seed. Increments the
+     * completed counter.
      * @param p the leecher that has completed this torrent
      * @return true if the leecher is on this torrent and has been changed to a
      * seed, false if the peer is not a leecher of this torrent.
@@ -123,6 +124,8 @@ public class Torrent implements Serializable {
             numSeeders++;
 
             p.setSeed(true);
+
+            numCompleted++;
 
             return true;
         }
