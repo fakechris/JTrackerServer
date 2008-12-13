@@ -30,6 +30,7 @@
         </form>
 
         <div id="content">
+            <div id="successDiv" style="display: none"></div>
             <div id="errorDiv" style="display: none"></div>
             <div id="warningDiv" style="display: none"></div>
             <div id="redownloadDiv" style="display: none"></div>
