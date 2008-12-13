@@ -19,6 +19,15 @@ $(document).ready(function() {
 });
 
 function processUploadResult(responseXML) {
+    // clear the div's (in case someone uploads more than one torrent in a row)
+    $("#errorDiv").text("");
+    $("#warningDiv").text("");
+    $("#redownloadDiv").text("");
+
+    // upload was successful, make sure to let the user know
+    // TODO: i18n
+    $("successDiv").append("<b>Upload successful!</b>")
+
     // populate some div's with the information received from the server
     var error = $('errorReason', responseXML).text();
     var warning = $('warningReason', responseXML).text();
