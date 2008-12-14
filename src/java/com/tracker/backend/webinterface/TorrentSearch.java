@@ -33,10 +33,17 @@ public class TorrentSearch {
      * instead of just the names.
      * @param includeDead Whether to include results that does not have any
      * activity - in other words, torrents with 0 seeds and 0 leechers.
-     * @return a List of torrents containing the result of the database query.
+     * @param firstResult the index of the first result to return from the query.
+     * @param numResults the maximum number of results to return from the query.
+     * The resulting list may be smaller than this.
+     * @return a List of torrents containing the result of the database query,
+     * where the first torrent has the index given in firstResult, and the list
+     * being no bigger than numResults.
      * @throws Exception if the query cannot be created or if the execution failed.
      */
-    public static List<Torrent> getList(String searchString, boolean searchDescriptions, boolean includeDead) throws Exception {
+    public static List<Torrent> getList(String searchString, 
+            boolean searchDescriptions, boolean includeDead, int firstResult,
+            int numResults) throws Exception {
         List<Torrent> result;
 
         EntityManager em = emf.createEntityManager();
@@ -65,6 +72,9 @@ public class TorrentSearch {
 
         try {
             q = em.createQuery(query.toString());
+            q.setFirstResult(firstResult);
+            q.setMaxResults(numResults);
+            
             result = q.getResultList();
         }
         catch(Exception ex) {
@@ -76,11 +86,36 @@ public class TorrentSearch {
     }
 
     /**
+     * Gets a simple list of torrents in the database, with pagination.
+     * @param firstResult the index of the first result to return from the query.
+     * @param numResults the maximum number of results to return from the query.
+     * The number of results may be smaller than this.
+     * @return a list of torrents in the database starting with the torrent with
+     * the index of "firstResult" and being no bigger than "numResults".
+     * @throws java.lang.Exception if the query failed.
+     */
+    public static List<Torrent> getList(int firstResult, int numResults) throws Exception {
+        List<Torrent> result;
+
+        EntityManager em = emf.createEntityManager();
+
+        Query q = em.createQuery("SELECT t FROM Torrent t");
+
+        q.setFirstResult(firstResult);
+        q.setMaxResults(numResults);
+
+        result = q.getResultList();
+
+        return result;
+    }
+
+    /**
      * Gets a simple list of all torrents in the database.
      * @return a List of torrents containing all torrents currently in the
      * database.
+     * @throws java.lang.Exception if the query fails.
      */
-    public static List<Torrent> getList() {
+    public static List<Torrent> getList() throws Exception {
         List<Torrent> result;
 
         EntityManager em = emf.createEntityManager();

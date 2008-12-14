@@ -59,8 +59,64 @@ public class JSONTorrentList implements TorrentList {
             boolean searchDescriptions = false;
             boolean includeDead = false;
 
+            // number of results and the index of the first result
+            // set some sane defaults here
+            int numResults = 25;
+            int firstResult = 0;
+
             // our json writer
             JSONWriter json = new JSONWriter(out);
+
+                        // do we have a request for a specific number of results?
+            if(requestMap.containsKey((String)"numResults")) {
+                try {
+                    int requestedNumResults = Integer.parseInt(requestMap.get(
+                            (String)"numResults")[0]);
+                    // do we have a valid number?
+                    if(requestedNumResults > 100 || requestedNumResults < 0) {
+                        // ignore the setting and log
+                        log.log(Level.INFO, "Requested number of results was" +
+                                "invalid (requested number: " +
+                                Integer.toString(requestedNumResults) + ")");
+                    }
+                    else {
+                        // valid number in a valid range, honour it
+                        numResults = requestedNumResults;
+                    }
+                }
+                catch(NumberFormatException ex) {
+                    // error parsing the number, log and ignore the requested
+                    // number
+                    log.log(Level.INFO, "Requested number of results is not a" +
+                            "long?", ex);
+                }
+            }
+
+            // do we have a request for the index of the first result for
+            // pagination?
+            if(requestMap.containsKey((String)"firstResult")) {
+                try {
+                    int requestedFirstResult = Integer.parseInt(requestMap.get(
+                            (String)"firstResult")[0]);
+                    // do we have a valid number?
+                    if(requestedFirstResult < 0) {
+                        // ignore the setting and log
+                        log.log(Level.INFO, "Requested index of first result" +
+                                "was invalid (requested number: " +
+                                Integer.toString(requestedFirstResult) + ")");
+                    }
+                    else {
+                        // valid number in a valid range, honour it
+                        firstResult = requestedFirstResult;
+                    }
+                }
+                catch(NumberFormatException ex) {
+                    // error parsing the number, log and ignore the requested
+                    // number
+                    log.log(Level.INFO, "Requested index of first result is not a" +
+                            "long?", ex);
+                }
+            }
 
             // do we search for anything?
             if(requestMap.containsKey((String)"searchField")) {
@@ -84,7 +140,8 @@ public class JSONTorrentList implements TorrentList {
                     }
                 }
 
-                result = (Vector<Torrent>) TorrentSearch.getList(searchString, searchDescriptions, includeDead);
+                result = (Vector<Torrent>) TorrentSearch.getList(searchString,
+                        searchDescriptions, includeDead, firstResult, numResults);
             }
             // no search string given
             else {
