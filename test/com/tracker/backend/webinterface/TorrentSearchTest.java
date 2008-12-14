@@ -225,13 +225,15 @@ public class TorrentSearchTest {
             // regardless of index
 
             expResult.add(brilliant);
-            result = TorrentSearch.getList(searchString, searchDescriptions, includeDead);
+            result = TorrentSearch.getList(searchString, searchDescriptions, 
+                    includeDead,0,100);
             assertTrue(result.containsAll(expResult));
 
             // now try it with includeDead = true to make sure that the other one does
             // not match
             includeDead = true;
-            result = TorrentSearch.getList(searchString, searchDescriptions, includeDead);
+            result = TorrentSearch.getList(searchString, searchDescriptions, 
+                    includeDead,0,100);
             assertTrue(result.containsAll(expResult));
 
             includeDead = false;
@@ -239,7 +241,8 @@ public class TorrentSearchTest {
             // try to find the brilliant torrent by description
             searchString = "fabulous";
             searchDescriptions = true;
-            result = TorrentSearch.getList(searchString, searchDescriptions, includeDead);
+            result = TorrentSearch.getList(searchString, searchDescriptions, 
+                    includeDead,0,100);
             assertTrue("cannot find the torrent based on description search", result.containsAll(expResult));
             searchDescriptions = false;
 
@@ -248,20 +251,23 @@ public class TorrentSearchTest {
 
             // test if it can match % by replacing 'name' and 'description'
             searchString = "this contains";
-            result = TorrentSearch.getList(searchString, searchDescriptions, includeDead);
+            result = TorrentSearch.getList(searchString, searchDescriptions, 
+                    includeDead,0,100);
             assertTrue(result.containsAll(expResult));
 
             // search description
             // look for the 'description' word which only happens in the description
             searchString = "'description'";
             searchDescriptions = true;
-            result = TorrentSearch.getList(searchString, searchDescriptions, includeDead);
+            result = TorrentSearch.getList(searchString, searchDescriptions, 
+                    includeDead,0,100);
             assertTrue(result.containsAll(expResult));
 
             // include dead, this should find 'awful'
             includeDead = true;
             expResult.add(awful);
-            result = TorrentSearch.getList(searchString, searchDescriptions, includeDead);
+            result = TorrentSearch.getList(searchString, searchDescriptions, 
+                    includeDead,0,100);
             assertTrue(result.containsAll(expResult));
         }
         catch(Exception ex) {
@@ -278,7 +284,7 @@ public class TorrentSearchTest {
      * Test of getList method, of class TorrentSearch.
      */
     @Test
-    public void testGetList() {
+    public void testGetList() throws Exception {
         System.out.println("getList");
         // this should give back a list of all torrents.
         List<Torrent> expResult = torrents;
