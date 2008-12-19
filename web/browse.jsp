@@ -1,7 +1,22 @@
-<%-- 
-    Document   : browse
-    Created on : 14-Nov-2008, 15:01:19
-    Author     : bo
+<%--
+  $Id$
+
+  Copyright © 2008,2009 Bjørn Øivind Bjørnsen
+
+  This file is part of Quash.
+
+  Quash is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  Quash is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with Quash. If not, see <http://www.gnu.org/licenses/>.
 --%>
 
 <%@page
@@ -29,10 +44,20 @@ We need the context path for the browse.js, so create it here
             <jsp:param name="caller" value="Browse" />
         </jsp:include>
         <h1>Hello World!</h1>
+        Search field:'
         <input type="text" name="searchField" value="" />
         <input type="submit" value="Submit" />
+        Search descriptions
         <input type="checkbox" name="searchDescriptions" value="checked" checked />
+        Include dead
         <input type="checkbox" name="includeDead" value="checked" />
+        Num results
+        <select name="numResults">
+            <option>25</option>
+            <option>50</option>
+            <option>75</option>
+            <option>100</option>
+        </select>
         <div id="loading"><img src="resources/images/ajax-loader.gif" alt="loading..."/></div>
 
         <div id="torrentList" style="display:none">
