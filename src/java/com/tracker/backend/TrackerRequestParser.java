@@ -319,13 +319,52 @@ public class TrackerRequestParser {
                         // not inactive yet, and attempts at a new started
                         log.log(Level.FINE,
                             "event=started more than once. IP: " + remoteAddress.toString());
-                        em.getTransaction().rollback();
-                        em.close();
-                        return parseFailed("You are already on this torrent! Wait a while if this is not true.");
+
+                        // handle multiple event=started in a graceful way.
+                        // this seems to happen rather often during testing, and
+                        // having to wait for the inactive-period to pass is not
+                        // ideal. Instead, let's just let the request pass, but
+                        // making sure that we do not add duplicate peers.
+                        // tl;dr - do nothing here and end up in regular
+                        // response creation.
+                    }
+                    else {
+                        // peer was inactive and has been removed, toss a
+                        // NoResultsFoundException to make sure the peer is
+                        // readded to the torrent.
+                        throw new NoResultException();
                     }
                 }
                 // no peer found (it's a good thing).
-                catch(NoResultException ex) {}
+                catch(NoResultException ex) {
+                    // add new peer
+                    p = new Peer();
+
+                    p.setPeerId(encodedPeerId);
+
+                    p.setBytesLeft(left);
+                    p.setDownloaded(downloaded);
+                    p.setUploaded(uploaded);
+
+                    p.setPort(port);
+
+                    // set address
+                    p.setIp(remoteAddress);
+
+                    p.setLastActionTime(Calendar.getInstance().getTime());
+
+                    // if left = 0, this peer has a complete copy, so add as seed,
+                    // if not, add as leech
+                    if(left == 0) {
+                        t.addSeeder(p);
+                    }
+                    else {
+                        t.addLeecher(p);
+                    }
+
+                    // persist this object
+                    em.persist(p);
+                }
                 // oh dear! some other error.
                 catch(Exception ex) {
                     log.log(Level.SEVERE,
@@ -335,33 +374,6 @@ public class TrackerRequestParser {
                     return(parseFailed("Tracker error."));
                 }
 
-                // add new peer
-                p = new Peer();
-
-                p.setPeerId(encodedPeerId);
-
-                p.setBytesLeft(left);
-                p.setDownloaded(downloaded);
-                p.setUploaded(uploaded);
-
-                p.setPort(port);
-
-                // set address
-                p.setIp(remoteAddress);
-
-                p.setLastActionTime(Calendar.getInstance().getTime());
-
-                // if left = 0, this peer has a complete copy, so add as seed,
-                // if not, add as leech
-                if(left == 0) {
-                    t.addSeeder(p);
-                }
-                else {
-                    t.addLeecher(p);
-                }
-
-                // persist this object
-                em.persist(p);
             }
             // client stopped download
             else if(event.equalsIgnoreCase("stopped")) {
