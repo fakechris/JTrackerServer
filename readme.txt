@@ -25,7 +25,8 @@ servlet container like Apache Tomcat makes it easy to deploy to the web.
 2) How do I use it?
 Quash depends on a couple of things. Primarily, you need the JDK and the Apache
 Commons FileUpload classes (which is used for the uploading of torrentfiles),
-which is available from <http://commons.apache.org/fileupload/>.
+which is available from <http://commons.apache.org/fileupload/> and included
+in binary form in the "third-party" directory.
 
 You also need to configure the database you are going to use for persistent
 information, and possibly install the JDBC drivers for this particular database.
