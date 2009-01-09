@@ -487,7 +487,7 @@ public class TrackerRequestParser {
             em.merge(p);
 
         }
-        // commit the changes made so far and close the EntityManager
+        // commit the changes made so far
         try {
             em.getTransaction().commit();
         } catch(Exception ex) {
