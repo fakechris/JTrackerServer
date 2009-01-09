@@ -11,15 +11,24 @@
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
                 <library>
-                    <file>${libs.commons-io.classpath}</file>
+                    <file>${file.reference.commons-io.jar}</file>
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
                 <library>
-                    <file>${libs.commons-fileupload.classpath}</file>
+                    <file>${file.reference.commons-fileupload.jar}</file>
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
             </web-module-libraries>
-            <web-module-additional-libraries/>
+            <web-module-additional-libraries>
+                <library>
+                    <file>${file.reference.commons-fileupload.jar}</file>
+                    <path-in-war>/</path-in-war>
+                </library>
+                <library>
+                    <file>${file.reference.commons-io.jar}</file>
+                    <path-in-war>/</path-in-war>
+                </library>
+            </web-module-additional-libraries>
             <source-roots>
                 <root id="src.dir"/>
             </source-roots>
