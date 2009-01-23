@@ -21,11 +21,11 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!-- Header -->
-<div id="header" style="text-align:center">
-    <table border="0" width="100%">
+<div id="header">
+    <table id="headerLinks">
 <%
 String caller = request.getParameter("caller");
-String[] pages = {"News", "Browse", "Upload", "FAQ", "Help", "Stats" };
+String[] pages = { "Browse", "Upload" };
 
 for(String s : pages) {
     out.println("<td>");
