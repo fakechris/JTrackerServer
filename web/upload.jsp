@@ -20,21 +20,30 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-   "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
 <script type="text/javascript" src="resources/jquery_1.2.6/jquery-1.2.6.js"></script>
 <script type="text/javascript" src="resources/jquery_1.2.6/jquery.form.js"></script>
 <script type="text/javascript" src="resources/behaviour/upload.js"></script>
 
-<html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Upload</title>
-    </head>
-    <body>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" >
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="keywords" content="quash, bittorrent, torrent" />
+    <meta name="description" content="The upload interface to this Quash-based
+    tracker." />
+
+    <title>Upload Torrents</title>
+
+    <style type="text/css" media="all">
+        @import "resources/css/default.css";
+    </style>
+</head>
+<body onload="window.defaultStatus='Upload Torrents';" id="upload-torrents">
+    <div id="container">
         <jsp:include page="header.jsp">
-            <jsp:param name="caller" value="News" />
+            <jsp:param name="caller" value="Upload" />
         </jsp:include>
         <!-- do some checking on size of torrentfile in javascript -->
         <form id="xmlUploadForm" action="xml/TakeUpload" method="POST" enctype="multipart/form-data">
@@ -50,5 +59,6 @@
             <div id="warningDiv" style="display: none"></div>
             <div id="redownloadDiv" style="display: none"></div>
         </div>
-    </body>
+    </div>
+</body>
 </html>
