@@ -83,12 +83,36 @@ We need the context path for the browse.js, so create it here
                         <em><b>Torrent</b></em>
                     </th>
                     <th>
+                        <em><b>Seeders</b></em>
+                    </th>
+                    <th>
+                        <em><b>Peers</b></em>
+                    </th>
+                    <th>
+                        <em><b>Completed</b></em>
+                    </th>
+                    <th>
                         <em><b>Date Added</b></em>
                     </th>
                 </tr>
                 <td>
                     <!-- content provided by JS -->
                     <div id="torrentName">
+                    </div>
+                </td>
+                <td>
+                    <!-- content provided by JS -->
+                    <div id="torrentSeeds">
+                    </div>
+                </td>
+                <td>
+                    <!-- content provided by JS -->
+                    <div id="torrentPeers">
+                    </div>
+                </td>
+                <td>
+                    <!-- content provided by JS -->
+                    <div id="torrentCompleted">
                     </div>
                 </td>
                 <td>
