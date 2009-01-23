@@ -22,6 +22,9 @@ function getTorrentList(searchParameters) {
  * processes the XML received from the server and populates the torrentlist.
  */
 function processBrowseResult(xml) {
+    //$("#torrentList").fadeOut("fast");
+    $("#torrentName").empty();
+    $("#torrentDate").empty();
     $(xml).find('torrent').each(function(index) {
         // list of all torrents including links to the relevant download.
         $("#torrentName").append("<a href=" + contextPath + "/Download?id=" 
@@ -29,16 +32,18 @@ function processBrowseResult(xml) {
             + $(this).find("name").text() + "</a><br />");
         $("#torrentDate").append($(this).find("dateAdded").text() + "<br />");
     });
-    $("div:hidden").fadeIn("fast");
+    //$("#torrentList").fadeIn("fast");
 }
 
 /**
  * displays an error in case AJAX failed horribly.
  */
 function displayError(XMLHttpRequest, textStatus, errorThrown) {
+    $("#torrentName").empty();
+    $("#torrentDate").empty();
     $("#torrentName").append("An error occured while getting AJAX response.");
     $("#torrentDate").append(textStatus + " - " + errorThrown);
-    $("div:hidden").show();
+    //$("div:hidden").show();
 }
 
 $(document).ready(function() {
@@ -52,12 +57,9 @@ $(document).ready(function() {
     // fill the torrentlist
     getTorrentList({});
 
-    // bind the submit button to the getTorrentlist function
-    $("#submit").click(function() {
-        getTorrentList({
-            searchField: $("#searchField").val(),
-            searchDescriptions: $("#searchDescriptions").val(),
-            includeDead: $("#includeDead").val()
-        });
+    // bind the form to the processing
+    $("#searchForm").ajaxForm({
+        dataType: 'xml',
+        success: processBrowseResult
     });
 });
