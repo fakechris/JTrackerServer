@@ -23,8 +23,8 @@
 contentType="text/html"
 pageEncoding="UTF-8"
 %>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-   "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <%--
 We need the context path for the browse.js, so create it here
 --%>
@@ -32,35 +32,51 @@ We need the context path for the browse.js, so create it here
     var contextPath = "<%=application.getContextPath()%>";
 </script>
 <script type="text/javascript" src="resources/jquery_1.2.6/jquery-1.2.6.js"></script>
+<script type="text/javascript" src="resources/jquery_1.2.6/jquery.form.js"></script>
 <script type="text/javascript" src="resources/behaviour/browse.js"></script>
 
-<html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Browse Torrents</title>
-    </head>
-    <body>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" >
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="keywords" content="quash, bittorrent, torrent" />
+    <meta name="description" content="A list of torrents tracked by this
+    tracker, including downloads for the torrentfiles and search capabilites" />
+
+    <title>Browse Torrents</title>
+
+    <style type="text/css" media="all">
+        @import "resources/css/default.css";
+    </style>
+</head>
+
+<body onload="window.defaultStatus='Browse Torrents';" id="browse-torrents">
+    <div id="container">
+        <%-- Load the header --%>
         <jsp:include page="header.jsp">
             <jsp:param name="caller" value="Browse" />
         </jsp:include>
-        <h1>Hello World!</h1>
-        Search field:'
-        <input type="text" name="searchField" value="" />
-        <input type="submit" value="Submit" />
-        Search descriptions
-        <input type="checkbox" name="searchDescriptions" value="checked" checked />
-        Include dead
-        <input type="checkbox" name="includeDead" value="checked" />
-        Num results
-        <select name="numResults">
-            <option>25</option>
-            <option>50</option>
-            <option>75</option>
-            <option>100</option>
-        </select>
-        <div id="loading"><img src="resources/images/ajax-loader.gif" alt="loading..."/></div>
+        <div id="searchBar">
+            <form id="searchForm" action="xml/torrentlist" method="post">
+                Search terms: <input type="text" name="searchField" value="" />
+                Search descriptions: <input type="checkbox"
+                    name="searchDescriptions" value="checked" checked="checked" />
+                Include dead torrents: <input type="checkbox" name="includeDead" value="checked" />
+                Number of results to return:
+                <select name="numResults">
+                    <option>25</option>
+                    <option>50</option>
+                    <option>75</option>
+                    <option>100</option>
+                </select>
+                <input type="submit" value="Search Torrents" name="submit" />
+            </form>
+            <div id="loading">
+                <img src="resources/images/ajax-loader.gif" alt="loading..."/>
+            </div>
+        </div>
 
-        <div id="torrentList" style="display:none">
+        <div id="torrentList">
             <table border="0">
                 <tr>
                     <th>
@@ -72,15 +88,17 @@ We need the context path for the browse.js, so create it here
                 </tr>
                 <td>
                     <!-- content provided by JS -->
-                    <div id="torrentName" style="display:none">
+                    <div id="torrentName">
                     </div>
                 </td>
                 <td>
                     <!-- content provided by JS -->
-                    <div id="torrentDate" style="display:none">
+                    <div id="torrentDate">
                     </div>
                 </td>
             </table>
         </div>
-    </body>
+    </div>
+</body>
+
 </html>
