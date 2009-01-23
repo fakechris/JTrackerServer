@@ -1,0 +1,81 @@
+/* 
+    Document   : default
+    Created on : 15-Jan-2009, 18:30:26
+    Author     : bo
+    Description:
+*/
+
+root { 
+    display: block;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+#header {
+   text-align: center;
+   width: 100%;
+
+   padding-top: 30px;
+
+   margin: 0;
+
+   border: solid #333333;
+   border-width: 0 0 2px 0;
+
+   background: #eeeeee;
+   color: #333333;
+}
+
+#headerLinks {
+    text-align: center;
+    width: 100%;
+}
+
+#container {
+    width: 80%;
+    height: 90%;
+    min-height: 75%;
+
+    overflow: auto;
+    
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 0;
+
+    border: solid #C0C0C0;
+    border-width: 0 2px 2px 2px;
+
+    background: #dddddd;
+}
+
+#torrentName {
+    color: #0000A0;
+}
+
+#torrentDate {
+    color: #C0C0C0;
+    font-style: normal;
+    font-weight: bold;
+}
+
+a:link {
+    color: #6a6a6a;
+    text-decoration: none;
+}
+
+a:visited {
+    color: #606060;
+    text-decoration: none
+}
+
+a:active {
+    text-decoration: none
+}
+
+a:hover {
+    text-decoration: underline;
+}
