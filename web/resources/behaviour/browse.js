@@ -19,31 +19,44 @@ function getTorrentList(searchParameters) {
 }
 
 /**
+ * Clears the torrentlist - used for reading the space for new data or errors
+ */
+function emptyList() {
+    $("#torrentName").empty();
+    $("#torrentSeeds").empty();
+    $("#torrentPeers").empty();
+    $("#torrentCompleted").empty();
+    $("#torrentDate").empty();
+}
+
+/**
  * processes the XML received from the server and populates the torrentlist.
  */
 function processBrowseResult(xml) {
-    //$("#torrentList").fadeOut("fast");
-    $("#torrentName").empty();
-    $("#torrentDate").empty();
-    $(xml).find('torrent').each(function(index) {
+    emptyList();
+    $(xml).find('torrent').each(function() {
         // list of all torrents including links to the relevant download.
         $("#torrentName").append("<a href=" + contextPath + "/Download?id=" 
-            + $(this).attr("id") + ">" + "#" + index + " "
-            + $(this).find("name").text() + "</a><br />");
-        $("#torrentDate").append($(this).find("dateAdded").text() + "<br />");
+            + $(this).attr("id") + "> "
+            + $(this).find("name").text()
+            + "</a><br />");
+        $("#torrentSeeds").append($(this).find("numSeeders").text()
+            + "<br />");
+        $("#torrentPeers").append($(this).find("numLeechers").text()
+            + "<br />");
+        $("#torrentCompleted").append($(this).find("numCompleted").text()
+            + "<br />");
+        $("#torrentDate").append($(this).find("dateAdded").text()
+            + "<br />");
     });
-    //$("#torrentList").fadeIn("fast");
 }
 
 /**
  * displays an error in case AJAX failed horribly.
  */
 function displayError(XMLHttpRequest, textStatus, errorThrown) {
-    $("#torrentName").empty();
-    $("#torrentDate").empty();
+    emptyList();
     $("#torrentName").append("An error occured while getting AJAX response.");
-    $("#torrentDate").append(textStatus + " - " + errorThrown);
-    //$("div:hidden").show();
 }
 
 $(document).ready(function() {
