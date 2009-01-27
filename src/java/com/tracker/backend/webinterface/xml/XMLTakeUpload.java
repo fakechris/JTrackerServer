@@ -115,6 +115,7 @@ public class XMLTakeUpload extends HttpServlet implements TakeUpload {
         return "Short description";
     }// </editor-fold>
 
+    @Override
     public void parseUpload(HttpServletRequest request, PrintWriter out) throws Exception {
         Map<String, String> response;
 
@@ -122,23 +123,10 @@ public class XMLTakeUpload extends HttpServlet implements TakeUpload {
             // split the request.
             TorrentUpload upload = new TorrentUpload();
             TorrentUpload.UnparsedTorrentData data = upload.getDataFromRequest(request);
-            
-            // reconstruct the URL of the application, used to check against
-            // announce entries in the addTorrent method. We use this method
-            // instead of request.getRequestURL because it is simpler than
-            // having to remove all the /TakeUpload bits.
-            
-            String scheme = request.getScheme();             // http
-            String serverName = request.getServerName();     // hostname.com
-            int serverPort = request.getServerPort();        // 8080, if 80, disregard
-            String contextPath = request.getContextPath();   // /mywebapp
-            String URL = scheme + "://" + serverName;
-            // disregard the port if it's 80, no need to add it
-            // TODO: accept :80 in announce also?
-            if(serverPort != 80) {
-                URL += ":" + serverPort;
-            }
-            URL += contextPath;
+
+            // get the URL of the webapp
+            String URL = TorrentUpload.getURL(request);
+
             // parse the request
             response = TorrentUpload.addTorrent(data.decodedTorrent, data.name,
                     data.description, URL);
