@@ -80,7 +80,7 @@ public class XMLTorrentList implements TorrentList {
             Vector<Torrent> result = (Vector<Torrent>) TorrentSearch.getList(requestMap);
             Iterator itr = result.iterator();
 
-//            // Set-up JAXP + SAX
+            // Set-up JAXP + SAX
             StreamResult streamResult = new StreamResult(out);
             SAXTransformerFactory tf = (SAXTransformerFactory) SAXTransformerFactory.newInstance();
 
