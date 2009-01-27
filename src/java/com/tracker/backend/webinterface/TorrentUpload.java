@@ -71,6 +71,31 @@ public class TorrentUpload {
     }
 
     /**
+     * A convenience method for reconstructing the URL of the application. Used
+     * to check against the Announce entries of the uploaded torrents.
+     * We use this method instead of request.getRequestURL because it is simpler
+     * than having to remove all the /TakeUpload bits.
+     * @param request the request to reconstruct the URL of this web-app from.
+     */
+    static public String getURL(HttpServletRequest request) {
+        String scheme = request.getScheme();             // http
+        String serverName = request.getServerName();     // hostname.com
+        int serverPort = request.getServerPort();        // 8080, if 80, disregard
+        String contextPath = request.getContextPath();   // /mywebapp
+
+        String URL = scheme + "://" + serverName;
+        // disregard the port if it's 80, no need to add it
+        // TODO: accept :80 in announce also?
+        if(serverPort != 80) {
+            URL += ":" + serverPort;
+        }
+
+        URL += contextPath;
+
+        return URL;
+    }
+
+    /**
      * A convenience method to separate out the interesting information from
      * a HttpServletRequest.
      * @param request the HttpServletRequest to parse the information from.
