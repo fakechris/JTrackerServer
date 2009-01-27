@@ -22,7 +22,11 @@
 package com.tracker.backend.webinterface;
 
 import com.tracker.backend.entity.Torrent;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
@@ -37,6 +41,114 @@ import javax.persistence.Query;
 public class TorrentSearch {
     // keep one copy of the entity manager factory
     static EntityManagerFactory emf = Persistence.createEntityManagerFactory("TorrentTrackerPU");
+    static Logger log = Logger.getLogger(TorrentSearch.class.getName());
+
+    /**
+     * A convenience method for getting a list of torrents given a simple map of
+     * the request as given by the HTTP-servlet methods.
+     * @param requestMap the request to produce a torrentlist for. For a
+     * complete explanation of the keys and values this may consist of, see
+     * the documentation of TorrentList.printTorrentList().
+     * @return a List of Torrents acquired from the requests given.
+     * @throws Exception if the query cannot be created or if the execution
+     * failed.
+     */
+    public static List<Torrent> getList(Map<String, String[]> requestMap)
+    throws Exception {
+            // query result
+            List<Torrent> result;
+
+            // number of results and the index of the first result
+            // set some sane defaults here
+            int numResults = 25;
+            int firstResult = 0;
+
+            boolean searchDescriptions = false;
+            boolean includeDead = false;
+
+            // do we have a request for a specific number of results?
+            if(requestMap.containsKey((String)"numResults")) {
+                try {
+                    int requestedNumResults = Integer.parseInt(requestMap.get(
+                            (String)"numResults")[0]);
+                    // do we have a valid number?
+                    if(requestedNumResults > 100 || requestedNumResults < 0) {
+                        // ignore the setting and log
+                        log.log(Level.INFO, "Requested number of results was" +
+                                "invalid (requested number: " +
+                                Integer.toString(requestedNumResults) + ")");
+                    }
+                    else {
+                        // valid number in a valid range, honour it
+                        numResults = requestedNumResults;
+                    }
+                }
+                catch(NumberFormatException ex) {
+                    // error parsing the number, log and ignore the requested
+                    // number
+                    log.log(Level.INFO, "Requested number of results is not a" +
+                            "long?", ex);
+                }
+            }
+
+            // do we have a request for the index of the first result for
+            // pagination?
+            if(requestMap.containsKey((String)"firstResult")) {
+                try {
+                    int requestedFirstResult = Integer.parseInt(requestMap.get(
+                            (String)"firstResult")[0]);
+                    // do we have a valid number?
+                    if(requestedFirstResult < 0) {
+                        // ignore the setting and log
+                        log.log(Level.INFO, "Requested index of first result" +
+                                "was invalid (requested number: " +
+                                Integer.toString(requestedFirstResult) + ")");
+                    }
+                    else {
+                        // valid number in a valid range, honour it
+                        firstResult = requestedFirstResult;
+                    }
+                }
+                catch(NumberFormatException ex) {
+                    // error parsing the number, log and ignore the requested
+                    // number
+                    log.log(Level.INFO, "Requested index of first result is not a" +
+                            "long?", ex);
+                }
+            }
+
+            // do we search for anything?
+            if(requestMap.containsKey((String)"searchField")) {
+                // search for the search string given
+                // (there is only one object of this anyway)
+                String searchString = requestMap.get((String)"searchField")[0];
+
+                // do we search descriptions?
+                if(requestMap.containsKey((String)"searchDescriptions")) {
+                    String value = requestMap.get((String)"searchDescriptions")[0];
+                    if(value.equalsIgnoreCase("checked")) {
+                        searchDescriptions = true;
+                    }
+                }
+
+                // do we search dead torrents?
+                if(requestMap.containsKey((String)"includeDead")) {
+                    String value = requestMap.get((String)"includeDead")[0];
+                    if(value.equalsIgnoreCase("checked")) {
+                        includeDead = true;
+                    }
+                }
+
+                result = getList(searchString,
+                        searchDescriptions, includeDead, firstResult, numResults);
+            }
+            // no search string given
+            else {
+                result = getList(firstResult, numResults);
+            }
+
+            return result;
+    }
 
     /**
      * Gets a list of torrents from the database with the given searchstring
