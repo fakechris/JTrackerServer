@@ -74,102 +74,13 @@ public class XMLTorrentList implements TorrentList {
      * Implements printTorrentList from com.tracker.backend.webinterface.TorrentList
      * @see com.tracker.backend.webinterface.TorrentList
      */
+    @Override
     public void printTorrentList(Map<String, String[]> requestMap, PrintWriter out) {
         try {
-            // query result
-            Vector<Torrent> result;
-            Iterator itr;
+            Vector<Torrent> result = (Vector<Torrent>) TorrentSearch.getList(requestMap);
+            Iterator itr = result.iterator();
 
-            // number of results and the index of the first result
-            // set some sane defaults here
-            int numResults = 25;
-            int firstResult = 0;
-
-            boolean searchDescriptions = false;
-            boolean includeDead = false;
-            
-            // do we have a request for a specific number of results?
-            if(requestMap.containsKey((String)"numResults")) {
-                try {
-                    int requestedNumResults = Integer.parseInt(requestMap.get(
-                            (String)"numResults")[0]);
-                    // do we have a valid number?
-                    if(requestedNumResults > 100 || requestedNumResults < 0) {
-                        // ignore the setting and log
-                        log.log(Level.INFO, "Requested number of results was" +
-                                "invalid (requested number: " +
-                                Integer.toString(requestedNumResults) + ")");
-                    }
-                    else {
-                        // valid number in a valid range, honour it
-                        numResults = requestedNumResults;
-                    }
-                }
-                catch(NumberFormatException ex) {
-                    // error parsing the number, log and ignore the requested
-                    // number
-                    log.log(Level.INFO, "Requested number of results is not a" +
-                            "long?", ex);
-                }
-            }
-
-            // do we have a request for the index of the first result for
-            // pagination?
-            if(requestMap.containsKey((String)"firstResult")) {
-                try {
-                    int requestedFirstResult = Integer.parseInt(requestMap.get(
-                            (String)"firstResult")[0]);
-                    // do we have a valid number?
-                    if(requestedFirstResult < 0) {
-                        // ignore the setting and log
-                        log.log(Level.INFO, "Requested index of first result" +
-                                "was invalid (requested number: " +
-                                Integer.toString(requestedFirstResult) + ")");
-                    }
-                    else {
-                        // valid number in a valid range, honour it
-                        firstResult = requestedFirstResult;
-                    }
-                }
-                catch(NumberFormatException ex) {
-                    // error parsing the number, log and ignore the requested
-                    // number
-                    log.log(Level.INFO, "Requested index of first result is not a" +
-                            "long?", ex);
-                }
-            }
-
-            // do we search for anything?
-            if(requestMap.containsKey((String)"searchField")) {
-                // search for the search string given
-                // (there is only one object of this anyway)
-                String searchString = requestMap.get((String)"searchField")[0];
-
-                // do we search descriptions?
-                if(requestMap.containsKey((String)"searchDescriptions")) {
-                    String value = requestMap.get((String)"searchDescriptions")[0];
-                    if(value.equalsIgnoreCase("checked")) {
-                        searchDescriptions = true;
-                    }
-                }
-
-                // do we search dead torrents?
-                if(requestMap.containsKey((String)"includeDead")) {
-                    String value = requestMap.get((String)"includeDead")[0];
-                    if(value.equalsIgnoreCase("checked")) {
-                        includeDead = true;
-                    }
-                }
-
-                result = (Vector<Torrent>) TorrentSearch.getList(searchString, 
-                        searchDescriptions, includeDead, firstResult, numResults);
-            }
-            // no search string given
-            else {
-                result = (Vector<Torrent>) TorrentSearch.getList(firstResult, numResults);
-            }
-
-            // Set-up JAXP + SAX
+//            // Set-up JAXP + SAX
             StreamResult streamResult = new StreamResult(out);
             SAXTransformerFactory tf = (SAXTransformerFactory) SAXTransformerFactory.newInstance();
 
