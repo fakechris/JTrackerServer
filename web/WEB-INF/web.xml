@@ -5,7 +5,17 @@
     <servlet>
         <servlet-name>Announce</servlet-name>
         <servlet-class>com.tracker.frontend.Announce</servlet-class>
-    </servlet>
+        <init-param>
+            <description>The minimum interval in seconds the tracker requests between announces</description>
+            <param-name>minInterval</param-name>
+            <param-value>180</param-value>
+        </init-param>
+        <init-param>
+            <description>The default time in seconds between announces, to be returned to the peer.</description>
+            <param-name>defaultInterval</param-name>
+            <param-value>1800</param-value>
+        </init-param>
+        </servlet>
     <servlet>
         <servlet-name>Scrape</servlet-name>
         <servlet-class>com.tracker.frontend.Scrape</servlet-class>
@@ -38,6 +48,10 @@
     <servlet>
         <servlet-name>XMLTakeUpload</servlet-name>
         <servlet-class>com.tracker.backend.webinterface.xml.XMLTakeUpload</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>JSONTakeUpload</servlet-name>
+        <servlet-class>com.tracker.backend.webinterface.json.JSONTakeUpload</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>Announce</servlet-name>
@@ -98,6 +112,14 @@
     <servlet-mapping>
         <servlet-name>JSON Torrentlist</servlet-name>
         <url-pattern>/json/TorrentList</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>JSONTakeUpload</servlet-name>
+        <url-pattern>/json/takeupload</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>JSONTakeUpload</servlet-name>
+        <url-pattern>/json/TakeUpload</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
