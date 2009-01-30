@@ -25,10 +25,11 @@ import com.tracker.backend.entity.Peer;
 import com.tracker.backend.entity.Torrent;
 
 import java.net.InetAddress;
-import java.util.TreeMap;
 import java.util.BitSet;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Random;
 import java.util.Vector;
 import java.util.logging.Level;
@@ -44,16 +45,15 @@ import javax.persistence.Query;
  * @author bo
  */
 public class TrackerRequestParser {
-    private TreeMap<String,String> requestParams;
+    private Map<String,String[]> requestParams;
     private InetAddress remoteAddress;
     private static EntityManagerFactory emf = Persistence.createEntityManagerFactory("TorrentTrackerPU");
 
     private Logger log = Logger.getLogger(TrackerRequestParser.class.getName());
 
-    // TODO: get from config or some such
     /// intervals between announces
-    private Long minInterval = (long)180;
-    private Long defaultInterval = (long)1800;
+    private Long minInterval = Long.valueOf(180);
+    private Long defaultInterval = Long.valueOf(1800);
 
     public TrackerRequestParser()
     {
@@ -61,12 +61,12 @@ public class TrackerRequestParser {
 
     /**
      * Performs a scrape on all tracked torrents
-     * @return a TreeMap consisting of {infoHash,{complete,downloaded,incomplete}}
+     * @return a HashMap consisting of {infoHash,{complete,downloaded,incomplete}}
      */
-    public TreeMap<String, TreeMap> scrape()
+    public HashMap<String, HashMap> scrape()
     {
-        TreeMap<String, TreeMap> result = new TreeMap<String, TreeMap>();
-        TreeMap<String, Long> contents;
+        HashMap<String, HashMap> result = new HashMap<String, HashMap>();
+        HashMap<String, Long> contents;
 
         EntityManager em = emf.createEntityManager();
 
@@ -76,7 +76,7 @@ public class TrackerRequestParser {
         Iterator itr = torrents.iterator();
         while(itr.hasNext()) {
             Torrent t = (Torrent) itr.next();
-            contents = new TreeMap<String, Long>();
+            contents = new HashMap<String, Long>();
             contents.put((String)"complete", t.getNumSeeders());
             contents.put((String)"downloaded", t.getNumCompleted());
             contents.put((String)"incomplete", t.getNumLeechers());
@@ -90,12 +90,12 @@ public class TrackerRequestParser {
     /**
      * Performs a scrape on a specified torrent.
      * @param infoHash the info hash to scrape
-     * @return a TreeMap consisting of {complete=x,downloaded=y,incomplete=z}}
+     * @return a HashMap consisting of {complete=x,downloaded=y,incomplete=z}}
      * @throws java.lang.Exception if the torrent cannot be found.
      */
-    public TreeMap<String, Long> scrape(String infoHash) throws Exception
+    public HashMap<String, Long> scrape(String infoHash) throws Exception
     {
-        TreeMap<String, Long> results = new TreeMap<String, Long>();
+        HashMap<String, Long> results = new HashMap<String, Long>();
 
         EntityManager em = emf.createEntityManager();
         
@@ -135,12 +135,12 @@ public class TrackerRequestParser {
         return results;
     }
 
-    public void setRequestParams(TreeMap<String,String> params)
+    public void setRequestParams(Map params)
     {
         requestParams = params;
     }
 
-    public TreeMap getRequestParams()
+    public Map<String,String[]> getRequestParams()
     {
         return(requestParams);
     }
@@ -155,7 +155,27 @@ public class TrackerRequestParser {
         return(remoteAddress);
     }
 
-    public TreeMap<String,? extends Object> parseRequest() throws Exception
+    public Long getMinInterval()
+    {
+        return minInterval;
+    }
+
+    public void setMinInterval(Long interval)
+    {
+        minInterval = interval;
+    }
+
+    public Long getDefaultInterval()
+    {
+        return defaultInterval;
+    }
+
+    public void setDefaultInterval(Long interval)
+    {
+        defaultInterval = interval;
+    }
+
+    public HashMap<String,? extends Object> parseRequest() throws Exception
     {
         if(requestParams == null || remoteAddress == null) {
             return(null);
@@ -164,13 +184,13 @@ public class TrackerRequestParser {
         EntityManager em = emf.createEntityManager();
         // cannot use generics here because the value must be able to hold
         // several different classes, and one cannot instantiate a collection
-        // without a concrete generic class (ie, no new TreeMap<String,?>();).
-        TreeMap responseParams = new TreeMap();
+        // without a concrete generic class (ie, no new HashMap<String,?>();).
+        HashMap responseParams = new HashMap();
         String encodedInfoHash, encodedPeerId;
-        String event = new String();
+        String event = "";
         Long uploaded, downloaded, left, port;
         boolean returnSeeds = true;
-        Integer numPeersToReturn = new Integer(50);
+        Integer numPeersToReturn = Integer.valueOf(50);
         Torrent t = null;
         Peer p = null;
 
@@ -185,7 +205,7 @@ public class TrackerRequestParser {
         // encode and store info hash for later
         {
             byte[] rawInfoHash = new byte[20];
-            String tmp = requestParams.get((String)"info_hash");
+            String tmp = requestParams.get((String)"info_hash")[0];
             for(int i = 0; i < rawInfoHash.length; i++) {
                 rawInfoHash[i] = (byte) tmp.charAt(i);
             }
@@ -200,7 +220,7 @@ public class TrackerRequestParser {
         // encode and store peer id for later
         {
             byte[] rawPeerId = new byte[20];
-            String tmp = requestParams.get((String)"peer_id");
+            String tmp = requestParams.get((String)"peer_id")[0];
             for(int i = 0; i < rawPeerId.length; i++) {
                 rawPeerId[i] = (byte) tmp.charAt(i);
             }
@@ -212,42 +232,42 @@ public class TrackerRequestParser {
             return(parseFailed("missing port number!"));
         }
 
-        port = Long.parseLong((String)requestParams.get((String)"port"));
+        port = Long.parseLong((String)requestParams.get((String)"port")[0]);
 
         // check for uploaded
         if(!requestParams.containsKey((String)"uploaded")) {
             return(parseFailed("missing 'uploaded' field!"));
         }
 
-        uploaded = Long.parseLong((String)requestParams.get((String)"uploaded"));
+        uploaded = Long.parseLong((String)requestParams.get((String)"uploaded")[0]);
 
         // check for downloaded
         if(!requestParams.containsKey((String)"downloaded")) {
             return(parseFailed("missing 'downloaded' field!"));
         }
 
-        downloaded = Long.parseLong((String)requestParams.get((String)"downloaded"));
+        downloaded = Long.parseLong((String)requestParams.get((String)"downloaded")[0]);
 
         // check for left
         if(!requestParams.containsKey((String)"left")) {
             return(parseFailed("missing 'left' field!"));
         }
 
-        left = Long.parseLong((String)requestParams.get((String)"left"));
+        left = Long.parseLong((String)requestParams.get((String)"left")[0]);
 
         /*
          * Check for optional fields
          */
         // check for 'compact'
         if(requestParams.containsKey((String)"compact")) {
-            if(requestParams.get((String)"compact").equalsIgnoreCase("0")) {
+            if(requestParams.get((String)"compact")[0].equalsIgnoreCase("0")) {
                 return(parseFailed("this tracker only supports compact responses"));
             }
         }
 
         // check for numwant
         if(requestParams.containsKey((String)"numwant")) {
-            Integer numWant = Integer.parseInt((String)requestParams.get((String)"numwant"));
+            Integer numWant = Integer.parseInt((String)requestParams.get((String)"numwant")[0]);
             // never give more than 50, less than 0 is not valid
             if(numWant < numPeersToReturn && numWant >= 0) {
                 // honour numwant from the client
@@ -260,7 +280,7 @@ public class TrackerRequestParser {
             // is this on the local LAN?
             if(remoteAddress.isSiteLocalAddress()) {
                 // honour the ip setting
-                remoteAddress = InetAddress.getByName(requestParams.get((String)"ip"));
+                remoteAddress = InetAddress.getByName(requestParams.get((String)"ip")[0]);
             }
         }
 
@@ -302,7 +322,7 @@ public class TrackerRequestParser {
          * event = started key/value pair.
          */
         if(requestParams.containsKey((String)"event")) {
-            event = (String) requestParams.get((String)"event");
+            event = (String) requestParams.get((String)"event")[0];
         }
 
         if(!event.isEmpty()) {
@@ -507,7 +527,7 @@ public class TrackerRequestParser {
         responseParams.put((String)"min interval", minInterval);
 
         // find some peers!
-        String peerList = new String();
+        String peerList;
         if(!returnSeeds) {
             // only return leechers
             Vector<Peer> v = (Vector<Peer>) t.getLeechersData();
@@ -572,7 +592,7 @@ public class TrackerRequestParser {
     private String getCompactPeerList(Vector<Peer> population, Integer numWanted, Peer askingPeer)
     {
         int numReturn = numWanted;
-        String ret = new String();
+        StringBuilder result = new StringBuilder();
         // is the population big enough to get all the peers we want?
         if(population.size() < numWanted) {
             // apparently not
@@ -588,7 +608,7 @@ public class TrackerRequestParser {
                     continue;
                 }
 
-                ret += p.getCompactAddressPort();
+                result.append(p.getCompactAddressPort());
             }
         }
 
@@ -605,7 +625,7 @@ public class TrackerRequestParser {
                 }
                 Peer p = population.get(next);
                 if(askingPeer != null && !p.equals(askingPeer)) {
-                    ret += p.getCompactAddressPort();
+                    result.append(p.getCompactAddressPort());
                 }
                 picked.set(next);
             }
@@ -618,7 +638,7 @@ public class TrackerRequestParser {
             // small swarms where peers to return is less than the total
             // amount of peers
         }
-        return ret;
+        return result.toString();
     }
 
     // not implemented
@@ -630,8 +650,8 @@ public class TrackerRequestParser {
      * @return returns a TreeMap containing one element. The key being
      * "failure reason" and the value being the human-readable explanation.
      */
-    private TreeMap<String,String> parseFailed(String error) {
-        TreeMap<String,String> t = new TreeMap<String,String>();
+    private HashMap<String,String> parseFailed(String error) {
+        HashMap<String,String> t = new HashMap<String,String>();
         t.put((String)"failure reason", error);
         return(t);
     }
@@ -642,8 +662,8 @@ public class TrackerRequestParser {
      * @return returns a TreeMap containing one element. The key being
      * "warning message" and the value being the human-readable explanation.
      */
-    private TreeMap<String,String> parseWarning(String warning) {
-        TreeMap<String,String> t = new TreeMap<String,String>();
+    private HashMap<String,String> parseWarning(String warning) {
+        HashMap<String,String> t = new HashMap<String,String>();
         t.put((String)"warning message", warning);
         return(t);
     }

@@ -107,20 +107,22 @@ public class Bencode {
      */
     public static String encode(List arg) throws Exception {
         Iterator i = arg.iterator();
-        String result = "l";
+        //String result = "l";
+        StringBuilder result = new StringBuilder();
+        result.append("l");
         
         while(i.hasNext()) {
             try {
                 Object o = i.next();
-                result += encode(o);
+                result.append(encode(o));
             }
             catch(Exception ex) {
                 throw new Exception("Exception caught when encoding a List", ex);
             }
         }
-        result += "e";
+        result.append("e");
         
-        return(result);
+        return(result.toString());
     }
     
     /**
@@ -132,7 +134,8 @@ public class Bencode {
      * or if the keys does not implement Comparable.
      */
     public static String encode(Map arg) throws Exception {
-        String result = "d";
+        StringBuilder result = new StringBuilder();
+        result.append('d');
         
         try {
             // keys must be in sorted order
@@ -148,16 +151,16 @@ public class Bencode {
                     throw new Exception("Keys given in dictionary was not a" +
                             "string." + pairs.getKey().getClass().getName());
                 }
-                result += encode((String)pairs.getKey());
-                result += encode(pairs.getValue());    
+                result.append(encode((String)pairs.getKey()));
+                result.append(encode(pairs.getValue()));
             }
         }
         catch(Exception ex) {
             throw new Exception("Exception caught when creating sorted Map", ex);
         }
-        result += "e";
+        result.append('e');
         
-        return(result);
+        return(result.toString());
     }
 
     /**
@@ -357,7 +360,7 @@ public class Bencode {
      * non-number data or due to problems converting to Long.
      */
     private static Long decodeInteger(InputStream stream) throws Exception {
-        Long result = new Long(0);
+        Long result;
         StringBuilder stringResult = new StringBuilder();
         int readByte;
         char charByte;

@@ -62,8 +62,10 @@ public class TorrentUpload {
 
     /**
      * A simple convenience class to make it easier to parse the Servlet request.
+     * Static to illustrate that it is more or less independent of the outer
+     * class.
      */
-    public class UnparsedTorrentData {
+    public static class UnparsedTorrentData {
         public String name;
         public String description;
 
@@ -181,7 +183,7 @@ public class TorrentUpload {
      */
     public static Map<String,String> addTorrent(Map decodedTorrent,
             String torrentName, String torrentDescription, String contextPath) throws Exception {
-        Long torrentLength = new Long(0L);
+        Long torrentLength = Long.valueOf(0);
         Torrent t;
         TorrentData tData;
         TorrentFile tFile;
@@ -368,16 +370,16 @@ public class TorrentUpload {
                     // grab path
                     Vector<String> filePath = (Vector<String>) f.get((String)"path");
                     Iterator pathItr = filePath.iterator();
-                    String path = (String) infoDictionary.get((String)"name");
+                    StringBuilder path = new StringBuilder((String) infoDictionary.get((String)"name"));
 
                     // build up the path
                     while(pathItr.hasNext()) {
-                        path += "/";
-                        path += pathItr.next();
+                        path.append('/');
+                        path.append(pathItr.next());
                     }
 
                     TorrentContent c = new TorrentContent();
-                    c.setFileName(path);
+                    c.setFileName(path.toString());
                     c.setFileSize(length);
 
                     // populate the list

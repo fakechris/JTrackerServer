@@ -31,10 +31,10 @@ import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
-import java.util.TreeMap;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.NoResultException;
@@ -80,20 +80,26 @@ public class TrackerRequestParserTest {
         return result.toString();
     }
 
-    public TreeMap peerRequest(String peerId, String infoHash, String event) throws Exception
+    public HashMap<String,String[]> peerRequest(String peerId, String infoHash, String event) throws Exception
     {
-        TreeMap requestParams = new TreeMap();
+        HashMap<String,String[]> requestParams = new HashMap<String,String[]>();
 
         try {
+            String[] s = new String[1];
             // info hash is not URL-encoded because it is automatically decoded
             // by tomcat
-            requestParams.put((String) "info_hash", infoHash);
-            requestParams.put((String)"peer_id", peerId);
-            requestParams.put((String)"port", (String)"1234");
-            requestParams.put((String)"uploaded", (String)"0");
-            requestParams.put((String)"downloaded", (String)"0");
-            requestParams.put((String)"left", (String)"0");
-            requestParams.put((String)"event", event);
+            s[0] = infoHash;
+            requestParams.put((String) "info_hash", s.clone());
+            s[0] = peerId;
+            requestParams.put((String)"peer_id", s.clone());
+            s[0] = String.valueOf(1234);
+            requestParams.put((String)"port", s.clone());
+            s[0] = String.valueOf(0);
+            requestParams.put((String)"uploaded", s.clone());
+            requestParams.put((String)"downloaded", s.clone());
+            requestParams.put((String)"left", s.clone());
+            s[0] = event;
+            requestParams.put((String)"event", s.clone());
         } catch (Exception ex) {
             throw ex;
         }
@@ -236,7 +242,7 @@ public class TrackerRequestParserTest {
         System.out.println("setRequestParams");
         TrackerRequestParser instance = new TrackerRequestParser();
         try {
-            TreeMap params = peerRequest(peerId, getRawString(rawInfoHash), "");
+            HashMap params = peerRequest(peerId, getRawString(rawInfoHash), "");
             instance.setRequestParams(params);
             assertEquals(params, instance.getRequestParams());
         } catch(Exception ex) {
@@ -270,9 +276,9 @@ public class TrackerRequestParserTest {
         try {
             System.out.println("Scrape()");
             TrackerRequestParser instance = new TrackerRequestParser();
-            TreeMap<String,TreeMap> results = new TreeMap<String,TreeMap>();
-            TreeMap<String,TreeMap> expResults = new TreeMap<String,TreeMap>();
-            TreeMap<String,Long> expResultContents = new TreeMap<String,Long>();
+            HashMap<String,HashMap> results = new HashMap<String,HashMap>();
+            HashMap<String,HashMap> expResults = new HashMap<String,HashMap>();
+            HashMap<String,Long> expResultContents = new HashMap<String,Long>();
 
             // torrent from setUp()
             expResultContents.put((String)"downloaded", 0L);
@@ -305,8 +311,8 @@ public class TrackerRequestParserTest {
         try {
             System.out.println("Scrape()");
             TrackerRequestParser instance = new TrackerRequestParser();
-            TreeMap result;
-            TreeMap<String,Long> expResult = new TreeMap<String,Long>();
+            HashMap result;
+            HashMap<String,Long> expResult = new HashMap<String,Long>();
 
             expResult.put((String)"downloaded", 0L);
             expResult.put((String)"incomplete", 1L);
@@ -337,10 +343,11 @@ public class TrackerRequestParserTest {
             System.out.println("parseRequestEventStarted");
             TrackerRequestParser instance = new TrackerRequestParser();
             // populate request and address
-            TreeMap request;
+            HashMap request;
             InetAddress address;
-            TreeMap expResult = new TreeMap();
+            HashMap expResult = new HashMap();
             String newPeerId = new String();
+            String[] s = new String[1];
             byte[] newRawPeerId = new byte[20];
 
             /**
@@ -354,7 +361,8 @@ public class TrackerRequestParserTest {
             }
 
             request = peerRequest(getRawString(newRawPeerId), getRawString(rawInfoHash), "started");
-            request.put((String)"left", (String)"999999999");
+            s[0] = String.valueOf(999999999);
+            request.put((String)"left", s.clone());
 
             instance.setRemoteAddress(address);
             instance.setRequestParams(request);
@@ -371,7 +379,7 @@ public class TrackerRequestParserTest {
             expResult.put((String)"peers", peerAddress);
 
             System.out.println(" -- parsing request");
-            TreeMap result = instance.parseRequest();
+            HashMap result = instance.parseRequest();
 
             assertEquals(expResult, result);
             
@@ -404,9 +412,10 @@ public class TrackerRequestParserTest {
             System.out.println("parseRequestEventStopped");
             TrackerRequestParser instance = new TrackerRequestParser();
             // populate request and address
-            TreeMap request;
+            HashMap request;
             InetAddress address;
-            TreeMap expResult = new TreeMap();
+            HashMap expResult = new HashMap();
+            String[] s = new String[1];
 
             /**
              * For event = stopped
@@ -415,7 +424,8 @@ public class TrackerRequestParserTest {
             address = p.getIp();
 
             request = peerRequest(getRawString(rawPeerId), getRawString(rawInfoHash), "stopped");
-            request.put((String)"left", (String)"999999999");
+            s[0] = String.valueOf(999999999);
+            request.put((String)"left", s.clone());
 
             instance.setRemoteAddress(address);
             instance.setRequestParams(request);
@@ -429,7 +439,7 @@ public class TrackerRequestParserTest {
             expResult.put((String)"peers","");
 
             System.out.println(" -- parsing request");
-            TreeMap result = instance.parseRequest();
+            HashMap result = instance.parseRequest();
 
             assertEquals(expResult, result);
 
@@ -462,9 +472,10 @@ public class TrackerRequestParserTest {
             System.out.println("parseRequestEventCompleted");
             TrackerRequestParser instance = new TrackerRequestParser();
             // populate request and address
-            TreeMap request;
+            HashMap request;
             InetAddress address;
-            TreeMap expResult = new TreeMap();
+            HashMap expResult = new HashMap();
+            String[] s = new String[1];
 
             /**
              * For event = completed
@@ -473,7 +484,8 @@ public class TrackerRequestParserTest {
             address = p.getIp();
             
             request = peerRequest(getRawString(rawPeerId), getRawString(rawInfoHash), "completed");
-            request.put((String)"left", (String)"999999999");
+            s[0] = String.valueOf(999999999);
+            request.put((String)"left", s.clone());
 
             instance.setRemoteAddress(address);
             instance.setRequestParams(request);
@@ -487,7 +499,7 @@ public class TrackerRequestParserTest {
             expResult.put((String)"peers","");
 
             System.out.println(" -- parsing request");
-            TreeMap result = instance.parseRequest();
+            HashMap result = instance.parseRequest();
 
             assertEquals(expResult, result);
 
@@ -526,9 +538,10 @@ public class TrackerRequestParserTest {
             System.out.println("parseRequestEventNone");
             TrackerRequestParser instance = new TrackerRequestParser();
             // populate request and address
-            TreeMap request, result;
+            HashMap request, result;
             InetAddress address;
-            TreeMap expResult = new TreeMap();
+            HashMap expResult = new HashMap();
+            String[] s = new String[1];
 
             /**
              * For event = ""
@@ -540,9 +553,12 @@ public class TrackerRequestParserTest {
 
             // first try with event=""
             request = peerRequest(getRawString(rawPeerId), getRawString(rawInfoHash), "");
-            request.put((String)"left", (String)"999990000");
-            request.put((String)"downloaded", (String)"9999");
-            request.put((String)"uploaded", (String)"105068");
+            s[0] = String.valueOf(999990000);
+            request.put((String)"left", s.clone());
+            s[0] = String.valueOf(9999);
+            request.put((String)"downloaded", s.clone());
+            s[0] = String.valueOf(105068);
+            request.put((String)"uploaded", s.clone());
 
             instance.setRemoteAddress(address);
             instance.setRequestParams(request);
@@ -589,9 +605,12 @@ public class TrackerRequestParserTest {
             // now try with no event key
             request = peerRequest(getRawString(rawPeerId), getRawString(rawInfoHash), "");
             request.remove((String)"event");
-            request.put((String)"left", (String)"999980000");
-            request.put((String)"downloaded", (String)"19999");
-            request.put((String)"uploaded", (String)"185068");
+            s[0] = String.valueOf(999980000);
+            request.put((String)"left", s.clone());
+            s[0] = String.valueOf(19999);
+            request.put((String)"downloaded", s.clone());
+            s[0] = String.valueOf(185068);
+            request.put((String)"uploaded", s.clone());
 
             instance.setRemoteAddress(address);
             instance.setRequestParams(request);
@@ -647,9 +666,10 @@ public class TrackerRequestParserTest {
             System.out.println("parseRequestNoCompact");
             TrackerRequestParser instance = new TrackerRequestParser();
             // populate request and address
-            TreeMap request, result;
+            HashMap request, result;
             InetAddress address;
-            TreeMap expResult = new TreeMap();
+            HashMap expResult = new HashMap();
+            String[] s = new String[1];
 
             /**
              * For compact=0
@@ -659,10 +679,14 @@ public class TrackerRequestParserTest {
             address = p.getIp();
             
             request = peerRequest(getRawString(rawPeerId), getRawString(rawInfoHash), "");
-            request.put((String)"left", (String)"999990000");
-            request.put((String)"downloaded", (String)"9999");
-            request.put((String)"uploaded", (String)"105068");
-            request.put((String)"compact", (String)"0");
+            s[0] = String.valueOf(999990000);
+            request.put((String)"left", s.clone());
+            s[0] = String.valueOf(9999);
+            request.put((String)"downloaded", s.clone());
+            s[0] = String.valueOf(105068);
+            request.put((String)"uploaded", s.clone());
+            s[0] = String.valueOf(0);
+            request.put((String)"compact", s.clone());
 
             instance.setRemoteAddress(address);
             instance.setRequestParams(request);
@@ -696,9 +720,9 @@ public class TrackerRequestParserTest {
 //            System.out.println("parseRequest");
 //            TrackerRequestParser instance = new TrackerRequestParser();
 //            // populate request and address
-//            TreeMap request = new TreeMap();
+//            HashMap request = new HashMap();
 //            InetAddress address;
-//            TreeMap expResult = new TreeMap();
+//            HashMap expResult = new HashMap();
 //            String newPeerId = new String();
 //
 //            /**
@@ -710,7 +734,7 @@ public class TrackerRequestParserTest {
 //            request.put((String)"peerId",newPeerId);
 //            request.put((String)"",)
 //
-//            TreeMap result = instance.parseRequest();
+//            HashMap result = instance.parseRequest();
 //
 //            assertEquals(expResult, result);
 //        } catch (Exception ex) {

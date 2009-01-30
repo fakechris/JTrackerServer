@@ -106,11 +106,11 @@ public class Peer implements Serializable {
     }
 
     public Date getLastActionTime() {
-        return lastAction;
+        return (Date)lastAction.clone();
     }
 
     public void setLastActionTime(Date lastAction) {
-        this.lastAction = lastAction;
+        this.lastAction = (Date) lastAction.clone();
     }
 
     public Boolean isSeed() {

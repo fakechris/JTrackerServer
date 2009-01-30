@@ -1,0 +1,791 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<BugCollection version="1.3.7" sequence="0" timestamp="1232746406000" analysisTimestamp="1233259081912" release="">
+  <Project filename="&lt;&lt;unnamed project&gt;&gt;" projectName="Quash">
+    <Jar>/home/bo/SVN/quash/dist/TorrentTracker.war</Jar>
+    <AuxClasspathEntry>/home/bo/SVN/quash/third-party/commons-fileupload.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/home/bo/SVN/quash/third-party/commons-io.jar</AuxClasspathEntry>
+    <SrcDir>/home/bo/SVN/quash/src/java</SrcDir>
+    <SuppressionFilter>
+      <LastVersion value="-1" relOp="NEQ"/>
+      <Class name="~org.json\.[^.]+"/>
+    </SuppressionFilter>
+  </Project>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" abbrev="DLS" category="STYLE">
+    <UserAnnotation/>
+    <Class classname="com.tracker.backend.Bencode">
+      <SourceLine classname="com.tracker.backend.Bencode" sourcefile="Bencode.java" sourcepath="com/tracker/backend/Bencode.java"/>
+    </Class>
+    <Method classname="com.tracker.backend.Bencode" name="decodeInteger" signature="(Ljava/io/InputStream;)Ljava/lang/Long;" isStatic="true">
+      <SourceLine classname="com.tracker.backend.Bencode" start="360" end="392" startBytecode="0" endBytecode="59" sourcefile="Bencode.java" sourcepath="com/tracker/backend/Bencode.java"/>
+    </Method>
+    <LocalVariable name="result" register="1" pc="9" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="com.tracker.backend.Bencode" start="360" end="360" startBytecode="8" endBytecode="8" sourcefile="Bencode.java" sourcepath="com/tracker/backend/Bencode.java"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.KILLED_BY_SUBSEQUENT_STORE" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.DEAD_OBJECT_STORE" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="result"/>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" abbrev="DLS" category="STYLE" last="0" removedByChange="true">
+    <UserAnnotation/>
+    <Class classname="com.tracker.backend.Bencode">
+      <SourceLine classname="com.tracker.backend.Bencode" sourcefile="Bencode.java" sourcepath="com/tracker/backend/Bencode.java"/>
+    </Class>
+    <Method classname="com.tracker.backend.Bencode" name="decodeInteger" signature="(Ljava/io/InputStream;)Ljava/lang/Long;" isStatic="true">
+      <SourceLine classname="com.tracker.backend.Bencode" start="360" end="392" startBytecode="0" endBytecode="59" sourcefile="Bencode.java" sourcepath="com/tracker/backend/Bencode.java"/>
+    </Method>
+    <LocalVariable name="result" register="1" pc="9" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="com.tracker.backend.Bencode" start="360" end="360" startBytecode="8" endBytecode="8" sourcefile="Bencode.java" sourcepath="com/tracker/backend/Bencode.java"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.KILLED_BY_SUBSEQUENT_STORE" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.DEAD_OBJECT_STORE" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="result"/>
+  </BugInstance>
+  <BugInstance type="DM_NUMBER_CTOR" priority="2" abbrev="Bx" category="PERFORMANCE">
+    <UserAnnotation/>
+    <Class classname="com.tracker.backend.Bencode">
+      <SourceLine classname="com.tracker.backend.Bencode" sourcefile="Bencode.java" sourcepath="com/tracker/backend/Bencode.java"/>
+    </Class>
+    <Method classname="com.tracker.backend.Bencode" name="decodeInteger" signature="(Ljava/io/InputStream;)Ljava/lang/Long;" isStatic="true">
+      <SourceLine classname="com.tracker.backend.Bencode" start="360" end="392" startBytecode="0" endBytecode="331" sourcefile="Bencode.java" sourcepath="com/tracker/backend/Bencode.java"/>
+    </Method>
+    <Method classname="java.lang.Long" name="&lt;init&gt;" signature="(J)V" isStatic="false" role="METHOD_CALLED">
+      <SourceLine classname="java.lang.Long" start="672" end="674" startBytecode="0" endBytecode="69" sourcefile="Long.java" sourcepath="java/lang/Long.java"/>
+    </Method>
+    <Method classname="java.lang.Long" name="valueOf" signature="(J)V" isStatic="false" role="SHOULD_CALL">
+      <SourceLine classname="java.lang.Long" sourcefile="Long.java" sourcepath="java/lang/Long.java"/>
+    </Method>
+    <SourceLine classname="com.tracker.backend.Bencode" start="360" end="360" startBytecode="5" endBytecode="5" sourcefile="Bencode.java" sourcepath="com/tracker/backend/Bencode.java"/>
+  </BugInstance>
+  <BugInstance type="DM_NUMBER_CTOR" priority="2" abbrev="Bx" category="PERFORMANCE" last="0" removedByChange="true">
+    <UserAnnotation/>
+    <Class classname="com.tracker.backend.Bencode">
+      <SourceLine classname="com.tracker.backend.Bencode" sourcefile="Bencode.java" sourcepath="com/tracker/backend/Bencode.java"/>
+    </Class>
+    <Method classname="com.tracker.backend.Bencode" name="decodeInteger" signature="(Ljava/io/InputStream;)Ljava/lang/Long;" isStatic="true">
+      <SourceLine classname="com.tracker.backend.Bencode" start="360" end="392" startBytecode="0" endBytecode="331" sourcefile="Bencode.java" sourcepath="com/tracker/backend/Bencode.java"/>
+    </Method>
+    <Method classname="java.lang.Long" name="&lt;init&gt;" signature="(J)V" isStatic="false" role="METHOD_CALLED">
+      <SourceLine classname="java.lang.Long" start="672" end="674" startBytecode="0" endBytecode="69" sourcefile="Long.java" sourcepath="java/lang/Long.java"/>
+    </Method>
+    <Method classname="java.lang.Long" name="valueOf" signature="(J)V" isStatic="false" role="SHOULD_CALL">
+      <SourceLine classname="java.lang.Long" sourcefile="Long.java" sourcepath="java/lang/Long.java"/>
+    </Method>
+    <SourceLine classname="com.tracker.backend.Bencode" start="360" end="360" startBytecode="5" endBytecode="5" sourcefile="Bencode.java" sourcepath="com/tracker/backend/Bencode.java"/>
+  </BugInstance>
+  <BugInstance type="SBSC_USE_STRINGBUFFER_CONCATENATION" priority="2" abbrev="SBSC" category="PERFORMANCE">
+    <UserAnnotation/>
+    <Class classname="com.tracker.backend.Bencode">
+      <SourceLine classname="com.tracker.backend.Bencode" sourcefile="Bencode.java" sourcepath="com/tracker/backend/Bencode.java"/>
+    </Class>
+    <Method classname="com.tracker.backend.Bencode" name="encode" signature="(Ljava/util/List;)Ljava/lang/String;" isStatic="true">
+      <SourceLine classname="com.tracker.backend.Bencode" start="109" end="123" startBytecode="0" endBytecode="232" sourcefile="Bencode.java" sourcepath="com/tracker/backend/Bencode.java"/>
+    </Method>
+    <SourceLine classname="com.tracker.backend.Bencode" start="115" end="115" startBytecode="26" endBytecode="26" sourcefile="Bencode.java" sourcepath="com/tracker/backend/Bencode.java"/>
+  </BugInstance>
+  <BugInstance type="SBSC_USE_STRINGBUFFER_CONCATENATION" priority="2" abbrev="SBSC" category="PERFORMANCE" last="0" removedByChange="true">
+    <UserAnnotation/>
+    <Class classname="com.tracker.backend.Bencode">
+      <SourceLine classname="com.tracker.backend.Bencode" sourcefile="Bencode.java" sourcepath="com/tracker/backend/Bencode.java"/>
+    </Class>
+    <Method classname="com.tracker.backend.Bencode" name="encode" signature="(Ljava/util/List;)Ljava/lang/String;" isStatic="true">
+      <SourceLine classname="com.tracker.backend.Bencode" start="109" end="123" startBytecode="0" endBytecode="232" sourcefile="Bencode.java" sourcepath="com/tracker/backend/Bencode.java"/>
+    </Method>
+    <SourceLine classname="com.tracker.backend.Bencode" start="115" end="115" startBytecode="26" endBytecode="26" sourcefile="Bencode.java" sourcepath="com/tracker/backend/Bencode.java"/>
+  </BugInstance>
+  <BugInstance type="SBSC_USE_STRINGBUFFER_CONCATENATION" priority="2" abbrev="SBSC" category="PERFORMANCE">
+    <UserAnnotation/>
+    <Class classname="com.tracker.backend.Bencode">
+      <SourceLine classname="com.tracker.backend.Bencode" sourcefile="Bencode.java" sourcepath="com/tracker/backend/Bencode.java"/>
+    </Class>
+    <Method classname="com.tracker.backend.Bencode" name="encode" signature="(Ljava/util/Map;)Ljava/lang/String;" isStatic="true">
+      <SourceLine classname="com.tracker.backend.Bencode" start="135" end="160" startBytecode="0" endBytecode="385" sourcefile="Bencode.java" sourcepath="com/tracker/backend/Bencode.java"/>
+    </Method>
+    <SourceLine classname="com.tracker.backend.Bencode" start="152" end="152" startBytecode="128" endBytecode="128" sourcefile="Bencode.java" sourcepath="com/tracker/backend/Bencode.java"/>
+  </BugInstance>
+  <BugInstance type="SBSC_USE_STRINGBUFFER_CONCATENATION" priority="2" abbrev="SBSC" category="PERFORMANCE" last="0" removedByChange="true">
+    <UserAnnotation/>
+    <Class classname="com.tracker.backend.Bencode">
+      <SourceLine classname="com.tracker.backend.Bencode" sourcefile="Bencode.java" sourcepath="com/tracker/backend/Bencode.java"/>
+    </Class>
+    <Method classname="com.tracker.backend.Bencode" name="encode" signature="(Ljava/util/Map;)Ljava/lang/String;" isStatic="true">
+      <SourceLine classname="com.tracker.backend.Bencode" start="135" end="160" startBytecode="0" endBytecode="385" sourcefile="Bencode.java" sourcepath="com/tracker/backend/Bencode.java"/>
+    </Method>
+    <SourceLine classname="com.tracker.backend.Bencode" start="152" end="152" startBytecode="128" endBytecode="128" sourcefile="Bencode.java" sourcepath="com/tracker/backend/Bencode.java"/>
+  </BugInstance>
+  <BugInstance type="BC_BAD_CAST_TO_CONCRETE_COLLECTION" priority="2" abbrev="BC" category="STYLE" introducedByChange="true">
+    <UserAnnotation/>
+    <Class classname="com.tracker.backend.TrackerRequestParser">
+      <SourceLine classname="com.tracker.backend.TrackerRequestParser" sourcefile="TrackerRequestParser.java" sourcepath="com/tracker/backend/TrackerRequestParser.java"/>
+    </Class>
+    <Method classname="com.tracker.backend.TrackerRequestParser" name="setRequestParams" signature="(Ljava/util/Map;)V" isStatic="false">
+      <SourceLine classname="com.tracker.backend.TrackerRequestParser" start="141" end="142" startBytecode="0" endBytecode="4" sourcefile="TrackerRequestParser.java" sourcepath="com/tracker/backend/TrackerRequestParser.java"/>
+    </Method>
+    <Type descriptor="Ljava/util/Map;" role="TYPE_FOUND">
+      <SourceLine classname="java.util.Map" sourcefile="Map.java" sourcepath="java/util/Map.java"/>
+    </Type>
+    <Type descriptor="Ljava/util/HashMap;" role="TYPE_EXPECTED">
+      <SourceLine classname="java.util.HashMap" start="187" end="1054" sourcefile="HashMap.java" sourcepath="java/util/HashMap.java"/>
+    </Type>
+    <LocalVariable name="params" register="1" pc="1" role="LOCAL_VARIABLE_VALUE_OF"/>
+    <SourceLine classname="com.tracker.backend.TrackerRequestParser" start="141" end="141" startBytecode="2" endBytecode="2" sourcefile="TrackerRequestParser.java" sourcepath="com/tracker/backend/TrackerRequestParser.java"/>
+  </BugInstance>
+  <BugInstance type="BC_BAD_CAST_TO_CONCRETE_COLLECTION" priority="2" abbrev="BC" category="STYLE" last="0" introducedByChange="true" removedByChange="true">
+    <UserAnnotation/>
+    <Class classname="com.tracker.backend.TrackerRequestParser">
+      <SourceLine classname="com.tracker.backend.TrackerRequestParser" sourcefile="TrackerRequestParser.java" sourcepath="com/tracker/backend/TrackerRequestParser.java"/>
+    </Class>
+    <Method classname="com.tracker.backend.TrackerRequestParser" name="setRequestParams" signature="(Ljava/util/Map;)V" isStatic="false">
+      <SourceLine classname="com.tracker.backend.TrackerRequestParser" start="141" end="142" startBytecode="0" endBytecode="4" sourcefile="TrackerRequestParser.java" sourcepath="com/tracker/backend/TrackerRequestParser.java"/>
+    </Method>
+    <Type descriptor="Ljava/util/Map;" role="TYPE_FOUND">
+      <SourceLine classname="java.util.Map" sourcefile="Map.java" sourcepath="java/util/Map.java"/>
+    </Type>
+    <Type descriptor="Ljava/util/HashMap;" role="TYPE_EXPECTED">
+      <SourceLine classname="java.util.HashMap" start="187" end="1054" sourcefile="HashMap.java" sourcepath="java/util/HashMap.java"/>
+    </Type>
+    <LocalVariable name="params" register="1" pc="1" role="LOCAL_VARIABLE_VALUE_OF"/>
+    <SourceLine classname="com.tracker.backend.TrackerRequestParser" start="141" end="141" startBytecode="2" endBytecode="2" sourcefile="TrackerRequestParser.java" sourcepath="com/tracker/backend/TrackerRequestParser.java"/>
+  </BugInstance>
+  <BugInstance type="DM_NUMBER_CTOR" priority="2" abbrev="Bx" category="PERFORMANCE">
+    <UserAnnotation/>
+    <Class classname="com.tracker.backend.TrackerRequestParser">
+      <SourceLine classname="com.tracker.backend.TrackerRequestParser" sourcefile="TrackerRequestParser.java" sourcepath="com/tracker/backend/TrackerRequestParser.java"/>
+    </Class>
+    <Method classname="com.tracker.backend.TrackerRequestParser" name="parseRequest" signature="()Ljava/util/TreeMap;" isStatic="false">
+      <SourceLine classname="com.tracker.backend.TrackerRequestParser" start="160" end="527" startBytecode="0" endBytecode="3428" sourcefile="TrackerRequestParser.java" sourcepath="com/tracker/backend/TrackerRequestParser.java"/>
+    </Method>
+    <Method classname="java.lang.Integer" name="&lt;init&gt;" signature="(I)V" isStatic="false" role="METHOD_CALLED">
+      <SourceLine classname="java.lang.Integer" start="618" end="620" startBytecode="0" endBytecode="69" sourcefile="Integer.java" sourcepath="java/lang/Integer.java"/>
+    </Method>
+    <Method classname="java.lang.Integer" name="valueOf" signature="(I)V" isStatic="false" role="SHOULD_CALL">
+      <SourceLine classname="java.lang.Integer" sourcefile="Integer.java" sourcepath="java/lang/Integer.java"/>
+    </Method>
+    <SourceLine classname="com.tracker.backend.TrackerRequestParser" start="173" end="173" startBytecode="51" endBytecode="51" sourcefile="TrackerRequestParser.java" sourcepath="com/tracker/backend/TrackerRequestParser.java"/>
+  </BugInstance>
+  <BugInstance type="DM_NUMBER_CTOR" priority="2" abbrev="Bx" category="PERFORMANCE" last="0" removedByChange="true">
+    <UserAnnotation/>
+    <Class classname="com.tracker.backend.TrackerRequestParser">
+      <SourceLine classname="com.tracker.backend.TrackerRequestParser" sourcefile="TrackerRequestParser.java" sourcepath="com/tracker/backend/TrackerRequestParser.java"/>
+    </Class>
+    <Method classname="com.tracker.backend.TrackerRequestParser" name="parseRequest" signature="()Ljava/util/TreeMap;" isStatic="false">
+      <SourceLine classname="com.tracker.backend.TrackerRequestParser" start="160" end="527" startBytecode="0" endBytecode="3428" sourcefile="TrackerRequestParser.java" sourcepath="com/tracker/backend/TrackerRequestParser.java"/>
+    </Method>
+    <Method classname="java.lang.Integer" name="&lt;init&gt;" signature="(I)V" isStatic="false" role="METHOD_CALLED">
+      <SourceLine classname="java.lang.Integer" start="618" end="620" startBytecode="0" endBytecode="69" sourcefile="Integer.java" sourcepath="java/lang/Integer.java"/>
+    </Method>
+    <Method classname="java.lang.Integer" name="valueOf" signature="(I)V" isStatic="false" role="SHOULD_CALL">
+      <SourceLine classname="java.lang.Integer" sourcefile="Integer.java" sourcepath="java/lang/Integer.java"/>
+    </Method>
+    <SourceLine classname="com.tracker.backend.TrackerRequestParser" start="173" end="173" startBytecode="51" endBytecode="51" sourcefile="TrackerRequestParser.java" sourcepath="com/tracker/backend/TrackerRequestParser.java"/>
+  </BugInstance>
+  <BugInstance type="DM_STRING_VOID_CTOR" priority="2" abbrev="Dm" category="PERFORMANCE">
+    <UserAnnotation/>
+    <Class classname="com.tracker.backend.TrackerRequestParser">
+      <SourceLine classname="com.tracker.backend.TrackerRequestParser" sourcefile="TrackerRequestParser.java" sourcepath="com/tracker/backend/TrackerRequestParser.java"/>
+    </Class>
+    <Method classname="com.tracker.backend.TrackerRequestParser" name="getCompactPeerList" signature="(Ljava/util/Vector;Ljava/lang/Integer;Lcom/tracker/backend/entity/Peer;)Ljava/lang/String;" isStatic="false">
+      <SourceLine classname="com.tracker.backend.TrackerRequestParser" start="574" end="621" startBytecode="0" endBytecode="584" sourcefile="TrackerRequestParser.java" sourcepath="com/tracker/backend/TrackerRequestParser.java"/>
+    </Method>
+    <SourceLine classname="com.tracker.backend.TrackerRequestParser" start="575" end="575" startBytecode="10" endBytecode="10" sourcefile="TrackerRequestParser.java" sourcepath="com/tracker/backend/TrackerRequestParser.java"/>
+  </BugInstance>
+  <BugInstance type="DM_STRING_VOID_CTOR" priority="2" abbrev="Dm" category="PERFORMANCE" last="0" removedByChange="true">
+    <UserAnnotation/>
+    <Class classname="com.tracker.backend.TrackerRequestParser">
+      <SourceLine classname="com.tracker.backend.TrackerRequestParser" sourcefile="TrackerRequestParser.java" sourcepath="com/tracker/backend/TrackerRequestParser.java"/>
+    </Class>
+    <Method classname="com.tracker.backend.TrackerRequestParser" name="getCompactPeerList" signature="(Ljava/util/Vector;Ljava/lang/Integer;Lcom/tracker/backend/entity/Peer;)Ljava/lang/String;" isStatic="false">
+      <SourceLine classname="com.tracker.backend.TrackerRequestParser" start="574" end="621" startBytecode="0" endBytecode="584" sourcefile="TrackerRequestParser.java" sourcepath="com/tracker/backend/TrackerRequestParser.java"/>
+    </Method>
+    <SourceLine classname="com.tracker.backend.TrackerRequestParser" start="575" end="575" startBytecode="10" endBytecode="10" sourcefile="TrackerRequestParser.java" sourcepath="com/tracker/backend/TrackerRequestParser.java"/>
+  </BugInstance>
+  <BugInstance type="DM_STRING_VOID_CTOR" priority="2" abbrev="Dm" category="PERFORMANCE">
+    <UserAnnotation/>
+    <Class classname="com.tracker.backend.TrackerRequestParser">
+      <SourceLine classname="com.tracker.backend.TrackerRequestParser" sourcefile="TrackerRequestParser.java" sourcepath="com/tracker/backend/TrackerRequestParser.java"/>
+    </Class>
+    <Method classname="com.tracker.backend.TrackerRequestParser" name="parseRequest" signature="()Ljava/util/TreeMap;" isStatic="false">
+      <SourceLine classname="com.tracker.backend.TrackerRequestParser" start="160" end="527" startBytecode="0" endBytecode="3428" sourcefile="TrackerRequestParser.java" sourcepath="com/tracker/backend/TrackerRequestParser.java"/>
+    </Method>
+    <SourceLine classname="com.tracker.backend.TrackerRequestParser" start="170" end="170" startBytecode="37" endBytecode="37" sourcefile="TrackerRequestParser.java" sourcepath="com/tracker/backend/TrackerRequestParser.java"/>
+    <SourceLine classname="com.tracker.backend.TrackerRequestParser" start="510" end="510" startBytecode="1659" endBytecode="1659" sourcefile="TrackerRequestParser.java" sourcepath="com/tracker/backend/TrackerRequestParser.java" role="SOURCE_LINE_ANOTHER_INSTANCE"/>
+  </BugInstance>
+  <BugInstance type="DM_STRING_VOID_CTOR" priority="2" abbrev="Dm" category="PERFORMANCE" last="0" removedByChange="true">
+    <UserAnnotation/>
+    <Class classname="com.tracker.backend.TrackerRequestParser">
+      <SourceLine classname="com.tracker.backend.TrackerRequestParser" sourcefile="TrackerRequestParser.java" sourcepath="com/tracker/backend/TrackerRequestParser.java"/>
+    </Class>
+    <Method classname="com.tracker.backend.TrackerRequestParser" name="parseRequest" signature="()Ljava/util/TreeMap;" isStatic="false">
+      <SourceLine classname="com.tracker.backend.TrackerRequestParser" start="160" end="527" startBytecode="0" endBytecode="3428" sourcefile="TrackerRequestParser.java" sourcepath="com/tracker/backend/TrackerRequestParser.java"/>
+    </Method>
+    <SourceLine classname="com.tracker.backend.TrackerRequestParser" start="170" end="170" startBytecode="37" endBytecode="37" sourcefile="TrackerRequestParser.java" sourcepath="com/tracker/backend/TrackerRequestParser.java"/>
+    <SourceLine classname="com.tracker.backend.TrackerRequestParser" start="510" end="510" startBytecode="1659" endBytecode="1659" sourcefile="TrackerRequestParser.java" sourcepath="com/tracker/backend/TrackerRequestParser.java" role="SOURCE_LINE_ANOTHER_INSTANCE"/>
+  </BugInstance>
+  <BugInstance type="DM_STRING_VOID_CTOR" priority="2" abbrev="Dm" category="PERFORMANCE">
+    <UserAnnotation/>
+    <Class classname="com.tracker.backend.TrackerRequestParser">
+      <SourceLine classname="com.tracker.backend.TrackerRequestParser" sourcefile="TrackerRequestParser.java" sourcepath="com/tracker/backend/TrackerRequestParser.java"/>
+    </Class>
+    <Method classname="com.tracker.backend.TrackerRequestParser" name="parseRequest" signature="()Ljava/util/TreeMap;" isStatic="false">
+      <SourceLine classname="com.tracker.backend.TrackerRequestParser" start="160" end="527" startBytecode="0" endBytecode="3419" sourcefile="TrackerRequestParser.java" sourcepath="com/tracker/backend/TrackerRequestParser.java"/>
+    </Method>
+    <SourceLine classname="com.tracker.backend.TrackerRequestParser" start="510" end="510" startBytecode="1650" endBytecode="1650" sourcefile="TrackerRequestParser.java" sourcepath="com/tracker/backend/TrackerRequestParser.java"/>
+  </BugInstance>
+  <BugInstance type="DM_STRING_VOID_CTOR" priority="2" abbrev="Dm" category="PERFORMANCE" last="0" removedByChange="true">
+    <UserAnnotation/>
+    <Class classname="com.tracker.backend.TrackerRequestParser">
+      <SourceLine classname="com.tracker.backend.TrackerRequestParser" sourcefile="TrackerRequestParser.java" sourcepath="com/tracker/backend/TrackerRequestParser.java"/>
+    </Class>
+    <Method classname="com.tracker.backend.TrackerRequestParser" name="parseRequest" signature="()Ljava/util/TreeMap;" isStatic="false">
+      <SourceLine classname="com.tracker.backend.TrackerRequestParser" start="160" end="527" startBytecode="0" endBytecode="3419" sourcefile="TrackerRequestParser.java" sourcepath="com/tracker/backend/TrackerRequestParser.java"/>
+    </Method>
+    <SourceLine classname="com.tracker.backend.TrackerRequestParser" start="510" end="510" startBytecode="1650" endBytecode="1650" sourcefile="TrackerRequestParser.java" sourcepath="com/tracker/backend/TrackerRequestParser.java"/>
+  </BugInstance>
+  <BugInstance type="SBSC_USE_STRINGBUFFER_CONCATENATION" priority="2" abbrev="SBSC" category="PERFORMANCE">
+    <UserAnnotation/>
+    <Class classname="com.tracker.backend.TrackerRequestParser">
+      <SourceLine classname="com.tracker.backend.TrackerRequestParser" sourcefile="TrackerRequestParser.java" sourcepath="com/tracker/backend/TrackerRequestParser.java"/>
+    </Class>
+    <Method classname="com.tracker.backend.TrackerRequestParser" name="getCompactPeerList" signature="(Ljava/util/Vector;Ljava/lang/Integer;Lcom/tracker/backend/entity/Peer;)Ljava/lang/String;" isStatic="false">
+      <SourceLine classname="com.tracker.backend.TrackerRequestParser" start="574" end="621" startBytecode="0" endBytecode="584" sourcefile="TrackerRequestParser.java" sourcepath="com/tracker/backend/TrackerRequestParser.java"/>
+    </Method>
+    <SourceLine classname="com.tracker.backend.TrackerRequestParser" start="591" end="591" startBytecode="77" endBytecode="77" sourcefile="TrackerRequestParser.java" sourcepath="com/tracker/backend/TrackerRequestParser.java"/>
+  </BugInstance>
+  <BugInstance type="SBSC_USE_STRINGBUFFER_CONCATENATION" priority="2" abbrev="SBSC" category="PERFORMANCE" last="0" removedByChange="true">
+    <UserAnnotation/>
+    <Class classname="com.tracker.backend.TrackerRequestParser">
+      <SourceLine classname="com.tracker.backend.TrackerRequestParser" sourcefile="TrackerRequestParser.java" sourcepath="com/tracker/backend/TrackerRequestParser.java"/>
+    </Class>
+    <Method classname="com.tracker.backend.TrackerRequestParser" name="getCompactPeerList" signature="(Ljava/util/Vector;Ljava/lang/Integer;Lcom/tracker/backend/entity/Peer;)Ljava/lang/String;" isStatic="false">
+      <SourceLine classname="com.tracker.backend.TrackerRequestParser" start="574" end="621" startBytecode="0" endBytecode="584" sourcefile="TrackerRequestParser.java" sourcepath="com/tracker/backend/TrackerRequestParser.java"/>
+    </Method>
+    <SourceLine classname="com.tracker.backend.TrackerRequestParser" start="591" end="591" startBytecode="77" endBytecode="77" sourcefile="TrackerRequestParser.java" sourcepath="com/tracker/backend/TrackerRequestParser.java"/>
+  </BugInstance>
+  <BugInstance type="EI_EXPOSE_REP" priority="2" abbrev="EI" category="MALICIOUS_CODE">
+    <UserAnnotation/>
+    <Class classname="com.tracker.backend.entity.Peer">
+      <SourceLine classname="com.tracker.backend.entity.Peer" sourcefile="Peer.java" sourcepath="com/tracker/backend/entity/Peer.java"/>
+    </Class>
+    <Method classname="com.tracker.backend.entity.Peer" name="getLastActionTime" signature="()Ljava/util/Date;" isStatic="false">
+      <SourceLine classname="com.tracker.backend.entity.Peer" start="109" end="109" startBytecode="0" endBytecode="46" sourcefile="Peer.java" sourcepath="com/tracker/backend/entity/Peer.java"/>
+    </Method>
+    <Field classname="com.tracker.backend.entity.Peer" name="lastAction" signature="Ljava/util/Date;" isStatic="false">
+      <SourceLine classname="com.tracker.backend.entity.Peer" sourcefile="Peer.java" sourcepath="com/tracker/backend/entity/Peer.java"/>
+    </Field>
+    <SourceLine classname="com.tracker.backend.entity.Peer" start="109" end="109" startBytecode="4" endBytecode="4" sourcefile="Peer.java" sourcepath="com/tracker/backend/entity/Peer.java"/>
+  </BugInstance>
+  <BugInstance type="EI_EXPOSE_REP2" priority="2" abbrev="EI2" category="MALICIOUS_CODE">
+    <UserAnnotation/>
+    <Class classname="com.tracker.backend.entity.Peer">
+      <SourceLine classname="com.tracker.backend.entity.Peer" sourcefile="Peer.java" sourcepath="com/tracker/backend/entity/Peer.java"/>
+    </Class>
+    <Method classname="com.tracker.backend.entity.Peer" name="setLastActionTime" signature="(Ljava/util/Date;)V" isStatic="false">
+      <SourceLine classname="com.tracker.backend.entity.Peer" start="113" end="114" startBytecode="0" endBytecode="61" sourcefile="Peer.java" sourcepath="com/tracker/backend/entity/Peer.java"/>
+    </Method>
+    <Field classname="com.tracker.backend.entity.Peer" name="lastAction" signature="Ljava/util/Date;" isStatic="false">
+      <SourceLine classname="com.tracker.backend.entity.Peer" sourcefile="Peer.java" sourcepath="com/tracker/backend/entity/Peer.java"/>
+    </Field>
+    <LocalVariable name="lastAction" register="1" pc="2" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="com.tracker.backend.entity.Peer" start="113" end="113" startBytecode="2" endBytecode="2" sourcefile="Peer.java" sourcepath="com/tracker/backend/entity/Peer.java"/>
+  </BugInstance>
+  <BugInstance type="DM_NUMBER_CTOR" priority="2" abbrev="Bx" category="PERFORMANCE">
+    <UserAnnotation/>
+    <Class classname="com.tracker.backend.webinterface.TorrentUpload">
+      <SourceLine classname="com.tracker.backend.webinterface.TorrentUpload" sourcefile="TorrentUpload.java" sourcepath="com/tracker/backend/webinterface/TorrentUpload.java"/>
+    </Class>
+    <Method classname="com.tracker.backend.webinterface.TorrentUpload" name="addTorrent" signature="(Ljava/util/Map;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/util/Map;" isStatic="true">
+      <SourceLine classname="com.tracker.backend.webinterface.TorrentUpload" start="159" end="454" startBytecode="0" endBytecode="2732" sourcefile="TorrentUpload.java" sourcepath="com/tracker/backend/webinterface/TorrentUpload.java"/>
+    </Method>
+    <Method classname="java.lang.Long" name="&lt;init&gt;" signature="(J)V" isStatic="false" role="METHOD_CALLED">
+      <SourceLine classname="java.lang.Long" start="672" end="674" startBytecode="0" endBytecode="69" sourcefile="Long.java" sourcepath="java/lang/Long.java"/>
+    </Method>
+    <Method classname="java.lang.Long" name="valueOf" signature="(J)V" isStatic="false" role="SHOULD_CALL">
+      <SourceLine classname="java.lang.Long" sourcefile="Long.java" sourcepath="java/lang/Long.java"/>
+    </Method>
+    <SourceLine classname="com.tracker.backend.webinterface.TorrentUpload" start="159" end="159" startBytecode="5" endBytecode="5" sourcefile="TorrentUpload.java" sourcepath="com/tracker/backend/webinterface/TorrentUpload.java"/>
+  </BugInstance>
+  <BugInstance type="DM_NUMBER_CTOR" priority="2" abbrev="Bx" category="PERFORMANCE" last="0" removedByChange="true">
+    <UserAnnotation/>
+    <Class classname="com.tracker.backend.webinterface.TorrentUpload">
+      <SourceLine classname="com.tracker.backend.webinterface.TorrentUpload" sourcefile="TorrentUpload.java" sourcepath="com/tracker/backend/webinterface/TorrentUpload.java"/>
+    </Class>
+    <Method classname="com.tracker.backend.webinterface.TorrentUpload" name="addTorrent" signature="(Ljava/util/Map;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/util/Map;" isStatic="true">
+      <SourceLine classname="com.tracker.backend.webinterface.TorrentUpload" start="159" end="454" startBytecode="0" endBytecode="2732" sourcefile="TorrentUpload.java" sourcepath="com/tracker/backend/webinterface/TorrentUpload.java"/>
+    </Method>
+    <Method classname="java.lang.Long" name="&lt;init&gt;" signature="(J)V" isStatic="false" role="METHOD_CALLED">
+      <SourceLine classname="java.lang.Long" start="672" end="674" startBytecode="0" endBytecode="69" sourcefile="Long.java" sourcepath="java/lang/Long.java"/>
+    </Method>
+    <Method classname="java.lang.Long" name="valueOf" signature="(J)V" isStatic="false" role="SHOULD_CALL">
+      <SourceLine classname="java.lang.Long" sourcefile="Long.java" sourcepath="java/lang/Long.java"/>
+    </Method>
+    <SourceLine classname="com.tracker.backend.webinterface.TorrentUpload" start="159" end="159" startBytecode="5" endBytecode="5" sourcefile="TorrentUpload.java" sourcepath="com/tracker/backend/webinterface/TorrentUpload.java"/>
+  </BugInstance>
+  <BugInstance type="SBSC_USE_STRINGBUFFER_CONCATENATION" priority="2" abbrev="SBSC" category="PERFORMANCE">
+    <UserAnnotation/>
+    <Class classname="com.tracker.backend.webinterface.TorrentUpload">
+      <SourceLine classname="com.tracker.backend.webinterface.TorrentUpload" sourcefile="TorrentUpload.java" sourcepath="com/tracker/backend/webinterface/TorrentUpload.java"/>
+    </Class>
+    <Method classname="com.tracker.backend.webinterface.TorrentUpload" name="addTorrent" signature="(Ljava/util/Map;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/util/Map;" isStatic="true">
+      <SourceLine classname="com.tracker.backend.webinterface.TorrentUpload" start="159" end="454" startBytecode="0" endBytecode="2732" sourcefile="TorrentUpload.java" sourcepath="com/tracker/backend/webinterface/TorrentUpload.java"/>
+    </Method>
+    <SourceLine classname="com.tracker.backend.webinterface.TorrentUpload" start="351" end="351" startBytecode="712" endBytecode="712" sourcefile="TorrentUpload.java" sourcepath="com/tracker/backend/webinterface/TorrentUpload.java"/>
+  </BugInstance>
+  <BugInstance type="SBSC_USE_STRINGBUFFER_CONCATENATION" priority="2" abbrev="SBSC" category="PERFORMANCE" last="0" removedByChange="true">
+    <UserAnnotation/>
+    <Class classname="com.tracker.backend.webinterface.TorrentUpload">
+      <SourceLine classname="com.tracker.backend.webinterface.TorrentUpload" sourcefile="TorrentUpload.java" sourcepath="com/tracker/backend/webinterface/TorrentUpload.java"/>
+    </Class>
+    <Method classname="com.tracker.backend.webinterface.TorrentUpload" name="addTorrent" signature="(Ljava/util/Map;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/util/Map;" isStatic="true">
+      <SourceLine classname="com.tracker.backend.webinterface.TorrentUpload" start="159" end="454" startBytecode="0" endBytecode="2732" sourcefile="TorrentUpload.java" sourcepath="com/tracker/backend/webinterface/TorrentUpload.java"/>
+    </Method>
+    <SourceLine classname="com.tracker.backend.webinterface.TorrentUpload" start="351" end="351" startBytecode="712" endBytecode="712" sourcefile="TorrentUpload.java" sourcepath="com/tracker/backend/webinterface/TorrentUpload.java"/>
+  </BugInstance>
+  <BugInstance type="SIC_INNER_SHOULD_BE_STATIC" priority="2" abbrev="SIC" category="PERFORMANCE">
+    <UserAnnotation/>
+    <Class classname="com.tracker.backend.webinterface.TorrentUpload$UnparsedTorrentData">
+      <SourceLine classname="com.tracker.backend.webinterface.TorrentUpload$UnparsedTorrentData" sourcefile="TorrentUpload.java" sourcepath="com/tracker/backend/webinterface/TorrentUpload.java"/>
+    </Class>
+  </BugInstance>
+  <BugInstance type="EI_EXPOSE_REP" priority="2" abbrev="EI" category="MALICIOUS_CODE">
+    <UserAnnotation/>
+    <Class classname="com.tracker.backend.webinterface.entity.TorrentData">
+      <SourceLine classname="com.tracker.backend.webinterface.entity.TorrentData" sourcefile="TorrentData.java" sourcepath="com/tracker/backend/webinterface/entity/TorrentData.java"/>
+    </Class>
+    <Method classname="com.tracker.backend.webinterface.entity.TorrentData" name="getAdded" signature="()Ljava/util/Date;" isStatic="false">
+      <SourceLine classname="com.tracker.backend.webinterface.entity.TorrentData" start="134" end="134" startBytecode="0" endBytecode="46" sourcefile="TorrentData.java" sourcepath="com/tracker/backend/webinterface/entity/TorrentData.java"/>
+    </Method>
+    <Field classname="com.tracker.backend.webinterface.entity.TorrentData" name="added" signature="Ljava/util/Date;" isStatic="false">
+      <SourceLine classname="com.tracker.backend.webinterface.entity.TorrentData" sourcefile="TorrentData.java" sourcepath="com/tracker/backend/webinterface/entity/TorrentData.java"/>
+    </Field>
+    <SourceLine classname="com.tracker.backend.webinterface.entity.TorrentData" start="134" end="134" startBytecode="4" endBytecode="4" sourcefile="TorrentData.java" sourcepath="com/tracker/backend/webinterface/entity/TorrentData.java"/>
+  </BugInstance>
+  <BugInstance type="EI_EXPOSE_REP2" priority="2" abbrev="EI2" category="MALICIOUS_CODE">
+    <UserAnnotation/>
+    <Class classname="com.tracker.backend.webinterface.entity.TorrentData">
+      <SourceLine classname="com.tracker.backend.webinterface.entity.TorrentData" sourcefile="TorrentData.java" sourcepath="com/tracker/backend/webinterface/entity/TorrentData.java"/>
+    </Class>
+    <Method classname="com.tracker.backend.webinterface.entity.TorrentData" name="setAdded" signature="(Ljava/util/Date;)V" isStatic="false">
+      <SourceLine classname="com.tracker.backend.webinterface.entity.TorrentData" start="142" end="143" startBytecode="0" endBytecode="61" sourcefile="TorrentData.java" sourcepath="com/tracker/backend/webinterface/entity/TorrentData.java"/>
+    </Method>
+    <Field classname="com.tracker.backend.webinterface.entity.TorrentData" name="added" signature="Ljava/util/Date;" isStatic="false">
+      <SourceLine classname="com.tracker.backend.webinterface.entity.TorrentData" sourcefile="TorrentData.java" sourcepath="com/tracker/backend/webinterface/entity/TorrentData.java"/>
+    </Field>
+    <LocalVariable name="added" register="1" pc="2" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="com.tracker.backend.webinterface.entity.TorrentData" start="142" end="142" startBytecode="2" endBytecode="2" sourcefile="TorrentData.java" sourcepath="com/tracker/backend/webinterface/entity/TorrentData.java"/>
+  </BugInstance>
+  <BugInstance type="EI_EXPOSE_REP" priority="2" abbrev="EI" category="MALICIOUS_CODE">
+    <UserAnnotation/>
+    <Class classname="com.tracker.backend.webinterface.entity.TorrentFile">
+      <SourceLine classname="com.tracker.backend.webinterface.entity.TorrentFile" sourcefile="TorrentFile.java" sourcepath="com/tracker/backend/webinterface/entity/TorrentFile.java"/>
+    </Class>
+    <Method classname="com.tracker.backend.webinterface.entity.TorrentFile" name="getTorrentFileRaw" signature="()[B" isStatic="false">
+      <SourceLine classname="com.tracker.backend.webinterface.entity.TorrentFile" start="92" end="92" startBytecode="0" endBytecode="46" sourcefile="TorrentFile.java" sourcepath="com/tracker/backend/webinterface/entity/TorrentFile.java"/>
+    </Method>
+    <Field classname="com.tracker.backend.webinterface.entity.TorrentFile" name="torrentFile" signature="[B" isStatic="false">
+      <SourceLine classname="com.tracker.backend.webinterface.entity.TorrentFile" sourcefile="TorrentFile.java" sourcepath="com/tracker/backend/webinterface/entity/TorrentFile.java"/>
+    </Field>
+    <SourceLine classname="com.tracker.backend.webinterface.entity.TorrentFile" start="92" end="92" startBytecode="4" endBytecode="4" sourcefile="TorrentFile.java" sourcepath="com/tracker/backend/webinterface/entity/TorrentFile.java"/>
+  </BugInstance>
+  <BugInstance type="DM_STRING_TOSTRING" priority="2" abbrev="Dm" category="PERFORMANCE">
+    <UserAnnotation/>
+    <Class classname="com.tracker.frontend.Announce">
+      <SourceLine classname="com.tracker.frontend.Announce" sourcefile="Announce.java" sourcepath="com/tracker/frontend/Announce.java"/>
+    </Class>
+    <Method classname="com.tracker.frontend.Announce" name="processRequest" signature="(Ljavax/servlet/http/HttpServletRequest;Ljavax/servlet/http/HttpServletResponse;)V" isStatic="false">
+      <SourceLine classname="com.tracker.frontend.Announce" start="57" end="109" startBytecode="0" endBytecode="746" sourcefile="Announce.java" sourcepath="com/tracker/frontend/Announce.java"/>
+    </Method>
+    <SourceLine classname="com.tracker.frontend.Announce" start="67" end="67" startBytecode="68" endBytecode="68" sourcefile="Announce.java" sourcepath="com/tracker/frontend/Announce.java"/>
+  </BugInstance>
+  <BugInstance type="DM_STRING_TOSTRING" priority="2" abbrev="Dm" category="PERFORMANCE" last="0" removedByChange="true">
+    <UserAnnotation/>
+    <Class classname="com.tracker.frontend.Announce">
+      <SourceLine classname="com.tracker.frontend.Announce" sourcefile="Announce.java" sourcepath="com/tracker/frontend/Announce.java"/>
+    </Class>
+    <Method classname="com.tracker.frontend.Announce" name="processRequest" signature="(Ljavax/servlet/http/HttpServletRequest;Ljavax/servlet/http/HttpServletResponse;)V" isStatic="false">
+      <SourceLine classname="com.tracker.frontend.Announce" start="57" end="109" startBytecode="0" endBytecode="746" sourcefile="Announce.java" sourcepath="com/tracker/frontend/Announce.java"/>
+    </Method>
+    <SourceLine classname="com.tracker.frontend.Announce" start="67" end="67" startBytecode="68" endBytecode="68" sourcefile="Announce.java" sourcepath="com/tracker/frontend/Announce.java"/>
+  </BugInstance>
+  <BugInstance type="DM_STRING_VOID_CTOR" priority="2" abbrev="Dm" category="PERFORMANCE">
+    <UserAnnotation/>
+    <Class classname="com.tracker.frontend.Announce">
+      <SourceLine classname="com.tracker.frontend.Announce" sourcefile="Announce.java" sourcepath="com/tracker/frontend/Announce.java"/>
+    </Class>
+    <Method classname="com.tracker.frontend.Announce" name="processRequest" signature="(Ljavax/servlet/http/HttpServletRequest;Ljavax/servlet/http/HttpServletResponse;)V" isStatic="false">
+      <SourceLine classname="com.tracker.frontend.Announce" start="57" end="109" startBytecode="0" endBytecode="746" sourcefile="Announce.java" sourcepath="com/tracker/frontend/Announce.java"/>
+    </Method>
+    <SourceLine classname="com.tracker.frontend.Announce" start="74" end="74" startBytecode="104" endBytecode="104" sourcefile="Announce.java" sourcepath="com/tracker/frontend/Announce.java"/>
+  </BugInstance>
+  <BugInstance type="DM_STRING_VOID_CTOR" priority="2" abbrev="Dm" category="PERFORMANCE" last="0" removedByChange="true">
+    <UserAnnotation/>
+    <Class classname="com.tracker.frontend.Announce">
+      <SourceLine classname="com.tracker.frontend.Announce" sourcefile="Announce.java" sourcepath="com/tracker/frontend/Announce.java"/>
+    </Class>
+    <Method classname="com.tracker.frontend.Announce" name="processRequest" signature="(Ljavax/servlet/http/HttpServletRequest;Ljavax/servlet/http/HttpServletResponse;)V" isStatic="false">
+      <SourceLine classname="com.tracker.frontend.Announce" start="57" end="109" startBytecode="0" endBytecode="746" sourcefile="Announce.java" sourcepath="com/tracker/frontend/Announce.java"/>
+    </Method>
+    <SourceLine classname="com.tracker.frontend.Announce" start="74" end="74" startBytecode="104" endBytecode="104" sourcefile="Announce.java" sourcepath="com/tracker/frontend/Announce.java"/>
+  </BugInstance>
+  <BugInstance type="DM_STRING_VOID_CTOR" priority="2" abbrev="Dm" category="PERFORMANCE">
+    <UserAnnotation/>
+    <Class classname="com.tracker.frontend.Scrape">
+      <SourceLine classname="com.tracker.frontend.Scrape" sourcefile="Scrape.java" sourcepath="com/tracker/frontend/Scrape.java"/>
+    </Class>
+    <Method classname="com.tracker.frontend.Scrape" name="processRequest" signature="(Ljavax/servlet/http/HttpServletRequest;Ljavax/servlet/http/HttpServletResponse;)V" isStatic="false">
+      <SourceLine classname="com.tracker.frontend.Scrape" start="59" end="113" startBytecode="0" endBytecode="732" sourcefile="Scrape.java" sourcepath="com/tracker/frontend/Scrape.java"/>
+    </Method>
+    <SourceLine classname="com.tracker.frontend.Scrape" start="71" end="71" startBytecode="66" endBytecode="66" sourcefile="Scrape.java" sourcepath="com/tracker/frontend/Scrape.java"/>
+  </BugInstance>
+  <BugInstance type="DM_STRING_VOID_CTOR" priority="2" abbrev="Dm" category="PERFORMANCE" last="0" removedByChange="true">
+    <UserAnnotation/>
+    <Class classname="com.tracker.frontend.Scrape">
+      <SourceLine classname="com.tracker.frontend.Scrape" sourcefile="Scrape.java" sourcepath="com/tracker/frontend/Scrape.java"/>
+    </Class>
+    <Method classname="com.tracker.frontend.Scrape" name="processRequest" signature="(Ljavax/servlet/http/HttpServletRequest;Ljavax/servlet/http/HttpServletResponse;)V" isStatic="false">
+      <SourceLine classname="com.tracker.frontend.Scrape" start="59" end="113" startBytecode="0" endBytecode="732" sourcefile="Scrape.java" sourcepath="com/tracker/frontend/Scrape.java"/>
+    </Method>
+    <SourceLine classname="com.tracker.frontend.Scrape" start="71" end="71" startBytecode="66" endBytecode="66" sourcefile="Scrape.java" sourcepath="com/tracker/frontend/Scrape.java"/>
+  </BugInstance>
+  <BugInstance type="DM_NUMBER_CTOR" priority="2" abbrev="Bx" category="PERFORMANCE">
+    <UserAnnotation/>
+    <Class classname="org.json.JSONArray">
+      <SourceLine classname="org.json.JSONArray" sourcefile="JSONArray.java" sourcepath="org/json/JSONArray.java"/>
+    </Class>
+    <Method classname="org.json.JSONArray" name="&lt;init&gt;" signature="(Lorg/json/JSONTokener;)V" isStatic="false">
+      <SourceLine classname="org.json.JSONArray" start="107" end="145" startBytecode="0" endBytecode="433" sourcefile="JSONArray.java" sourcepath="org/json/JSONArray.java"/>
+    </Method>
+    <Method classname="java.lang.Character" name="&lt;init&gt;" signature="(C)V" isStatic="false" role="METHOD_CALLED">
+      <SourceLine classname="java.lang.Character" start="2074" end="2076" startBytecode="0" endBytecode="69" sourcefile="Character.java" sourcepath="java/lang/Character.java"/>
+    </Method>
+    <Method classname="java.lang.Character" name="valueOf" signature="(C)V" isStatic="false" role="SHOULD_CALL">
+      <SourceLine classname="java.lang.Character" sourcefile="Character.java" sourcepath="java/lang/Character.java"/>
+    </Method>
+    <SourceLine classname="org.json.JSONArray" start="141" end="141" startBytecode="184" endBytecode="184" sourcefile="JSONArray.java" sourcepath="org/json/JSONArray.java"/>
+  </BugInstance>
+  <BugInstance type="DM_NUMBER_CTOR" priority="2" abbrev="Bx" category="PERFORMANCE">
+    <UserAnnotation/>
+    <Class classname="org.json.JSONArray">
+      <SourceLine classname="org.json.JSONArray" sourcefile="JSONArray.java" sourcepath="org/json/JSONArray.java"/>
+    </Class>
+    <Method classname="org.json.JSONArray" name="put" signature="(I)Lorg/json/JSONArray;" isStatic="false">
+      <SourceLine classname="org.json.JSONArray" start="638" end="639" startBytecode="0" endBytecode="70" sourcefile="JSONArray.java" sourcepath="org/json/JSONArray.java"/>
+    </Method>
+    <Method classname="java.lang.Integer" name="&lt;init&gt;" signature="(I)V" isStatic="false" role="METHOD_CALLED">
+      <SourceLine classname="java.lang.Integer" start="618" end="620" startBytecode="0" endBytecode="69" sourcefile="Integer.java" sourcepath="java/lang/Integer.java"/>
+    </Method>
+    <Method classname="java.lang.Integer" name="valueOf" signature="(I)V" isStatic="false" role="SHOULD_CALL">
+      <SourceLine classname="java.lang.Integer" sourcefile="Integer.java" sourcepath="java/lang/Integer.java"/>
+    </Method>
+    <SourceLine classname="org.json.JSONArray" start="638" end="638" startBytecode="6" endBytecode="6" sourcefile="JSONArray.java" sourcepath="org/json/JSONArray.java"/>
+  </BugInstance>
+  <BugInstance type="DM_NUMBER_CTOR" priority="2" abbrev="Bx" category="PERFORMANCE">
+    <UserAnnotation/>
+    <Class classname="org.json.JSONArray">
+      <SourceLine classname="org.json.JSONArray" sourcefile="JSONArray.java" sourcepath="org/json/JSONArray.java"/>
+    </Class>
+    <Method classname="org.json.JSONArray" name="put" signature="(II)Lorg/json/JSONArray;" isStatic="false">
+      <SourceLine classname="org.json.JSONArray" start="736" end="737" startBytecode="0" endBytecode="81" sourcefile="JSONArray.java" sourcepath="org/json/JSONArray.java"/>
+    </Method>
+    <Method classname="java.lang.Integer" name="&lt;init&gt;" signature="(I)V" isStatic="false" role="METHOD_CALLED">
+      <SourceLine classname="java.lang.Integer" start="618" end="620" startBytecode="0" endBytecode="69" sourcefile="Integer.java" sourcepath="java/lang/Integer.java"/>
+    </Method>
+    <Method classname="java.lang.Integer" name="valueOf" signature="(I)V" isStatic="false" role="SHOULD_CALL">
+      <SourceLine classname="java.lang.Integer" sourcefile="Integer.java" sourcepath="java/lang/Integer.java"/>
+    </Method>
+    <SourceLine classname="org.json.JSONArray" start="736" end="736" startBytecode="7" endBytecode="7" sourcefile="JSONArray.java" sourcepath="org/json/JSONArray.java"/>
+  </BugInstance>
+  <BugInstance type="DM_NUMBER_CTOR" priority="2" abbrev="Bx" category="PERFORMANCE">
+    <UserAnnotation/>
+    <Class classname="org.json.JSONArray">
+      <SourceLine classname="org.json.JSONArray" sourcefile="JSONArray.java" sourcepath="org/json/JSONArray.java"/>
+    </Class>
+    <Method classname="org.json.JSONArray" name="put" signature="(IJ)Lorg/json/JSONArray;" isStatic="false">
+      <SourceLine classname="org.json.JSONArray" start="751" end="752" startBytecode="0" endBytecode="81" sourcefile="JSONArray.java" sourcepath="org/json/JSONArray.java"/>
+    </Method>
+    <Method classname="java.lang.Long" name="&lt;init&gt;" signature="(J)V" isStatic="false" role="METHOD_CALLED">
+      <SourceLine classname="java.lang.Long" start="672" end="674" startBytecode="0" endBytecode="69" sourcefile="Long.java" sourcepath="java/lang/Long.java"/>
+    </Method>
+    <Method classname="java.lang.Long" name="valueOf" signature="(J)V" isStatic="false" role="SHOULD_CALL">
+      <SourceLine classname="java.lang.Long" sourcefile="Long.java" sourcepath="java/lang/Long.java"/>
+    </Method>
+    <SourceLine classname="org.json.JSONArray" start="751" end="751" startBytecode="7" endBytecode="7" sourcefile="JSONArray.java" sourcepath="org/json/JSONArray.java"/>
+  </BugInstance>
+  <BugInstance type="DM_NUMBER_CTOR" priority="2" abbrev="Bx" category="PERFORMANCE">
+    <UserAnnotation/>
+    <Class classname="org.json.JSONArray">
+      <SourceLine classname="org.json.JSONArray" sourcefile="JSONArray.java" sourcepath="org/json/JSONArray.java"/>
+    </Class>
+    <Method classname="org.json.JSONArray" name="put" signature="(J)Lorg/json/JSONArray;" isStatic="false">
+      <SourceLine classname="org.json.JSONArray" start="650" end="651" startBytecode="0" endBytecode="70" sourcefile="JSONArray.java" sourcepath="org/json/JSONArray.java"/>
+    </Method>
+    <Method classname="java.lang.Long" name="&lt;init&gt;" signature="(J)V" isStatic="false" role="METHOD_CALLED">
+      <SourceLine classname="java.lang.Long" start="672" end="674" startBytecode="0" endBytecode="69" sourcefile="Long.java" sourcepath="java/lang/Long.java"/>
+    </Method>
+    <Method classname="java.lang.Long" name="valueOf" signature="(J)V" isStatic="false" role="SHOULD_CALL">
+      <SourceLine classname="java.lang.Long" sourcefile="Long.java" sourcepath="java/lang/Long.java"/>
+    </Method>
+    <SourceLine classname="org.json.JSONArray" start="650" end="650" startBytecode="6" endBytecode="6" sourcefile="JSONArray.java" sourcepath="org/json/JSONArray.java"/>
+  </BugInstance>
+  <BugInstance type="NP_TOSTRING_COULD_RETURN_NULL" priority="2" abbrev="NP" category="BAD_PRACTICE">
+    <UserAnnotation/>
+    <Class classname="org.json.JSONArray">
+      <SourceLine classname="org.json.JSONArray" sourcefile="JSONArray.java" sourcepath="org/json/JSONArray.java"/>
+    </Class>
+    <Method classname="org.json.JSONArray" name="toString" signature="()Ljava/lang/String;" isStatic="false">
+      <SourceLine classname="org.json.JSONArray" start="834" end="836" startBytecode="0" endBytecode="112" sourcefile="JSONArray.java" sourcepath="org/json/JSONArray.java"/>
+    </Method>
+    <SourceLine classname="org.json.JSONArray" start="836" end="836" startBytecode="32" endBytecode="32" sourcefile="JSONArray.java" sourcepath="org/json/JSONArray.java"/>
+  </BugInstance>
+  <BugInstance type="BC_VACUOUS_INSTANCEOF" priority="2" abbrev="BC" category="STYLE">
+    <UserAnnotation/>
+    <Class classname="org.json.JSONObject">
+      <SourceLine classname="org.json.JSONObject" sourcefile="JSONObject.java" sourcepath="org/json/JSONObject.java"/>
+    </Class>
+    <Method classname="org.json.JSONObject" name="valueToString" signature="(Ljava/lang/Object;)Ljava/lang/String;" isStatic="true">
+      <SourceLine classname="org.json.JSONObject" start="1423" end="1454" startBytecode="0" endBytecode="92" sourcefile="JSONObject.java" sourcepath="org/json/JSONObject.java"/>
+    </Method>
+    <Type descriptor="Ljava/lang/String;" role="TYPE_FOUND">
+      <SourceLine classname="java.lang.String" start="109" end="2985" sourcefile="String.java" sourcepath="java/lang/String.java"/>
+    </Type>
+    <Type descriptor="Ljava/lang/String;" role="TYPE_EXPECTED">
+      <SourceLine classname="java.lang.String" start="109" end="2985" sourcefile="String.java" sourcepath="java/lang/String.java"/>
+    </Type>
+    <SourceLine classname="org.json.JSONObject" start="1433" end="1433" startBytecode="46" endBytecode="46" sourcefile="JSONObject.java" sourcepath="org/json/JSONObject.java"/>
+  </BugInstance>
+  <BugInstance type="BC_VACUOUS_INSTANCEOF" priority="2" abbrev="BC" category="STYLE">
+    <UserAnnotation/>
+    <Class classname="org.json.JSONObject">
+      <SourceLine classname="org.json.JSONObject" sourcefile="JSONObject.java" sourcepath="org/json/JSONObject.java"/>
+    </Class>
+    <Method classname="org.json.JSONObject" name="valueToString" signature="(Ljava/lang/Object;II)Ljava/lang/String;" isStatic="true">
+      <SourceLine classname="org.json.JSONObject" start="1474" end="1508" startBytecode="0" endBytecode="93" sourcefile="JSONObject.java" sourcepath="org/json/JSONObject.java"/>
+    </Method>
+    <Type descriptor="Ljava/lang/String;" role="TYPE_FOUND">
+      <SourceLine classname="java.lang.String" start="109" end="2985" sourcefile="String.java" sourcepath="java/lang/String.java"/>
+    </Type>
+    <Type descriptor="Ljava/lang/String;" role="TYPE_EXPECTED">
+      <SourceLine classname="java.lang.String" start="109" end="2985" sourcefile="String.java" sourcepath="java/lang/String.java"/>
+    </Type>
+    <SourceLine classname="org.json.JSONObject" start="1480" end="1480" startBytecode="33" endBytecode="33" sourcefile="JSONObject.java" sourcepath="org/json/JSONObject.java"/>
+  </BugInstance>
+  <BugInstance type="DM_NUMBER_CTOR" priority="2" abbrev="Bx" category="PERFORMANCE">
+    <UserAnnotation/>
+    <Class classname="org.json.JSONObject">
+      <SourceLine classname="org.json.JSONObject" sourcefile="JSONObject.java" sourcepath="org/json/JSONObject.java"/>
+    </Class>
+    <Method classname="org.json.JSONObject" name="put" signature="(Ljava/lang/String;I)Lorg/json/JSONObject;" isStatic="false">
+      <SourceLine classname="org.json.JSONObject" start="1006" end="1007" startBytecode="0" endBytecode="81" sourcefile="JSONObject.java" sourcepath="org/json/JSONObject.java"/>
+    </Method>
+    <Method classname="java.lang.Integer" name="&lt;init&gt;" signature="(I)V" isStatic="false" role="METHOD_CALLED">
+      <SourceLine classname="java.lang.Integer" start="618" end="620" startBytecode="0" endBytecode="69" sourcefile="Integer.java" sourcepath="java/lang/Integer.java"/>
+    </Method>
+    <Method classname="java.lang.Integer" name="valueOf" signature="(I)V" isStatic="false" role="SHOULD_CALL">
+      <SourceLine classname="java.lang.Integer" sourcefile="Integer.java" sourcepath="java/lang/Integer.java"/>
+    </Method>
+    <SourceLine classname="org.json.JSONObject" start="1006" end="1006" startBytecode="7" endBytecode="7" sourcefile="JSONObject.java" sourcepath="org/json/JSONObject.java"/>
+  </BugInstance>
+  <BugInstance type="DM_NUMBER_CTOR" priority="2" abbrev="Bx" category="PERFORMANCE">
+    <UserAnnotation/>
+    <Class classname="org.json.JSONObject">
+      <SourceLine classname="org.json.JSONObject" sourcefile="JSONObject.java" sourcepath="org/json/JSONObject.java"/>
+    </Class>
+    <Method classname="org.json.JSONObject" name="put" signature="(Ljava/lang/String;J)Lorg/json/JSONObject;" isStatic="false">
+      <SourceLine classname="org.json.JSONObject" start="1020" end="1021" startBytecode="0" endBytecode="81" sourcefile="JSONObject.java" sourcepath="org/json/JSONObject.java"/>
+    </Method>
+    <Method classname="java.lang.Long" name="&lt;init&gt;" signature="(J)V" isStatic="false" role="METHOD_CALLED">
+      <SourceLine classname="java.lang.Long" start="672" end="674" startBytecode="0" endBytecode="69" sourcefile="Long.java" sourcepath="java/lang/Long.java"/>
+    </Method>
+    <Method classname="java.lang.Long" name="valueOf" signature="(J)V" isStatic="false" role="SHOULD_CALL">
+      <SourceLine classname="java.lang.Long" sourcefile="Long.java" sourcepath="java/lang/Long.java"/>
+    </Method>
+    <SourceLine classname="org.json.JSONObject" start="1020" end="1020" startBytecode="7" endBytecode="7" sourcefile="JSONObject.java" sourcepath="org/json/JSONObject.java"/>
+  </BugInstance>
+  <BugInstance type="DM_NUMBER_CTOR" priority="2" abbrev="Bx" category="PERFORMANCE">
+    <UserAnnotation/>
+    <Class classname="org.json.JSONObject">
+      <SourceLine classname="org.json.JSONObject" sourcefile="JSONObject.java" sourcepath="org/json/JSONObject.java"/>
+    </Class>
+    <Method classname="org.json.JSONObject" name="stringToValue" signature="(Ljava/lang/String;)Ljava/lang/Object;" isStatic="true">
+      <SourceLine classname="org.json.JSONObject" start="1194" end="1248" startBytecode="0" endBytecode="495" sourcefile="JSONObject.java" sourcepath="org/json/JSONObject.java"/>
+    </Method>
+    <Method classname="java.lang.Integer" name="&lt;init&gt;" signature="(I)V" isStatic="false" role="METHOD_CALLED">
+      <SourceLine classname="java.lang.Integer" start="618" end="620" startBytecode="0" endBytecode="69" sourcefile="Integer.java" sourcepath="java/lang/Integer.java"/>
+    </Method>
+    <Method classname="java.lang.Integer" name="valueOf" signature="(I)V" isStatic="false" role="SHOULD_CALL">
+      <SourceLine classname="java.lang.Integer" sourcefile="Integer.java" sourcepath="java/lang/Integer.java"/>
+    </Method>
+    <SourceLine classname="org.json.JSONObject" start="1221" end="1221" startBytecode="134" endBytecode="134" sourcefile="JSONObject.java" sourcepath="org/json/JSONObject.java"/>
+    <SourceLine classname="org.json.JSONObject" start="1228" end="1228" startBytecode="152" endBytecode="152" sourcefile="JSONObject.java" sourcepath="org/json/JSONObject.java" role="SOURCE_LINE_ANOTHER_INSTANCE"/>
+  </BugInstance>
+  <BugInstance type="EC_NULL_ARG" priority="2" abbrev="EC" category="CORRECTNESS">
+    <UserAnnotation/>
+    <Class classname="org.json.JSONObject">
+      <SourceLine classname="org.json.JSONObject" sourcefile="JSONObject.java" sourcepath="org/json/JSONObject.java"/>
+    </Class>
+    <Method classname="org.json.JSONObject" name="valueToString" signature="(Ljava/lang/Object;)Ljava/lang/String;" isStatic="true">
+      <SourceLine classname="org.json.JSONObject" start="1423" end="1454" startBytecode="0" endBytecode="92" sourcefile="JSONObject.java" sourcepath="org/json/JSONObject.java"/>
+    </Method>
+    <SourceLine classname="org.json.JSONObject" start="1423" end="1423" startBytecode="6" endBytecode="6" sourcefile="JSONObject.java" sourcepath="org/json/JSONObject.java"/>
+  </BugInstance>
+  <BugInstance type="EC_NULL_ARG" priority="2" abbrev="EC" category="CORRECTNESS">
+    <UserAnnotation/>
+    <Class classname="org.json.JSONObject">
+      <SourceLine classname="org.json.JSONObject" sourcefile="JSONObject.java" sourcepath="org/json/JSONObject.java"/>
+    </Class>
+    <Method classname="org.json.JSONObject" name="valueToString" signature="(Ljava/lang/Object;II)Ljava/lang/String;" isStatic="true">
+      <SourceLine classname="org.json.JSONObject" start="1474" end="1508" startBytecode="0" endBytecode="93" sourcefile="JSONObject.java" sourcepath="org/json/JSONObject.java"/>
+    </Method>
+    <SourceLine classname="org.json.JSONObject" start="1474" end="1474" startBytecode="6" endBytecode="6" sourcefile="JSONObject.java" sourcepath="org/json/JSONObject.java"/>
+  </BugInstance>
+  <BugInstance type="NP_TOSTRING_COULD_RETURN_NULL" priority="2" abbrev="NP" category="BAD_PRACTICE">
+    <UserAnnotation/>
+    <Class classname="org.json.JSONObject">
+      <SourceLine classname="org.json.JSONObject" sourcefile="JSONObject.java" sourcepath="org/json/JSONObject.java"/>
+    </Class>
+    <Method classname="org.json.JSONObject" name="toString" signature="()Ljava/lang/String;" isStatic="false">
+      <SourceLine classname="org.json.JSONObject" start="1307" end="1322" startBytecode="0" endBytecode="274" sourcefile="JSONObject.java" sourcepath="org/json/JSONObject.java"/>
+    </Method>
+    <SourceLine classname="org.json.JSONObject" start="1322" end="1322" startBytecode="100" endBytecode="100" sourcefile="JSONObject.java" sourcepath="org/json/JSONObject.java"/>
+  </BugInstance>
+  <BugInstance type="REC_CATCH_EXCEPTION" priority="2" abbrev="REC" category="STYLE">
+    <UserAnnotation/>
+    <Class classname="org.json.JSONObject">
+      <SourceLine classname="org.json.JSONObject" sourcefile="JSONObject.java" sourcepath="org/json/JSONObject.java"/>
+    </Class>
+    <Method classname="org.json.JSONObject" name="populateInternalMap" signature="(Ljava/lang/Object;Z)V" isStatic="false">
+      <SourceLine classname="org.json.JSONObject" start="298" end="352" startBytecode="0" endBytecode="830" sourcefile="JSONObject.java" sourcepath="org/json/JSONObject.java"/>
+    </Method>
+    <SourceLine classname="org.json.JSONObject" start="348" end="348" startBytecode="440" endBytecode="440" sourcefile="JSONObject.java" sourcepath="org/json/JSONObject.java"/>
+  </BugInstance>
+  <BugInstance type="EQ_UNUSUAL" priority="2" abbrev="Eq" category="STYLE">
+    <UserAnnotation/>
+    <Class classname="org.json.JSONObject$Null">
+      <SourceLine classname="org.json.JSONObject$Null" sourcefile="JSONObject.java" sourcepath="org/json/JSONObject.java"/>
+    </Class>
+    <Method classname="org.json.JSONObject$Null" name="equals" signature="(Ljava/lang/Object;)Z" isStatic="false">
+      <SourceLine classname="org.json.JSONObject$Null" start="114" end="114" startBytecode="0" endBytecode="78" sourcefile="JSONObject.java" sourcepath="org/json/JSONObject.java"/>
+    </Method>
+  </BugInstance>
+  <BugInstance type="HE_EQUALS_USE_HASHCODE" priority="2" abbrev="HE" category="BAD_PRACTICE">
+    <UserAnnotation/>
+    <Class classname="org.json.JSONObject$Null">
+      <SourceLine classname="org.json.JSONObject$Null" sourcefile="JSONObject.java" sourcepath="org/json/JSONObject.java"/>
+    </Class>
+    <Method classname="org.json.JSONObject$Null" name="equals" signature="(Ljava/lang/Object;)Z" isStatic="false">
+      <SourceLine classname="org.json.JSONObject$Null" start="114" end="114" startBytecode="0" endBytecode="78" sourcefile="JSONObject.java" sourcepath="org/json/JSONObject.java"/>
+    </Method>
+  </BugInstance>
+  <BugInstance type="NP_TOSTRING_COULD_RETURN_NULL" priority="2" abbrev="NP" category="BAD_PRACTICE">
+    <UserAnnotation/>
+    <Class classname="org.json.JSONStringer">
+      <SourceLine classname="org.json.JSONStringer" sourcefile="JSONStringer.java" sourcepath="org/json/JSONStringer.java"/>
+    </Class>
+    <Method classname="org.json.JSONStringer" name="toString" signature="()Ljava/lang/String;" isStatic="false">
+      <SourceLine classname="org.json.JSONStringer" start="76" end="76" startBytecode="0" endBytecode="75" sourcefile="JSONStringer.java" sourcepath="org/json/JSONStringer.java"/>
+    </Method>
+    <LocalVariable name="?" register="-1" pc="20" role="LOCAL_VARIABLE_UNKNOWN"/>
+    <SourceLine classname="org.json.JSONStringer" start="76" end="76" startBytecode="20" endBytecode="20" sourcefile="JSONStringer.java" sourcepath="org/json/JSONStringer.java" role="SOURCE_LINE_RETURNED"/>
+    <SourceLine classname="org.json.JSONStringer" start="76" end="76" startBytecode="19" endBytecode="19" sourcefile="JSONStringer.java" sourcepath="org/json/JSONStringer.java" role="SOURCE_LINE_KNOWN_NULL"/>
+  </BugInstance>
+  <BugInstance type="DM_NUMBER_CTOR" priority="2" abbrev="Bx" category="PERFORMANCE">
+    <UserAnnotation/>
+    <Class classname="org.json.XML">
+      <SourceLine classname="org.json.XML" sourcefile="XML.java" sourcepath="org/json/XML.java"/>
+    </Class>
+    <Method classname="org.json.XML" name="&lt;clinit&gt;" signature="()V" isStatic="true">
+      <SourceLine classname="org.json.XML" start="39" end="63" startBytecode="0" endBytecode="164" sourcefile="XML.java" sourcepath="org/json/XML.java"/>
+    </Method>
+    <Method classname="java.lang.Character" name="&lt;init&gt;" signature="(C)V" isStatic="false" role="METHOD_CALLED">
+      <SourceLine classname="java.lang.Character" start="2074" end="2076" startBytecode="0" endBytecode="69" sourcefile="Character.java" sourcepath="java/lang/Character.java"/>
+    </Method>
+    <Method classname="java.lang.Character" name="valueOf" signature="(C)V" isStatic="false" role="SHOULD_CALL">
+      <SourceLine classname="java.lang.Character" sourcefile="Character.java" sourcepath="java/lang/Character.java"/>
+    </Method>
+    <SourceLine classname="org.json.XML" start="39" end="39" startBytecode="6" endBytecode="6" sourcefile="XML.java" sourcepath="org/json/XML.java"/>
+    <SourceLine classname="org.json.XML" start="42" end="42" startBytecode="18" endBytecode="18" sourcefile="XML.java" sourcepath="org/json/XML.java" role="SOURCE_LINE_ANOTHER_INSTANCE"/>
+    <SourceLine classname="org.json.XML" start="45" end="45" startBytecode="30" endBytecode="30" sourcefile="XML.java" sourcepath="org/json/XML.java" role="SOURCE_LINE_ANOTHER_INSTANCE"/>
+    <SourceLine classname="org.json.XML" start="48" end="48" startBytecode="42" endBytecode="42" sourcefile="XML.java" sourcepath="org/json/XML.java" role="SOURCE_LINE_ANOTHER_INSTANCE"/>
+    <SourceLine classname="org.json.XML" start="51" end="51" startBytecode="54" endBytecode="54" sourcefile="XML.java" sourcepath="org/json/XML.java" role="SOURCE_LINE_ANOTHER_INSTANCE"/>
+    <SourceLine classname="org.json.XML" start="54" end="54" startBytecode="66" endBytecode="66" sourcefile="XML.java" sourcepath="org/json/XML.java" role="SOURCE_LINE_ANOTHER_INSTANCE"/>
+    <SourceLine classname="org.json.XML" start="57" end="57" startBytecode="78" endBytecode="78" sourcefile="XML.java" sourcepath="org/json/XML.java" role="SOURCE_LINE_ANOTHER_INSTANCE"/>
+    <SourceLine classname="org.json.XML" start="60" end="60" startBytecode="90" endBytecode="90" sourcefile="XML.java" sourcepath="org/json/XML.java" role="SOURCE_LINE_ANOTHER_INSTANCE"/>
+    <SourceLine classname="org.json.XML" start="63" end="63" startBytecode="102" endBytecode="102" sourcefile="XML.java" sourcepath="org/json/XML.java" role="SOURCE_LINE_ANOTHER_INSTANCE"/>
+  </BugInstance>
+  <Errors>
+    <MissingClass>javax.persistence.CascadeType</MissingClass>
+    <MissingClass>javax.persistence.Column</MissingClass>
+    <MissingClass>javax.persistence.Entity</MissingClass>
+    <MissingClass>javax.persistence.EntityManager</MissingClass>
+    <MissingClass>javax.persistence.EntityManagerFactory</MissingClass>
+    <MissingClass>javax.persistence.EntityTransaction</MissingClass>
+    <MissingClass>javax.persistence.GeneratedValue</MissingClass>
+    <MissingClass>javax.persistence.GenerationType</MissingClass>
+    <MissingClass>javax.persistence.Id</MissingClass>
+    <MissingClass>javax.persistence.JoinTable</MissingClass>
+    <MissingClass>javax.persistence.Lob</MissingClass>
+    <MissingClass>javax.persistence.ManyToOne</MissingClass>
+    <MissingClass>javax.persistence.NoResultException</MissingClass>
+    <MissingClass>javax.persistence.OneToMany</MissingClass>
+    <MissingClass>javax.persistence.OneToOne</MissingClass>
+    <MissingClass>javax.persistence.Persistence</MissingClass>
+    <MissingClass>javax.persistence.Query</MissingClass>
+    <MissingClass>javax.persistence.Temporal</MissingClass>
+    <MissingClass>javax.persistence.TemporalType</MissingClass>
+    <MissingClass>javax.servlet.ServletException</MissingClass>
+    <MissingClass>javax.servlet.ServletOutputStream</MissingClass>
+    <MissingClass>javax.servlet.http.HttpServlet</MissingClass>
+    <MissingClass>javax.servlet.http.HttpServletRequest</MissingClass>
+    <MissingClass>javax.servlet.http.HttpServletResponse</MissingClass>
+  </Errors>
+  <FindBugsSummary timestamp="Fri, 23 Jan 2009 22:33:26 +0100" total_classes="31" total_bugs="40" total_size="2905" num_packages="8" vm_version="1.6.0_0-b12" cpu_seconds="13.28" clock_seconds="23.95" peak_mbytes="86.69" alloc_mbytes="762.12" gc_seconds="2.68" priority_2="40">
+    <PackageStats package="com.tracker.backend" total_bugs="10" total_types="3" total_size="470" priority_2="10">
+      <ClassStats class="com.tracker.backend.Bencode" sourceFile="Bencode.java" interface="false" size="166" bugs="4" priority_2="4"/>
+      <ClassStats class="com.tracker.backend.StringUtils" sourceFile="StringUtils.java" interface="false" size="28" bugs="0"/>
+      <ClassStats class="com.tracker.backend.TrackerRequestParser" sourceFile="TrackerRequestParser.java" interface="false" size="276" bugs="6" priority_2="6"/>
+    </PackageStats>
+    <PackageStats package="com.tracker.backend.entity" total_bugs="2" total_types="2" total_size="250" priority_2="2">
+      <ClassStats class="com.tracker.backend.entity.Peer" sourceFile="Peer.java" interface="false" size="106" bugs="2" priority_2="2"/>
+      <ClassStats class="com.tracker.backend.entity.Torrent" sourceFile="Torrent.java" interface="false" size="144" bugs="0"/>
+    </PackageStats>
+    <PackageStats package="com.tracker.backend.webinterface" total_bugs="3" total_types="5" total_size="237" priority_2="3">
+      <ClassStats class="com.tracker.backend.webinterface.TakeUpload" sourceFile="TakeUpload.java" interface="true" size="2" bugs="0"/>
+      <ClassStats class="com.tracker.backend.webinterface.TorrentList" sourceFile="TorrentList.java" interface="true" size="2" bugs="0"/>
+      <ClassStats class="com.tracker.backend.webinterface.TorrentSearch" sourceFile="TorrentSearch.java" interface="false" size="75" bugs="0"/>
+      <ClassStats class="com.tracker.backend.webinterface.TorrentUpload" sourceFile="TorrentUpload.java" interface="false" size="151" bugs="2" priority_2="2"/>
+      <ClassStats class="com.tracker.backend.webinterface.TorrentUpload$UnparsedTorrentData" sourceFile="TorrentUpload.java" interface="false" size="7" bugs="1" priority_2="1"/>
+    </PackageStats>
+    <PackageStats package="com.tracker.backend.webinterface.entity" total_bugs="3" total_types="3" total_size="142" priority_2="3">
+      <ClassStats class="com.tracker.backend.webinterface.entity.TorrentContent" sourceFile="TorrentContent.java" interface="false" size="35" bugs="0"/>
+      <ClassStats class="com.tracker.backend.webinterface.entity.TorrentData" sourceFile="TorrentData.java" interface="false" size="61" bugs="2" priority_2="2"/>
+      <ClassStats class="com.tracker.backend.webinterface.entity.TorrentFile" sourceFile="TorrentFile.java" interface="false" size="46" bugs="1" priority_2="1"/>
+    </PackageStats>
+    <PackageStats package="com.tracker.backend.webinterface.json" total_bugs="0" total_types="1" total_size="28">
+      <ClassStats class="com.tracker.backend.webinterface.json.JSONTorrentList" sourceFile="JSONTorrentList.java" interface="false" size="28" bugs="0"/>
+    </PackageStats>
+    <PackageStats package="com.tracker.backend.webinterface.xml" total_bugs="0" total_types="2" total_size="125">
+      <ClassStats class="com.tracker.backend.webinterface.xml.XMLTakeUpload" sourceFile="XMLTakeUpload.java" interface="false" size="74" bugs="0"/>
+      <ClassStats class="com.tracker.backend.webinterface.xml.XMLTorrentList" sourceFile="XMLTorrentList.java" interface="false" size="51" bugs="0"/>
+    </PackageStats>
+    <PackageStats package="com.tracker.frontend" total_bugs="3" total_types="3" total_size="129" priority_2="3">
+      <ClassStats class="com.tracker.frontend.Announce" sourceFile="Announce.java" interface="false" size="43" bugs="2" priority_2="2"/>
+      <ClassStats class="com.tracker.frontend.Download" sourceFile="Download.java" interface="false" size="45" bugs="0"/>
+      <ClassStats class="com.tracker.frontend.Scrape" sourceFile="Scrape.java" interface="false" size="41" bugs="1" priority_2="1"/>
+    </PackageStats>
+    <PackageStats package="org.json" total_bugs="19" total_types="12" total_size="1524" priority_2="19">
+      <ClassStats class="org.json.JSONArray" sourceFile="JSONArray.java" interface="false" size="250" bugs="6" priority_2="6"/>
+      <ClassStats class="org.json.JSONException" sourceFile="JSONException.java" interface="false" size="11" bugs="0"/>
+      <ClassStats class="org.json.JSONML" sourceFile="JSONML.java" interface="false" size="187" bugs="0"/>
+      <ClassStats class="org.json.JSONObject" sourceFile="JSONObject.java" interface="false" size="486" bugs="9" priority_2="9"/>
+      <ClassStats class="org.json.JSONObject$1" sourceFile="JSONObject.java" interface="false" size="1" bugs="0"/>
+      <ClassStats class="org.json.JSONObject$Null" sourceFile="JSONObject.java" interface="false" size="10" bugs="2" priority_2="2"/>
+      <ClassStats class="org.json.JSONString" sourceFile="JSONString.java" interface="true" size="2" bugs="0"/>
+      <ClassStats class="org.json.JSONStringer" sourceFile="JSONStringer.java" interface="false" size="6" bugs="1" priority_2="1"/>
+      <ClassStats class="org.json.JSONTokener" sourceFile="JSONTokener.java" interface="false" size="157" bugs="0"/>
+      <ClassStats class="org.json.JSONWriter" sourceFile="JSONWriter.java" interface="false" size="99" bugs="0"/>
+      <ClassStats class="org.json.XML" sourceFile="XML.java" interface="false" size="184" bugs="1" priority_2="1"/>
+      <ClassStats class="org.json.XMLTokener" sourceFile="XMLTokener.java" interface="false" size="131" bugs="0"/>
+    </PackageStats>
+  </FindBugsSummary>
+  <ClassFeatures></ClassFeatures>
+  <History></History>
+</BugCollection>

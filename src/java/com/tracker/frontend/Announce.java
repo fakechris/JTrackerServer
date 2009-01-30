@@ -27,8 +27,7 @@ import com.tracker.backend.TrackerRequestParser;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetAddress;
-import java.util.Enumeration;
-import java.util.TreeMap;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
@@ -58,20 +57,14 @@ public class Announce extends HttpServlet {
         
         // parse request
         TrackerRequestParser trp = new TrackerRequestParser();
-        Enumeration e = request.getParameterNames();
-        TreeMap<String, String> requestParams = new TreeMap<String,String>();
-        TreeMap<String, ?> responseParams;
-        
-        while(e.hasMoreElements()) {
-            String name = (String)e.nextElement();
-            String value = request.getParameter(name).toString();
-            requestParams.put(name, value);
-        }
+        HashMap<String, ?> responseParams;
         
         trp.setRemoteAddress(remoteAddress);
-        trp.setRequestParams(requestParams);
+        trp.setRequestParams(request.getParameterMap());
+        trp.setMinInterval(Long.parseLong(getInitParameter("minInterval")));
+        trp.setDefaultInterval(Long.parseLong(getInitParameter("defaultInterval")));
 
-        String responseString = new String();
+        String responseString = "";
 
         try {
             responseParams = trp.parseRequest();
@@ -83,7 +76,7 @@ public class Announce extends HttpServlet {
             Logger.getLogger(Announce.class.getName()).log(Level.SEVERE,
                     "Exception caught", ex);
             // set a simple failure reason response
-            TreeMap<String,String> failureResponse = new TreeMap<String,String>();
+            HashMap<String,String> failureResponse = new HashMap<String,String>();
             failureResponse.put("failure reason", "Internal tracker error.");
 
             try {

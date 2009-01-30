@@ -89,7 +89,7 @@ public class TorrentFile implements Serializable {
      * @return a byte array containing the torrentfile.
      */
     public byte[] getTorrentFileRaw() {
-        return torrentFile;
+        return torrentFile.clone();
     }
 
     /**

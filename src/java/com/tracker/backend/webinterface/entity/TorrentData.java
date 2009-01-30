@@ -25,7 +25,6 @@ import com.tracker.backend.entity.Torrent;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Vector;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -131,7 +130,7 @@ public class TorrentData implements Serializable {
      * @return Date when the torrent was added.
      */
     public Date getAdded() {
-        return added;
+        return (Date) added.clone();
     }
 
     /**
@@ -139,7 +138,7 @@ public class TorrentData implements Serializable {
      * @param added Date the torrent was added.
      */
     public void setAdded(Date added) {
-        this.added = added;
+        this.added = (Date) added.clone();
     }
 
     /**

@@ -27,7 +27,8 @@ import com.tracker.backend.TrackerRequestParser;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.InetAddress;
-import java.util.TreeMap;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
@@ -63,17 +64,16 @@ public class Scrape extends HttpServlet {
         // set remote address for logging purposes
         trp.setRemoteAddress(remoteAddress);
         
-        TreeMap<String,TreeMap> innerDictionary = new TreeMap<String,TreeMap>();
-        TreeMap<String,TreeMap> outerDictionary = new TreeMap<String,TreeMap>();
+        HashMap<String,HashMap> innerDictionary = new HashMap<String,HashMap>();
+        HashMap<String,HashMap> outerDictionary = new HashMap<String,HashMap>();
 
-        TreeMap<String,String[]> requestMap = new TreeMap<String,String[]>(
-                request.getParameterMap());
-        String responseString = new String();
+        Map requestMap = request.getParameterMap();
+        String responseString = "";
 
         try {
             // is there a info_hash key present?
             if(requestMap.containsKey((String)"info_hash")) {
-                String[] value = requestMap.get((String)"info_hash");
+                String[] value = (String[])requestMap.get((String)"info_hash");
                 // scrape all requested info hashes
                 for(int i = 0; i < value.length; i++) {
                     /**
