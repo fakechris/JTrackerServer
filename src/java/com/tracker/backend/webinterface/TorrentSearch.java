@@ -197,6 +197,8 @@ public class TorrentSearch {
         if(!includeDead) {
             query.append(" AND (t.numSeeders > 0 OR t.numLeechers > 0)");
         }
+        // order by date, descending
+        query.append(" ORDER BY t.torrentData.added DESC");
 
         try {
             q = em.createQuery(query.toString());
@@ -227,7 +229,8 @@ public class TorrentSearch {
 
         EntityManager em = emf.createEntityManager();
 
-        Query q = em.createQuery("SELECT t FROM Torrent t");
+        Query q = em.createQuery("SELECT t FROM Torrent t ORDER BY " +
+                "t.torrentData.added DESC");
 
         q.setFirstResult(firstResult);
         q.setMaxResults(numResults);
@@ -248,7 +251,8 @@ public class TorrentSearch {
 
         EntityManager em = emf.createEntityManager();
 
-        Query q = em.createQuery("SELECT t FROM Torrent t");
+        Query q = em.createQuery("SELECT t FROM Torrent t ORDER BY " +
+                "t.torrentData.added DESC");
 
         result = q.getResultList();
 
