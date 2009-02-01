@@ -22,7 +22,6 @@
 package com.tracker.backend.webinterface;
 
 import com.tracker.backend.entity.Torrent;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
