@@ -54,7 +54,7 @@ public class TorrentSearchTest {
     static Vector<TorrentData> torrentMetaData = new Vector<TorrentData>();
 
 
-    static EntityManagerFactory emf = Persistence.createEntityManagerFactory("TorrentTrackerPU");
+    static EntityManagerFactory emf = Persistence.createEntityManagerFactory("QuashPU");
 
     public TorrentSearchTest() {
     }

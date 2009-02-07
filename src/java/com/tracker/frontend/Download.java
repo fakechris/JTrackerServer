@@ -44,7 +44,7 @@ import javax.servlet.http.HttpServletResponse;
  * @author bo
  */
 public class Download extends HttpServlet {
-    static EntityManagerFactory emf = Persistence.createEntityManagerFactory("TorrentTrackerPU");
+    static EntityManagerFactory emf = Persistence.createEntityManagerFactory("QuashPU");
 
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.

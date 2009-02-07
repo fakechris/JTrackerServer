@@ -49,7 +49,7 @@ import static org.junit.Assert.*;
  * @author bo
  */
 public class TorrentUploadTest {
-    static EntityManagerFactory emf = Persistence.createEntityManagerFactory("TorrentTrackerPU");
+    static EntityManagerFactory emf = Persistence.createEntityManagerFactory("QuashPU");
 
     public TorrentUploadTest() {
     }

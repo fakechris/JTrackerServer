@@ -39,7 +39,7 @@ import javax.persistence.Query;
  */
 public class TorrentSearch {
     // keep one copy of the entity manager factory
-    static EntityManagerFactory emf = Persistence.createEntityManagerFactory("TorrentTrackerPU");
+    static EntityManagerFactory emf = Persistence.createEntityManagerFactory("QuashPU");
     static Logger log = Logger.getLogger(TorrentSearch.class.getName());
 
     /**

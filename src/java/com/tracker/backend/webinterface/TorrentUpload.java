@@ -58,7 +58,7 @@ import org.apache.commons.fileupload.util.Streams;
  */
 public class TorrentUpload {
     static Logger log = Logger.getLogger(TorrentUpload.class.getName());
-    static EntityManagerFactory emf = Persistence.createEntityManagerFactory("TorrentTrackerPU");
+    static EntityManagerFactory emf = Persistence.createEntityManagerFactory("QuashPU");
 
     /**
      * A simple convenience class to make it easier to parse the Servlet request.
