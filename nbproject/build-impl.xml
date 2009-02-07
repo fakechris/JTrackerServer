@@ -17,7 +17,7 @@
         - cleanup
 
         -->
-<project xmlns:webproject1="http://www.netbeans.org/ns/web-project/1" xmlns:webproject2="http://www.netbeans.org/ns/web-project/2" xmlns:webproject3="http://www.netbeans.org/ns/web-project/3" basedir=".." default="default" name="TorrentTracker-impl">
+<project xmlns:webproject1="http://www.netbeans.org/ns/web-project/1" xmlns:webproject2="http://www.netbeans.org/ns/web-project/2" xmlns:webproject3="http://www.netbeans.org/ns/web-project/3" basedir=".." default="default" name="Quash-impl">
     <import file="ant-deploy.xml"/>
     <target depends="dist,javadoc" description="Build whole project." name="default"/>
     <!--
@@ -501,8 +501,6 @@ exists or setup the property manually. For example like this:
         <copyfiles files="${libs.toplink.classpath}" iftldtodir="${build.web.dir}/WEB-INF" manifestproperty="manifest.libs.toplink.classpath" todir="${dist.ear.dir}"/>
         <copyfiles files="${file.reference.commons-io.jar}" iftldtodir="${build.web.dir}/WEB-INF" manifestproperty="manifest.file.reference.commons-io.jar" todir="${dist.ear.dir}"/>
         <copyfiles files="${file.reference.commons-fileupload.jar}" iftldtodir="${build.web.dir}/WEB-INF" manifestproperty="manifest.file.reference.commons-fileupload.jar" todir="${dist.ear.dir}"/>
-        <copyfiles files="${file.reference.commons-fileupload.jar}" todir="${build.web.dir}//"/>
-        <copyfiles files="${file.reference.commons-io.jar}" todir="${build.web.dir}//"/>
         <mkdir dir="${build.web.dir}/META-INF"/>
         <manifest file="${build.web.dir}/META-INF/MANIFEST.MF" mode="update">
             <attribute name="Class-Path" value="${manifest.libs.toplink.classpath} ${manifest.file.reference.commons-io.jar} ${manifest.file.reference.commons-fileupload.jar} "/>
@@ -512,8 +510,6 @@ exists or setup the property manually. For example like this:
         <copyfiles files="${libs.toplink.classpath}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copyfiles files="${file.reference.commons-io.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copyfiles files="${file.reference.commons-fileupload.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
-        <copyfiles files="${file.reference.commons-fileupload.jar}" todir="${build.web.dir}//"/>
-        <copyfiles files="${file.reference.commons-io.jar}" todir="${build.web.dir}//"/>
     </target>
     <target depends="init,compile,compile-jsps,-pre-dist,library-inclusion-in-manifest" name="do-ear-dist">
         <dirname file="${dist.ear.war}" property="dist.jar.dir"/>
