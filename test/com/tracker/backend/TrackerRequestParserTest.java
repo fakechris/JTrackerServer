@@ -65,7 +65,7 @@ public class TrackerRequestParserTest {
     static byte[] rawInfoHash = new byte[20];
     static byte[] rawPeerId = new byte[20];
 
-    static EntityManagerFactory emf = Persistence.createEntityManagerFactory("TorrentTrackerPU");
+    static EntityManagerFactory emf = Persistence.createEntityManagerFactory("QuashPU");
 
 
     public TrackerRequestParserTest() {

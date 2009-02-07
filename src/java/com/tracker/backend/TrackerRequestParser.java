@@ -47,7 +47,7 @@ import javax.persistence.Query;
 public class TrackerRequestParser {
     private Map<String,String[]> requestParams;
     private InetAddress remoteAddress;
-    private static EntityManagerFactory emf = Persistence.createEntityManagerFactory("TorrentTrackerPU");
+    private static EntityManagerFactory emf = Persistence.createEntityManagerFactory("QuashPU");
 
     private Logger log = Logger.getLogger(TrackerRequestParser.class.getName());
 
@@ -189,7 +189,6 @@ public class TrackerRequestParser {
         String encodedInfoHash, encodedPeerId;
         String event = "";
         Long uploaded, downloaded, left, port;
-        boolean returnSeeds = true;
         Integer numPeersToReturn = Integer.valueOf(50);
         Torrent t = null;
         Peer p = null;
@@ -464,8 +463,6 @@ public class TrackerRequestParser {
                     em.close();
                     return parseFailed("Tracker error.");
                 }
-
-                returnSeeds = false;
             }
         } // if(event)
 
@@ -502,8 +499,6 @@ public class TrackerRequestParser {
             p.setUploaded(uploaded);
             p.setLastActionTime(Calendar.getInstance().getTime());
 
-            returnSeeds = !p.isSeed();
-
             em.merge(p);
 
         }
@@ -528,16 +523,7 @@ public class TrackerRequestParser {
 
         // find some peers!
         String peerList;
-        if(!returnSeeds) {
-            // only return leechers
-            Vector<Peer> v = (Vector<Peer>) t.getLeechersData();
-            peerList = getCompactPeerList(v, numPeersToReturn, p);
-        }
-        else {
-            // return both seeds and leechers
-            Vector<Peer> v = (Vector<Peer>) t.getPeersData();
-            peerList = getCompactPeerList(v, numPeersToReturn, p);
-        }
+        peerList = getCompactPeerList((Vector<Peer>) t.getPeersData(), numPeersToReturn, p);
 
         // close the EntityManager
         em.close();
@@ -563,6 +549,7 @@ public class TrackerRequestParser {
         long drag = (defaultInterval * 1000) + 120000;
         // inactive for a long period?
         if(currentTime - (lastAction + drag) > 0) {
+            log.log(Level.FINE, "Found inactive peer: " + p.toString());
             Torrent t = p.getTorrent();
 
             t.removePeer(p);
@@ -589,55 +576,74 @@ public class TrackerRequestParser {
      * @return a peer list in the compact format ((4 bytes address + 2 bytes port) * amount)
      * as a String.
      */
-    private String getCompactPeerList(Vector<Peer> population, Integer numWanted, Peer askingPeer)
+    private String getCompactPeerList(Vector<Peer> peers, Integer numWanted, Peer askingPeer)
     {
-        int numReturn = numWanted;
         StringBuilder result = new StringBuilder();
-        // is the population big enough to get all the peers we want?
-        if(population.size() < numWanted) {
-            // apparently not
+
+        // do we have enough peers?
+        if(numWanted > peers.size()) {
             // return everything
-            for(int i = 0; i < population.size(); i++) {
-                Peer p = population.get(i);
-                // is this the asking peer?
-                if(askingPeer != null && p.equals(askingPeer)) {
-                    continue;
-                }
-                // is the peer inactive and thus open for removal?
-                if(peerIsInactive(p)) {
-                    continue;
-                }
-
-                result.append(p.getCompactAddressPort());
-            }
-        }
-
-        else {
-            // pick some random peers
-            Random r = new Random(Calendar.getInstance().getTimeInMillis());
-            // index of already picked peers
-            BitSet picked = new BitSet(numReturn);
-            // pick some peers
-            for(int i = 0; i < numReturn; i++) {
-                int next = r.nextInt(numReturn);
-                while(picked.get(next)) {
-                    next = r.nextInt(numReturn);
-                }
-                Peer p = population.get(next);
-                if(askingPeer != null && !p.equals(askingPeer)) {
+            for(Peer p : peers) {
+                if(!peerIsInactive(p) && p != askingPeer)
                     result.append(p.getCompactAddressPort());
-                }
-                picked.set(next);
             }
-            // check chances for collisions?
-            // TODO: improve random pick, check for inactivity
-            // if numpeers is half the size or more of the swarm, drop the
-            // usual random pick-method, and simply pick either a sequential
-            // stream of peers either right-to-left or left-to-right?
-            // would greatly improve the performance of the algorithm on
-            // small swarms where peers to return is less than the total
-            // amount of peers
         }
+
+        // do we bother with picking random peers?
+        else if((numWanted * 1.5) < peers.size()) {
+            // the peer size isn't that much bigger than the peers wanted, so
+            // make things easier by just returning peers sequentially either
+            // starting from behind or from in front
+            Random r = new Random(Calendar.getInstance().getTimeInMillis());
+            if(r.nextBoolean()) {
+                // return starting from the front
+                for(int i = 0; i < numWanted; i++) {
+                    Peer p = peers.get(i);
+                    if(!peerIsInactive(p) && p != askingPeer) {
+                        result.append(p.getCompactAddressPort());
+                    }
+                }
+            }
+            else {
+                // return starting from behind
+                for(int i = peers.size(), j = 0; j < numWanted; i--, j++) {
+                    Peer p = peers.get(i);
+                    if(!peerIsInactive(p) && p != askingPeer) {
+                        result.append(p.getCompactAddressPort());
+                    }
+                }
+            }
+        }
+
+        // pick some properly random peers
+        else {
+            Random r = new Random(Calendar.getInstance().getTimeInMillis());
+
+            // index of peers already picked
+            BitSet picked = new BitSet(numWanted);
+            
+            // population size (may change due to inactive peers)
+            Integer populationSize = peers.size();
+
+            // loop while we have peers to return and actually want them
+            while(populationSize > numWanted && numWanted > 0) {
+                int i = r.nextInt(peers.size());
+
+                if(picked.get(i))
+                    continue;
+
+                picked.set(i);
+
+                Peer p = peers.get(i);
+                if(peerIsInactive(p) || p == askingPeer)
+                    populationSize--;
+                else
+                    result.append(p.getCompactAddressPort());
+
+                numWanted--;
+            }
+        }
+
         return result.toString();
     }
 

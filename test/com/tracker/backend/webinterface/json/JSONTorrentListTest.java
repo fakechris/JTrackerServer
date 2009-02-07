@@ -52,7 +52,7 @@ import static org.junit.Assert.*;
  */
 public class JSONTorrentListTest {
 
-    static EntityManagerFactory emf = Persistence.createEntityManagerFactory("TorrentTrackerPU");
+    static EntityManagerFactory emf = Persistence.createEntityManagerFactory("QuashPU");
 
     public JSONTorrentListTest() {
     }
