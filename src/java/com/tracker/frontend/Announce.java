@@ -61,8 +61,22 @@ public class Announce extends HttpServlet {
         
         trp.setRemoteAddress(remoteAddress);
         trp.setRequestParams(request.getParameterMap());
-        trp.setMinInterval(Long.parseLong(getInitParameter("minInterval")));
-        trp.setDefaultInterval(Long.parseLong(getInitParameter("defaultInterval")));
+        try {
+            // these can potentially return null, set some sensible defaults if they do
+            if(getInitParameter("minInterval") == null)
+                trp.setMinInterval(180L);
+            else
+                trp.setMinInterval(Long.parseLong(getInitParameter("minInterval")));
+
+            if(getInitParameter("defaultInterval") == null)
+                trp.setDefaultInterval(300L);
+            else
+                trp.setDefaultInterval(Long.parseLong(getInitParameter("defaultInterval")));
+        }
+        catch(Exception ex) {
+            trp.setMinInterval(180L);
+            trp.setDefaultInterval(300L);
+        }
 
         String responseString = "";
 
