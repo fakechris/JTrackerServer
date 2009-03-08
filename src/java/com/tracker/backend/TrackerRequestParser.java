@@ -374,7 +374,7 @@ public class TrackerRequestParser {
 
                     // if left = 0, this peer has a complete copy, so add as seed,
                     // if not, add as leech
-                    if(left == 0) {
+                    if(left == 0L) {
                         t.addSeeder(p);
                     }
                     else {
@@ -455,8 +455,9 @@ public class TrackerRequestParser {
                     return parseFailed("Tracker error.");
                 }
 
+                // is the peer a seed already? if so, ignore him
                 // turn peer into a seed, also increments the completed counter.
-                if(!p.getTorrent().leecherCompleted(p)) {
+                if(!p.isSeed() && !p.getTorrent().leecherCompleted(p)) {
                     log.log(Level.SEVERE,
                             "cannot turn leech (" + p.toString() + ") into seed?");
                     em.getTransaction().rollback();
@@ -512,22 +513,21 @@ public class TrackerRequestParser {
             throw ex;
         }
 
+        // find some peers!
+        String peerList;
+        peerList = getCompactPeerList((Vector<Peer>) t.getPeersData(), numPeersToReturn, p);
+
         // make sure that the response is not based on some stale cache
         em.refresh(t);
+
+        // close the EntityManager
+        em.close();
 
         // populate the response
         responseParams.put((String)"complete", t.getNumSeeders());
         responseParams.put((String)"incomplete", t.getNumLeechers());
         responseParams.put((String)"interval", defaultInterval);
         responseParams.put((String)"min interval", minInterval);
-
-        // find some peers!
-        String peerList;
-        peerList = getCompactPeerList((Vector<Peer>) t.getPeersData(), numPeersToReturn, p);
-
-        // close the EntityManager
-        em.close();
-
         responseParams.put((String)"peers", peerList);
 
         return(responseParams);
@@ -549,14 +549,14 @@ public class TrackerRequestParser {
         long drag = (defaultInterval * 1000) + 120000;
         // inactive for a long period?
         if(currentTime - (lastAction + drag) > 0) {
-            log.log(Level.FINE, "Found inactive peer: " + p.toString());
+            log.log(Level.INFO, "Found inactive peer: " + p.toString());
             Torrent t = p.getTorrent();
-
-            t.removePeer(p);
 
             // remove from persistence
             EntityManager em = emf.createEntityManager();
             em.getTransaction().begin();
+            t.removePeer(p);
+            em.merge(t);
             // merge in the changes to make it managed, then call remove
             p = em.merge(p);
             em.remove(p);
@@ -579,22 +579,32 @@ public class TrackerRequestParser {
     private String getCompactPeerList(Vector<Peer> peers, Integer numWanted, Peer askingPeer)
     {
         StringBuilder result = new StringBuilder();
+        /**
+         * The ratio of peers to number of peers wanted that have to be exceeded
+         * to employ random picking of peers.
+         */
+        Integer randomPickRatio = 2;
+
+        Random r = new Random(Calendar.getInstance().getTimeInMillis());
 
         // do we have enough peers?
         if(numWanted > peers.size()) {
             // return everything
-            for(Peer p : peers) {
-                if(!peerIsInactive(p) && p != askingPeer)
+            for(int i = 0; i < peers.size(); i++) {
+                Peer p = peers.get(i);
+                if(!peerIsInactive(p) && p != askingPeer) {
                     result.append(p.getCompactAddressPort());
+                }
             }
+
+            return result.toString();
         }
 
         // do we bother with picking random peers?
-        else if((numWanted * 1.5) < peers.size()) {
+        else if((numWanted * randomPickRatio) > peers.size()) {
             // the peer size isn't that much bigger than the peers wanted, so
             // make things easier by just returning peers sequentially either
             // starting from behind or from in front
-            Random r = new Random(Calendar.getInstance().getTimeInMillis());
             if(r.nextBoolean()) {
                 // return starting from the front
                 for(int i = 0; i < numWanted; i++) {
@@ -613,15 +623,15 @@ public class TrackerRequestParser {
                     }
                 }
             }
+
+            return result.toString();
         }
 
         // pick some properly random peers
         else {
-            Random r = new Random(Calendar.getInstance().getTimeInMillis());
-
             // index of peers already picked
             BitSet picked = new BitSet(numWanted);
-            
+
             // population size (may change due to inactive peers)
             Integer populationSize = peers.size();
 
@@ -642,9 +652,9 @@ public class TrackerRequestParser {
 
                 numWanted--;
             }
-        }
 
-        return result.toString();
+            return result.toString();
+        }
     }
 
     // not implemented
