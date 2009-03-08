@@ -206,11 +206,11 @@ public class JSONTorrentListTest {
         StringWriter stringResult = new StringWriter();
         PrintWriter out = new PrintWriter(stringResult);
 
-        // the output is ordered by id's
+        // the output is ordered by dates added
         Torrent first, second;
 
         EntityManager em = emf.createEntityManager();
-        Query q = em.createQuery("SELECT t FROM Torrent t");
+        Query q = em.createQuery("SELECT t FROM Torrent t ORDER BY t.torrentData.added DESC");
         List<Torrent> l = (List<Torrent>) q.getResultList();
 
         first = l.get(0);
