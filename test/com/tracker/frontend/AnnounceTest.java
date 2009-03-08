@@ -1,7 +1,7 @@
 /*
  * $Id$
  *
- * Copyright © 2008,2009 Bjørn Øivind Bjørnsen
+ * Copyright © 2009 Bjørn Øivind Bjørnsen
  *
  * This file is part of Quash.
  *
@@ -64,8 +64,8 @@ import org.junit.runner.RunWith;
  *  - event=completed
  *  - no event
  *  - no compact
- * TODO:
  *  - peer timeout
+ * TODO:
  *  - more tests of counters (seeds, peers, completed)?
  *
  * @see com.tracker.frontend.Announce
