@@ -250,7 +250,11 @@ public class TorrentUpload {
              * _value_ of the info key, in other words, a bencoded
              * dictionary.
              *
-             * see: http://wiki.theory.org/BitTorrentSpecification
+             * see: 
+             *  - http://wiki.theory.org/BitTorrentSpecification
+             *  - http://bittorrent.org/beps/bep_0003.html (bittorrent specs)
+             *  - http://bittorrent.org/beps/bep_0005.html (DHT specs)
+             *  - http://bittorrent.org/beps/bep_0012.html (multitracker specs)
              * for more information and links on optional keys like the
              * announce-list.
              */
@@ -259,11 +263,17 @@ public class TorrentUpload {
 
             // make sure that the torrentfile contains a bare minimum
             // of data.
-            if(!decodedTorrent.containsKey("announce") ||
-                    !decodedTorrent.containsKey("info")) {
+            if(!decodedTorrent.containsKey("info")) {
                 log.log(Level.WARNING, "Malformed torrentfile received." +
-                        "Missing 'announce' or 'info' keys.");
+                        " missing 'info' dictionary.");
                 throw new Exception("The Torrentfile given in upload is malformed.");
+            }
+
+            // do we have an announce key?
+            if(!decodedTorrent.containsKey("announce")) {
+                // add the announce key and rewrite it below
+                log.log(Level.FINE, "Uploaded torrent missing announce key");
+                decodedTorrent.put("announce", "");
             }
 
             // make sure that we are the ones that track this torrent.
