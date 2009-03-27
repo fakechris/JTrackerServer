@@ -52,8 +52,11 @@ public class TorrentFile implements Serializable {
 
     /**
      * The torrentfile itself stored in the database.
+     * The length of the column is specified (10MB) to avoid limitations in BLOB-objects
+     * in different databases (MySQL BLOBs can only store 64k.)
      */
     @Lob
+    @Column(length=10485760)
     byte[] torrentFile;
 
     /**
